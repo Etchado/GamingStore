@@ -128,10 +128,10 @@ export function ProductCard({ product, onQuickView }) {
           </span>
         )}
 
-        {/* Wishlist top-right */}
+        {/* Wishlist top-right — always visible when wishlisted, hover-only otherwise */}
         <button
           onClick={handleWishlist}
-          className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center transition-opacity shadow-sm border border-border"
+          className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center transition-opacity shadow-sm border border-border opacity-0 group-hover:opacity-100"
           style={{ opacity: inWishlist ? 1 : undefined }}
         >
           <svg
