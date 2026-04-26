@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { useWishlist } from '@/context/WishlistContext'
 
@@ -129,6 +130,7 @@ export default function Navbar() {
   const [mobileQuery, setMobileQuery]       = useState('')
   const { itemCount, setIsOpen: openCart }  = useCart()
   const { count: wishlistCount }            = useWishlist()
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   function toggleMobileItem(label) {
@@ -180,7 +182,7 @@ export default function Navbar() {
               </svg>
             </div>
             <span className="font-black text-ink text-[15px] tracking-tight leading-none">
-              Gaming<span style={{ color: '#0056b3' }}>Store</span>
+              {t('nav.brandFirst')}<span style={{ color: '#0056b3' }}>{t('nav.brandSecond')}</span>
             </span>
           </Link>
 
@@ -206,7 +208,7 @@ export default function Navbar() {
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search products, brands, and categories…"
+              placeholder={t('nav.searchPlaceholder')}
               className="flex-1 px-4 py-2.5 text-sm outline-none text-ink placeholder-muted bg-white"
             />
             <button
@@ -230,7 +232,7 @@ export default function Navbar() {
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
-              <span className="text-xs font-semibold hidden sm:inline">Account</span>
+              <span className="text-xs font-semibold hidden sm:inline">{t('nav.account')}</span>
             </button>
 
             {/* Wishlist */}
@@ -241,7 +243,7 @@ export default function Navbar() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
-              <span className="text-xs font-semibold">Wishlist</span>
+              <span className="text-xs font-semibold">{t('nav.wishlist')}</span>
               <AnimatePresence>
                 {wishlistCount > 0 && (
                   <motion.span
@@ -271,7 +273,7 @@ export default function Navbar() {
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <path d="M16 10a4 4 0 0 1-8 0" />
               </svg>
-              <span className="hidden sm:inline">Cart</span>
+              <span className="hidden sm:inline">{t('nav.cart')}</span>
               <AnimatePresence>
                 {itemCount > 0 && (
                   <motion.span
@@ -317,7 +319,7 @@ export default function Navbar() {
                   borderColor: activeMenu === item.label ? '#0056b3' : 'transparent',
                 }}
               >
-                {item.label}
+                {t(`nav.${item.label.toLowerCase()}`)}
                 <svg className="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                   <path d="m6 9 6 6 6-6" />
                 </svg>
@@ -325,14 +327,14 @@ export default function Navbar() {
             </div>
           ))}
           <div className="ml-auto flex items-center gap-4">
-            <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors">🔥 Deals</Link>
-            <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors">⭐ New Arrivals</Link>
+            <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors">{t('nav.deals')}</Link>
+            <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors">{t('nav.newArrivals')}</Link>
             <Link
               to="/"
               className="text-xs font-semibold px-3 py-1 rounded-full border transition-colors"
               style={{ color: '#28a745', borderColor: '#a7dfb7' }}
             >
-              Games
+              {t('nav.games')}
             </Link>
           </div>
         </div>
@@ -369,7 +371,7 @@ export default function Navbar() {
                   type="search"
                   value={mobileQuery}
                   onChange={(e) => setMobileQuery(e.target.value)}
-                  placeholder="Search products…"
+                  placeholder={t('nav.searchMobilePlaceholder')}
                   className="flex-1 px-4 py-2.5 text-sm outline-none text-ink bg-white"
                 />
                 <button
@@ -391,7 +393,7 @@ export default function Navbar() {
                   onClick={() => toggleMobileItem(item.label)}
                   className="flex items-center justify-between w-full px-5 py-3.5 text-sm font-bold text-ink hover:bg-surface transition-colors"
                 >
-                  {item.label}
+                  {t(`nav.${item.label.toLowerCase()}`)}
                   <svg
                     className="w-4 h-4 text-muted transition-transform duration-200"
                     style={{ transform: mobileExpanded === item.label ? 'rotate(180deg)' : 'rotate(0deg)' }}
@@ -444,22 +446,22 @@ export default function Navbar() {
 
             {/* Mobile extras */}
             <div className="px-5 py-3 flex gap-4 border-t border-border bg-white">
-              <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors" onClick={() => setMobileOpen(false)}>🔥 Deals</Link>
-              <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors" onClick={() => setMobileOpen(false)}>⭐ New Arrivals</Link>
-              <Link to="/" className="text-xs font-semibold" style={{ color: '#28a745' }} onClick={() => setMobileOpen(false)}>Games</Link>
+              <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.deals')}</Link>
+              <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.newArrivals')}</Link>
+              <Link to="/" className="text-xs font-semibold" style={{ color: '#28a745' }} onClick={() => setMobileOpen(false)}>{t('nav.games')}</Link>
               <Link
                 to="/wishlist"
                 className="text-xs font-semibold text-muted hover:text-ink transition-colors flex items-center gap-1"
                 onClick={() => setMobileOpen(false)}
               >
-                ♡ Wishlist{wishlistCount > 0 && <span className="text-red-500 font-black">({wishlistCount})</span>}
+                ♡ {t('nav.wishlist')}{wishlistCount > 0 && <span className="text-red-500 font-black">({wishlistCount})</span>}
               </Link>
               <button className="text-xs font-semibold text-muted hover:text-ink transition-colors ml-auto">
                 <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
-                Account
+                {t('nav.account')}
               </button>
             </div>
           </motion.div>

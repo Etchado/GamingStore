@@ -1,0 +1,18 @@
+{
+  "nav": {
+    "brandFirst": "Gaming",
+    "brandSecond": "Store",
+    "systems": "Systems",
+    "components": "Components",
+    "peripherals": "Peripherals",
+    "accessories": "Accessories",
+    "deals": "🔥 Deals",
+    "newArrivals": "⭐ New Arrivals",
+    "games": "Games",
+    "account": "Account",
+    "cart": "Cart",
+    "wishlist": "Wishlist",
+    "searchPlaceholder": "Search products, brands, and categories…",
+    "searchMobilePlaceholder": "Search products…"
+  }
+}
