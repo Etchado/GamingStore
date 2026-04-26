@@ -13,6 +13,8 @@ import CartDrawer from './components/CartDrawer'
 import ToastContainer from './components/ToastContainer'
 import BackToTop from './components/BackToTop'
 import ProductDetailPage from './pages/ProductDetailPage'
+import CheckoutPage from './pages/CheckoutPage'
+import NotFoundPage from './pages/NotFoundPage'
 import './App.css'
 
 function ScrollToTop() {
@@ -44,6 +46,8 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/product/:id" element={<ProductDetailPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
             <Footer />
             <CartDrawer />

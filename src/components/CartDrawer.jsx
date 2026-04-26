@@ -1,7 +1,9 @@
 import { motion, AnimatePresence } from 'motion/react'
+import { useNavigate } from 'react-router-dom'
 import { useCart } from '@/context/CartContext'
 
 export default function CartDrawer() {
+  const navigate = useNavigate()
   const { items, isOpen, setIsOpen, removeItem, updateQty, itemCount, total } = useCart()
 
   return (
@@ -131,6 +133,7 @@ export default function CartDrawer() {
                 </div>
                 <p className="text-xs text-muted">Shipping &amp; taxes calculated at checkout.</p>
                 <button
+                  onClick={() => { setIsOpen(false); navigate('/checkout') }}
                   className="w-full py-3.5 rounded-xl text-sm font-black text-white transition-colors"
                   style={{ backgroundColor: '#0056b3' }}
                   onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}

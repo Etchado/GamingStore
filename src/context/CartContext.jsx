@@ -30,6 +30,8 @@ export function CartProvider({ children }) {
     ))
   }, [removeItem])
 
+  const clearCart = useCallback(() => setItems([]), [])
+
   const itemCount = items.reduce((s, i) => s + i.qty, 0)
   const total = items.reduce((s, i) => {
     const p = parseFloat(i.product.price.replace(/[^0-9.]/g, ''))
@@ -37,7 +39,7 @@ export function CartProvider({ children }) {
   }, 0)
 
   return (
-    <CartCtx.Provider value={{ items, addItem, removeItem, updateQty, itemCount, total, isOpen, setIsOpen }}>
+    <CartCtx.Provider value={{ items, addItem, removeItem, updateQty, clearCart, itemCount, total, isOpen, setIsOpen }}>
       {children}
     </CartCtx.Provider>
   )
