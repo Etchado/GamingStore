@@ -1,4 +1,5 @@
 import { motion } from 'motion/react'
+import { Link } from 'react-router-dom'
 import { FocusCards } from '@/components/ui/focus-cards'
 
 /* Real Unsplash PC hardware images */
@@ -71,17 +72,17 @@ export default function HeroSection() {
               </svg>
             </motion.a>
 
-            <motion.a
-              href="#"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold border-2 transition-colors"
-              style={{ borderColor: '#28a745', color: '#1e8035' }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e9f7ed' }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
-            >
-              Browse Systems
-            </motion.a>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              <Link
+                to="/?category=System"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold border-2 transition-colors"
+                style={{ borderColor: '#28a745', color: '#1e8035' }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e9f7ed' }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
+              >
+                Browse Systems
+              </Link>
+            </motion.div>
           </motion.div>
 
           {/* Stats */}

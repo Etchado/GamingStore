@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
+import { Link } from 'react-router-dom'
 
 const SHOP_LINKS = [
-  { label: 'Custom PC Systems',  href: '#' },
-  { label: 'Graphics Cards',     href: '#' },
-  { label: 'Processors (CPU)',   href: '#' },
-  { label: 'Gaming Monitors',    href: '#' },
-  { label: 'Keyboards & Mice',   href: '#' },
-  { label: 'Ergonomic Furniture',href: '#' },
-  { label: 'New Arrivals',       href: '#' },
-  { label: 'Deals & Clearance',  href: '#' },
+  { label: 'Custom PC Systems',  href: '/?category=System' },
+  { label: 'Graphics Cards',     href: '/?category=GPU' },
+  { label: 'Processors (CPU)',   href: '/?category=CPU' },
+  { label: 'Gaming Monitors',    href: '/?category=Monitor' },
+  { label: 'Keyboards & Mice',   href: '/?category=Keyboard' },
+  { label: 'Ergonomic Furniture',href: '/?category=Desk' },
+  { label: 'New Arrivals',       href: '/' },
+  { label: 'Deals & Clearance',  href: '/' },
 ]
 
 const SUPPORT_LINKS = [
@@ -80,9 +81,9 @@ function FooterCol({ heading, links }) {
       <ul className="space-y-2.5">
         {links.map((l) => (
           <li key={l.label}>
-            <a href={l.href} className="text-sm text-muted hover:text-ink transition-colors">
+            <Link to={l.href} className="text-sm text-muted hover:text-ink transition-colors">
               {l.label}
-            </a>
+            </Link>
           </li>
         ))}
       </ul>
@@ -109,7 +110,7 @@ export default function Footer() {
           {/* Col 1 — Brand */}
           <div>
             {/* Logo */}
-            <a href="/" className="flex items-center gap-2.5 mb-4">
+            <Link to="/" className="flex items-center gap-2.5 mb-4">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#0056b3' }}>
                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
@@ -118,7 +119,7 @@ export default function Footer() {
               <span className="font-black text-ink text-base tracking-tight">
                 Gaming<span style={{ color: '#0056b3' }}>Store</span>
               </span>
-            </a>
+            </Link>
 
             <p className="text-sm text-muted leading-relaxed max-w-[220px]">
               The premier destination for premium PC hardware, custom builds, and professional setups.

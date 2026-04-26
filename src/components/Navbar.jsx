@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { useCart } from '@/context/CartContext'
 
@@ -6,36 +7,78 @@ import { useCart } from '@/context/CartContext'
 const NAV_ITEMS = [
   {
     label: 'Systems',
+    filter: 'System',
     cols: [
-      { heading: 'PC Builds',   links: ['Prebuilt PCs', 'Custom Builder', 'Mini ITX', 'Workstations'] },
-      { heading: 'By Brand',    links: ['ASUS ROG',     'Corsair',        'NZXT',     'Fractal Design'] },
+      { heading: 'PC Builds',   links: [
+        { label: 'Prebuilt PCs',      filter: 'System' },
+        { label: 'Custom Builder',    filter: 'System' },
+        { label: 'Mini ITX',          filter: 'System' },
+        { label: 'Workstations',      filter: 'System' },
+      ]},
+      { heading: 'By Brand',    links: [
+        { label: 'ASUS ROG',          filter: 'System' },
+        { label: 'Corsair',           filter: 'System' },
+        { label: 'NZXT',              filter: 'System' },
+        { label: 'Fractal Design',    filter: 'System' },
+      ]},
     ],
   },
   {
     label: 'Components',
+    filter: 'GPU',
     cols: [
-      { heading: 'Processing',       links: ['Graphics Cards (GPU)', 'Processors (CPU)', 'Motherboards'] },
-      { heading: 'Storage & Memory', links: ['NVMe SSDs', 'DDR5 RAM', 'SATA SSDs', 'Cooling'] },
+      { heading: 'Processing',       links: [
+        { label: 'Graphics Cards (GPU)', filter: 'GPU' },
+        { label: 'Processors (CPU)',     filter: 'CPU' },
+        { label: 'Motherboards',         filter: 'System' },
+      ]},
+      { heading: 'Storage & Memory', links: [
+        { label: 'NVMe SSDs',            filter: 'Storage' },
+        { label: 'DDR5 RAM',             filter: 'System' },
+        { label: 'SATA SSDs',            filter: 'Storage' },
+        { label: 'Cooling',              filter: 'System' },
+      ]},
     ],
   },
   {
     label: 'Peripherals',
+    filter: 'Monitor',
     cols: [
-      { heading: 'Display', links: ['4K Monitors', 'Ultrawide', '240Hz Gaming', 'Portable'] },
-      { heading: 'Input',   links: ['Mechanical Keyboards', 'Gaming Mice', 'Headsets', 'Webcams'] },
+      { heading: 'Display', links: [
+        { label: '4K Monitors',           filter: 'Monitor' },
+        { label: 'Ultrawide',             filter: 'Monitor' },
+        { label: '240Hz Gaming',          filter: 'Monitor' },
+        { label: 'Portable',              filter: 'Monitor' },
+      ]},
+      { heading: 'Input',   links: [
+        { label: 'Mechanical Keyboards',  filter: 'Keyboard' },
+        { label: 'Gaming Mice',           filter: 'Keyboard' },
+        { label: 'Headsets',              filter: 'Keyboard' },
+        { label: 'Webcams',               filter: 'Keyboard' },
+      ]},
     ],
   },
   {
     label: 'Accessories',
+    filter: 'Desk',
     cols: [
-      { heading: 'Furniture', links: ['Standing Desks', 'Ergonomic Chairs', 'Monitor Arms'] },
-      { heading: 'Extras',    links: ['Cable Management', 'LED Strips', 'Desk Mats', 'Controllers'] },
+      { heading: 'Furniture', links: [
+        { label: 'Standing Desks',        filter: 'Desk' },
+        { label: 'Ergonomic Chairs',      filter: 'Chair' },
+        { label: 'Monitor Arms',          filter: 'Desk' },
+      ]},
+      { heading: 'Extras',    links: [
+        { label: 'Cable Management',      filter: 'Desk' },
+        { label: 'LED Strips',            filter: 'Desk' },
+        { label: 'Desk Mats',             filter: 'Desk' },
+        { label: 'Controllers',           filter: 'Keyboard' },
+      ]},
     ],
   },
 ]
 
 /* ── Desktop MegaMenu ── */
-function MegaMenu({ item }) {
+function MegaMenu({ item, onLinkClick }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -56,14 +99,15 @@ function MegaMenu({ item }) {
               </p>
               <ul className="space-y-2">
                 {col.links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
+                  <li key={link.label}>
+                    <Link
+                      to={`/?category=${link.filter}`}
+                      onClick={onLinkClick}
                       className="text-sm text-ink font-medium hover:text-primary-600 transition-colors flex items-center gap-2 group"
                     >
                       <span className="w-1 h-1 rounded-full bg-border group-hover:bg-primary-600 transition-colors" />
-                      {link}
-                    </a>
+                      {link.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -77,13 +121,26 @@ function MegaMenu({ item }) {
 
 /* ── Navbar ── */
 export default function Navbar() {
-  const [activeMenu, setActiveMenu]       = useState(null)
-  const [mobileOpen, setMobileOpen]       = useState(false)
+  const [activeMenu, setActiveMenu]         = useState(null)
+  const [mobileOpen, setMobileOpen]         = useState(false)
   const [mobileExpanded, setMobileExpanded] = useState(null)
-  const { itemCount, setIsOpen: openCart } = useCart()
+  const { itemCount, setIsOpen: openCart }  = useCart()
+  const navigate = useNavigate()
 
   function toggleMobileItem(label) {
     setMobileExpanded(prev => prev === label ? null : label)
+  }
+
+  function handleNavClick(filter) {
+    setActiveMenu(null)
+    navigate(`/?category=${filter}`)
+    setTimeout(() => {
+      document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 80)
+  }
+
+  function handleMegaClose() {
+    setActiveMenu(null)
   }
 
   return (
@@ -97,7 +154,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-3 sm:gap-4">
 
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2.5 shrink-0">
+          <Link to="/" className="flex items-center gap-2.5 shrink-0">
             <div
               className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
               style={{ backgroundColor: '#0056b3' }}
@@ -109,7 +166,7 @@ export default function Navbar() {
             <span className="font-black text-ink text-[15px] tracking-tight leading-none">
               Gaming<span style={{ color: '#0056b3' }}>Store</span>
             </span>
-          </a>
+          </Link>
 
           {/* Search bar — hidden on mobile */}
           <div
@@ -209,6 +266,7 @@ export default function Navbar() {
           {NAV_ITEMS.map((item) => (
             <div key={item.label} onMouseEnter={() => setActiveMenu(item.label)}>
               <button
+                onClick={() => handleNavClick(item.filter)}
                 className="px-4 h-10 text-sm font-semibold transition-colors flex items-center gap-1.5 rounded-none border-b-2 -mb-px"
                 style={{
                   color:       activeMenu === item.label ? '#0056b3' : '#4a5568',
@@ -223,22 +281,25 @@ export default function Navbar() {
             </div>
           ))}
           <div className="ml-auto flex items-center gap-4">
-            <a href="#" className="text-xs font-bold text-muted hover:text-ink transition-colors">🔥 Deals</a>
-            <a href="#" className="text-xs font-bold text-muted hover:text-ink transition-colors">⭐ New Arrivals</a>
-            <a
-              href="#"
+            <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors">🔥 Deals</Link>
+            <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors">⭐ New Arrivals</Link>
+            <Link
+              to="/"
               className="text-xs font-semibold px-3 py-1 rounded-full border transition-colors"
               style={{ color: '#28a745', borderColor: '#a7dfb7' }}
             >
               Games
-            </a>
+            </Link>
           </div>
         </div>
 
         {/* Mega menu */}
         <AnimatePresence>
           {activeMenu && (
-            <MegaMenu item={NAV_ITEMS.find(i => i.label === activeMenu)} />
+            <MegaMenu
+              item={NAV_ITEMS.find(i => i.label === activeMenu)}
+              onLinkClick={handleMegaClose}
+            />
           )}
         </AnimatePresence>
       </div>
@@ -313,10 +374,14 @@ export default function Navbar() {
                             </p>
                             <ul className="space-y-2">
                               {col.links.map((link) => (
-                                <li key={link}>
-                                  <a href="#" className="text-sm text-ink hover:text-primary-600 transition-colors">
-                                    {link}
-                                  </a>
+                                <li key={link.label}>
+                                  <Link
+                                    to={`/?category=${link.filter}`}
+                                    onClick={() => setMobileOpen(false)}
+                                    className="text-sm text-ink hover:text-primary-600 transition-colors"
+                                  >
+                                    {link.label}
+                                  </Link>
                                 </li>
                               ))}
                             </ul>
@@ -331,16 +396,16 @@ export default function Navbar() {
 
             {/* Mobile extras */}
             <div className="px-5 py-3 flex gap-4 border-t border-border bg-white">
-              <a href="#" className="text-xs font-bold text-muted hover:text-ink transition-colors">🔥 Deals</a>
-              <a href="#" className="text-xs font-bold text-muted hover:text-ink transition-colors">⭐ New Arrivals</a>
-              <a href="#" className="text-xs font-semibold" style={{ color: '#28a745' }}>Games</a>
-              <a href="#" className="text-xs font-semibold text-muted hover:text-ink transition-colors ml-auto">
+              <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors" onClick={() => setMobileOpen(false)}>🔥 Deals</Link>
+              <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors" onClick={() => setMobileOpen(false)}>⭐ New Arrivals</Link>
+              <Link to="/" className="text-xs font-semibold" style={{ color: '#28a745' }} onClick={() => setMobileOpen(false)}>Games</Link>
+              <button className="text-xs font-semibold text-muted hover:text-ink transition-colors ml-auto">
                 <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
                 Account
-              </a>
+              </button>
             </div>
           </motion.div>
         )}
