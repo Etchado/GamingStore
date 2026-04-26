@@ -1,0 +1,47 @@
+/* Inter — Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base reset ─────────────────────────────── */
+html, body {
+  background-color: #ffffff;
+  color: #1a202c;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ── 8pt grid helper ────────────────────────── */
+/* All spacing already follows 4px Tailwind base (×2 = 8pt grid) */
+
+/* ── Smooth scroll ──────────────────────────── */
+html { scroll-behavior: smooth; }
+
+/* ── Focus ring ─────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #0056b3;
+  outline-offset: 2px;
+}
+
+/* ── Search input ───────────────────────────── */
+.search-input:focus {
+  box-shadow: 0 0 0 3px rgba(0,86,179,0.12);
+  border-color: #0056b3;
+}
