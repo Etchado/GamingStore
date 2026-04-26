@@ -6,7 +6,7 @@ import SkeletonCard from '@/components/ui/SkeletonCard'
 import QuickViewModal from '@/components/QuickViewModal'
 import { PRODUCTS } from '@/data/products'
 
-const FILTERS = ['All', 'System', 'GPU', 'CPU', 'Monitor', 'Desk', 'Chair', 'Keyboard']
+const FILTERS = ['All', 'System', 'GPU', 'CPU', 'Monitor', 'Mouse', 'Keyboard', 'Desk', 'Chair']
 
 const slideUp = {
   hidden:  { opacity: 0, y: 28 },

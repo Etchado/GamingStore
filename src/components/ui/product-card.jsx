@@ -42,6 +42,7 @@ const badges = {
   GPU:      { bg: '#f3f0ff', text: '#5521b5' },
   CPU:      { bg: '#fff3e0', text: '#c2410c' },
   Monitor:  { bg: '#e9f7ed', text: '#1e8035' },
+  Mouse:    { bg: '#fef2f2', text: '#b91c1c' },
   Desk:     { bg: '#fffbeb', text: '#92400e' },
   Chair:    { bg: '#fdf4ff', text: '#7e22ce' },
   Storage:  { bg: '#f0fdf4', text: '#166534' },

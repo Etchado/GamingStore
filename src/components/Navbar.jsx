@@ -53,7 +53,7 @@ const NAV_ITEMS = [
       ]},
       { heading: 'Input',   links: [
         { label: 'Mechanical Keyboards',  filter: 'Keyboard' },
-        { label: 'Gaming Mice',           filter: 'Keyboard' },
+        { label: 'Gaming Mice',           filter: 'Mouse' },
         { label: 'Headsets',              filter: 'Keyboard' },
         { label: 'Webcams',               filter: 'Keyboard' },
       ]},
@@ -98,15 +98,15 @@ function MegaMenu({ item, onLinkClick }) {
               <p className="text-[10px] font-black tracking-[0.15em] uppercase text-muted mb-3">
                 {col.heading}
               </p>
-              <ul className="space-y-2">
+              <ul className="space-y-1">
                 {col.links.map((link) => (
                   <li key={link.label}>
                     <Link
                       to={link.href ?? `/?category=${link.filter}`}
                       onClick={onLinkClick}
-                      className="text-sm text-ink font-medium hover:text-primary-600 transition-colors flex items-center gap-2 group"
+                      className="text-sm text-ink font-medium transition-colors inline-flex items-center gap-2 group px-2 py-1 -mx-2 rounded-md hover:bg-primary-50 hover:text-primary-600"
                     >
-                      <span className="w-1 h-1 rounded-full bg-border group-hover:bg-primary-600 transition-colors" />
+                      <span className="w-1 h-1 rounded-full bg-border group-hover:bg-primary-600 transition-colors shrink-0" />
                       {link.label}
                     </Link>
                   </li>
@@ -311,7 +311,7 @@ export default function Navbar() {
             <div key={item.label} onMouseEnter={() => setActiveMenu(item.label)}>
               <button
                 onClick={() => handleNavClick(item.filter)}
-                className="px-4 h-10 text-sm font-semibold transition-colors flex items-center gap-1.5 rounded-none border-b-2 -mb-px"
+                className="px-2 mx-1 h-10 text-sm font-semibold transition-colors flex items-center gap-1.5 rounded-none border-b-2 -mb-px"
                 style={{
                   color:       activeMenu === item.label ? '#0056b3' : '#4a5568',
                   borderColor: activeMenu === item.label ? '#0056b3' : 'transparent',
