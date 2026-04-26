@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { useCart } from '@/context/CartContext'
@@ -201,6 +202,7 @@ export default function ProductDetailPage() {
   usePageTitle(product?.title)
   const inWishlist = has(id)
   const recentIds = useRecentlyViewed(id)
+  const [qty, setQty] = useState(1)
   const recentProducts = recentIds.map(rid => PRODUCTS.find(p => p.id === rid)).filter(Boolean)
   const related = PRODUCTS.filter(p => p.id !== id && p.category === product?.category).slice(0, 4)
   const fallbackRelated = PRODUCTS.filter(p => p.id !== id).slice(0, 4)
@@ -227,9 +229,9 @@ export default function ProductDetailPage() {
   const badge = badges[product.category] ?? badges.System
 
   function handleAddToCart() {
-    addItem(product)
+    for (let i = 0; i < qty; i++) addItem(product)
     const label = product.title.length > 32 ? product.title.slice(0, 32) + '…' : product.title
-    addToast(`${label} added to cart`, 'success')
+    addToast(qty > 1 ? `${qty}× ${label} added to cart` : `${label} added to cart`, 'success')
   }
 
   function handleWishlist() {
@@ -397,6 +399,26 @@ export default function ProductDetailPage() {
             {/* Short description */}
             <p className="text-sm text-muted leading-relaxed">{product.longDescription}</p>
 
+            {/* Qty selector */}
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-semibold text-ink">Qty:</span>
+              <div className="flex items-center border rounded-xl overflow-hidden" style={{ borderColor: '#e0e0e0' }}>
+                <button
+                  onClick={() => setQty(q => Math.max(1, q - 1))}
+                  className="w-9 h-9 flex items-center justify-center text-muted hover:bg-surface transition-colors font-bold text-base"
+                >
+                  −
+                </button>
+                <span className="w-10 text-center text-sm font-bold text-ink">{qty}</span>
+                <button
+                  onClick={() => setQty(q => q + 1)}
+                  className="w-9 h-9 flex items-center justify-center text-muted hover:bg-surface transition-colors font-bold text-base"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
             {/* Add to Cart + Wishlist */}
             <div className="flex gap-3 mt-1">
               <motion.button
@@ -408,7 +430,7 @@ export default function ProductDetailPage() {
                 onMouseEnter={(e) => { if (product.inStock) e.currentTarget.style.backgroundColor = '#004494' }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
               >
-                Add to Cart
+                Add {qty > 1 ? `${qty} × ` : ''}to Cart
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.97 }}
@@ -521,6 +543,26 @@ export default function ProductDetailPage() {
             </div>
           </motion.div>
         )}
+      </div>
+
+      {/* ── Mobile sticky CTA ── */}
+      <div
+        className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t px-4 py-3 flex items-center gap-3"
+        style={{ borderColor: '#e0e0e0', boxShadow: '0 -4px 16px rgba(0,0,0,0.06)' }}
+      >
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-bold text-ink truncate">{product.title}</p>
+          <p className="text-base font-black" style={{ color: '#0056b3' }}>{product.price}</p>
+        </div>
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          onClick={handleAddToCart}
+          disabled={!product.inStock}
+          className="px-6 py-3 rounded-xl text-sm font-bold text-white disabled:opacity-40 shrink-0"
+          style={{ backgroundColor: '#0056b3' }}
+        >
+          {product.inStock ? 'Add to Cart' : 'Out of Stock'}
+        </motion.button>
       </div>
     </motion.div>
   )

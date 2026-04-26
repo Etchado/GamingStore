@@ -17,8 +17,10 @@ export function WishlistProvider({ children }) {
 
   const has = useCallback((id) => ids.includes(id), [ids])
 
+  const clear = useCallback(() => setIds([]), [])
+
   return (
-    <WishlistCtx.Provider value={{ ids, toggle, has, count: ids.length }}>
+    <WishlistCtx.Provider value={{ ids, toggle, has, clear, count: ids.length }}>
       {children}
     </WishlistCtx.Provider>
   )
