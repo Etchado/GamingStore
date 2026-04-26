@@ -91,6 +91,7 @@ export default function ProductDetailPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
+      className="pt-16 lg:pt-26"
     >
       {/* ── Breadcrumb ── */}
       <div className="border-b" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
@@ -122,7 +123,7 @@ export default function ProductDetailPage() {
             className="relative"
           >
             <div
-              className="rounded-3xl overflow-hidden border"
+              className="relative rounded-3xl overflow-hidden border"
               style={{
                 aspectRatio: '4/3',
                 borderColor: '#e0e0e0',

@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import { CartProvider } from './context/CartContext'
 import { ToastProvider } from './context/ToastContext'
 import Navbar from './components/Navbar'
@@ -13,6 +14,12 @@ import ToastContainer from './components/ToastContainer'
 import BackToTop from './components/BackToTop'
 import ProductDetailPage from './pages/ProductDetailPage'
 import './App.css'
+
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => { window.scrollTo(0, 0) }, [pathname])
+  return null
+}
 
 function HomePage() {
   return (
@@ -32,6 +39,7 @@ function App() {
       <ToastProvider>
         <CartProvider>
           <div className="min-h-screen bg-white text-ink">
+            <ScrollToTop />
             <Navbar />
             <Routes>
               <Route path="/" element={<HomePage />} />

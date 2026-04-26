@@ -77,7 +77,7 @@ export default function CartDrawer() {
                 </div>
               ) : (
                 items.map(({ product, qty }) => (
-                  <div key={product.title} className="flex gap-3 pb-4 border-b border-border last:border-0">
+                  <div key={product.id ?? product.title} className="flex gap-3 pb-4 border-b border-border last:border-0">
                     <img
                       src={product.image}
                       alt={product.title}
@@ -93,21 +93,21 @@ export default function CartDrawer() {
                         <div className="flex items-center gap-2">
                           <div className="flex items-center border border-border rounded-lg overflow-hidden">
                             <button
-                              onClick={() => updateQty(product.title, qty - 1)}
+                              onClick={() => updateQty(product.id ?? product.title, qty - 1)}
                               className="w-7 h-7 flex items-center justify-center text-muted hover:bg-surface transition-colors text-sm font-bold"
                             >
                               −
                             </button>
                             <span className="w-7 text-center text-sm font-bold text-ink">{qty}</span>
                             <button
-                              onClick={() => updateQty(product.title, qty + 1)}
+                              onClick={() => updateQty(product.id ?? product.title, qty + 1)}
                               className="w-7 h-7 flex items-center justify-center text-muted hover:bg-surface transition-colors text-sm font-bold"
                             >
                               +
                             </button>
                           </div>
                           <button
-                            onClick={() => removeItem(product.title)}
+                            onClick={() => removeItem(product.id ?? product.title)}
                             className="w-7 h-7 flex items-center justify-center rounded-lg text-muted hover:text-red-500 hover:bg-red-50 transition-colors"
                           >
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
