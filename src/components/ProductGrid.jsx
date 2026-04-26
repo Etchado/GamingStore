@@ -22,28 +22,31 @@ export default function ProductGrid() {
   const [quickView, setQuickView]       = useState(null)
 
   const categoryParam = searchParams.get('category')
+  const queryParam    = searchParams.get('q') ?? ''
   const active = categoryParam && FILTERS.includes(categoryParam) ? categoryParam : 'All'
 
   function setActive(filter) {
-    if (filter === 'All') {
-      setSearchParams({}, { replace: true })
-    } else {
-      setSearchParams({ category: filter }, { replace: true })
-    }
+    const next = new URLSearchParams()
+    if (queryParam) next.set('q', queryParam)
+    if (filter !== 'All') next.set('category', filter)
+    setSearchParams(next, { replace: true })
   }
 
-  // Scroll to grid only on first mount when arriving with a pre-set category param
-  // (e.g. clicking a CategoryShowcase card from another page).
-  // We do NOT re-scroll on every filter pill click — that would fight the user's scroll position.
+  function clearSearch() {
+    const next = new URLSearchParams()
+    if (categoryParam) next.set('category', categoryParam)
+    setSearchParams(next, { replace: true })
+  }
+
   useEffect(() => {
-    if (categoryParam) {
+    if (categoryParam || queryParam) {
       const el = document.getElementById('products')
       if (el) {
         const offset = el.getBoundingClientRect().top + window.scrollY - 80
         window.scrollTo({ top: offset, behavior: 'smooth' })
       }
     }
-    // Intentionally run only once on mount — eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -51,9 +54,14 @@ export default function ProductGrid() {
     return () => clearTimeout(t)
   }, [])
 
-  const filtered = active === 'All'
-    ? PRODUCTS
-    : PRODUCTS.filter(p => p.category === active)
+  const filtered = PRODUCTS.filter(p => {
+    const matchCat = active === 'All' || p.category === active
+    if (!matchCat) return false
+    if (!queryParam) return true
+    const q = queryParam.toLowerCase()
+    return [p.title, p.description, p.spec, p.brand, p.category]
+      .some(f => f?.toLowerCase().includes(q))
+  })
 
   return (
     <section id="products" className="py-20 px-6" style={{ backgroundColor: '#f8fafc' }}>
@@ -68,20 +76,53 @@ export default function ProductGrid() {
           className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6"
         >
           <div>
-            <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
-              ◈ Curated Collection
-            </p>
-            <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
-              Featured Products
-            </h2>
+            {queryParam ? (
+              <>
+                <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
+                  ◈ Search Results
+                </p>
+                <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
+                  "{queryParam}"
+                </h2>
+                {!loading && (
+                  <p className="text-sm text-muted mt-1">
+                    {filtered.length} result{filtered.length !== 1 ? 's' : ''} found
+                  </p>
+                )}
+              </>
+            ) : (
+              <>
+                <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
+                  ◈ Curated Collection
+                </p>
+                <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
+                  Featured Products
+                </h2>
+              </>
+            )}
           </div>
-          <button
-            onClick={() => setActive('All')}
-            className="hidden sm:inline text-sm font-bold transition-colors"
-            style={{ color: '#0056b3' }}
-          >
-            View all products →
-          </button>
+          <div className="flex items-center gap-3">
+            {queryParam && (
+              <button
+                onClick={clearSearch}
+                className="flex items-center gap-1.5 text-sm font-bold text-muted hover:text-ink transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+                Clear search
+              </button>
+            )}
+            {!queryParam && (
+              <button
+                onClick={() => setActive('All')}
+                className="hidden sm:inline text-sm font-bold transition-colors"
+                style={{ color: '#0056b3' }}
+              >
+                View all products →
+              </button>
+            )}
+          </div>
         </motion.div>
 
         {/* ── Filter pills ── */}
@@ -130,16 +171,30 @@ export default function ProductGrid() {
             <div>
               <p className="text-base font-bold text-ink">No products found</p>
               <p className="text-sm text-muted mt-1">
-                No products in the <strong>{active}</strong> category yet.
+                {queryParam
+                  ? <>No results for <strong>"{queryParam}"</strong>{active !== 'All' ? <> in <strong>{active}</strong></> : ''}.</>
+                  : <>No products in the <strong>{active}</strong> category yet.</>
+                }
               </p>
             </div>
-            <button
-              onClick={() => setActive('All')}
-              className="px-6 py-2.5 rounded-xl text-sm font-bold text-white"
-              style={{ backgroundColor: '#0056b3' }}
-            >
-              View All Products
-            </button>
+            <div className="flex gap-3 flex-wrap justify-center">
+              {queryParam && (
+                <button
+                  onClick={clearSearch}
+                  className="px-6 py-2.5 rounded-xl text-sm font-bold border"
+                  style={{ borderColor: '#e0e0e0', color: '#555' }}
+                >
+                  Clear Search
+                </button>
+              )}
+              <button
+                onClick={() => setActive('All')}
+                className="px-6 py-2.5 rounded-xl text-sm font-bold text-white"
+                style={{ backgroundColor: '#0056b3' }}
+              >
+                View All Products
+              </button>
+            </div>
           </motion.div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

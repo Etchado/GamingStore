@@ -124,6 +124,8 @@ export default function Navbar() {
   const [activeMenu, setActiveMenu]         = useState(null)
   const [mobileOpen, setMobileOpen]         = useState(false)
   const [mobileExpanded, setMobileExpanded] = useState(null)
+  const [query, setQuery]                   = useState('')
+  const [mobileQuery, setMobileQuery]       = useState('')
   const { itemCount, setIsOpen: openCart }  = useCart()
   const navigate = useNavigate()
 
@@ -141,6 +143,18 @@ export default function Navbar() {
 
   function handleMegaClose() {
     setActiveMenu(null)
+  }
+
+  function doSearch(q, closeMobile = false) {
+    const trimmed = q.trim()
+    if (!trimmed) return
+    navigate(`/?q=${encodeURIComponent(trimmed)}`)
+    setQuery('')
+    setMobileQuery('')
+    if (closeMobile) setMobileOpen(false)
+    setTimeout(() => {
+      document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 80)
   }
 
   return (
@@ -169,7 +183,8 @@ export default function Navbar() {
           </Link>
 
           {/* Search bar — hidden on mobile */}
-          <div
+          <form
+            onSubmit={(e) => { e.preventDefault(); doSearch(query) }}
             className="hidden md:flex flex-1 items-stretch rounded-xl border overflow-hidden transition-all"
             style={{ borderColor: '#e0e0e0' }}
             onFocus={(e) => e.currentTarget.style.borderColor = '#0056b3'}
@@ -187,10 +202,13 @@ export default function Navbar() {
             </select>
             <input
               type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               placeholder="Search products, brands, and categories…"
               className="flex-1 px-4 py-2.5 text-sm outline-none text-ink placeholder-muted bg-white"
             />
             <button
+              type="submit"
               className="px-5 text-white text-sm font-bold transition-colors"
               style={{ backgroundColor: '#0056b3' }}
               onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
@@ -200,7 +218,7 @@ export default function Navbar() {
                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
               </svg>
             </button>
-          </div>
+          </form>
 
           {/* Icons */}
           <div className="flex items-center gap-1 sm:gap-2 ml-auto md:ml-0 shrink-0">
@@ -316,16 +334,20 @@ export default function Navbar() {
           >
             {/* Mobile search */}
             <div className="px-4 py-3 border-b border-border">
-              <div
+              <form
+                onSubmit={(e) => { e.preventDefault(); doSearch(mobileQuery, true) }}
                 className="flex items-stretch rounded-xl border overflow-hidden"
                 style={{ borderColor: '#e0e0e0' }}
               >
                 <input
                   type="search"
+                  value={mobileQuery}
+                  onChange={(e) => setMobileQuery(e.target.value)}
                   placeholder="Search products…"
                   className="flex-1 px-4 py-2.5 text-sm outline-none text-ink bg-white"
                 />
                 <button
+                  type="submit"
                   className="px-4 text-white transition-colors"
                   style={{ backgroundColor: '#0056b3' }}
                 >
@@ -333,7 +355,7 @@ export default function Navbar() {
                     <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                   </svg>
                 </button>
-              </div>
+              </form>
             </div>
 
             {/* Nav items accordion */}
