@@ -9,8 +9,8 @@ const SHOP_LINKS = [
   { label: 'Gaming Monitors',    href: '/?category=Monitor' },
   { label: 'Keyboards & Mice',   href: '/?category=Keyboard' },
   { label: 'Ergonomic Furniture',href: '/?category=Desk' },
-  { label: 'New Arrivals',       href: '/' },
-  { label: 'Deals & Clearance',  href: '/' },
+  { label: 'New Arrivals',       href: '/?badge=NEW' },
+  { label: 'Deals & Clearance',  href: '/?sort=deals' },
 ]
 
 const SUPPORT_LINKS = [

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
+import { usePageTitle } from '@/hooks/usePageTitle'
 import { BUILDER_CATEGORIES, BUILDER_PARTS, TIER_LABELS } from '@/data/builderParts'
 
 /* ── Tier badge ── */
@@ -243,6 +244,7 @@ function BuildSummary({ selections, onAddToCart, adding }) {
 
 /* ── Page ── */
 export default function BuilderPage() {
+  usePageTitle('Custom PC Builder')
   const navigate = useNavigate()
   const { addItem } = useCart()
   const { addToast } = useToast()
@@ -250,6 +252,11 @@ export default function BuilderPage() {
   const [selections, setSelections] = useState({})
   const [openCat, setOpenCat]       = useState(BUILDER_CATEGORIES[0].key)
   const [adding, setAdding]         = useState(false)
+
+  function handleReset() {
+    setSelections({})
+    setOpenCat(BUILDER_CATEGORIES[0].key)
+  }
 
   function handleSelect(catKey, part) {
     setSelections(prev => ({ ...prev, [catKey]: part }))
@@ -310,13 +317,26 @@ export default function BuilderPage() {
                 Pick every component. We handle assembly and shipping — every build is tested before it leaves.
               </p>
             </div>
-            <button
-              onClick={() => navigate('/')}
-              className="hidden sm:inline text-sm font-bold transition-colors shrink-0"
-              style={{ color: '#0056b3' }}
-            >
-              ← Back to Store
-            </button>
+            <div className="flex items-center gap-3 shrink-0">
+              {Object.keys(selections).length > 0 && (
+                <button
+                  onClick={handleReset}
+                  className="text-sm font-bold transition-colors px-4 py-2 rounded-xl border"
+                  style={{ borderColor: '#e0e0e0', color: '#718096' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#fca5a5'; e.currentTarget.style.color = '#b91c1c' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e0e0e0'; e.currentTarget.style.color = '#718096' }}
+                >
+                  Reset Build
+                </button>
+              )}
+              <button
+                onClick={() => navigate('/')}
+                className="hidden sm:inline text-sm font-bold transition-colors"
+                style={{ color: '#0056b3' }}
+              >
+                ← Back to Store
+              </button>
+            </div>
           </div>
         </div>
       </div>

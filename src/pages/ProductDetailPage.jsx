@@ -4,6 +4,7 @@ import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { useWishlist } from '@/context/WishlistContext'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
+import { usePageTitle } from '@/hooks/usePageTitle'
 import { PRODUCTS } from '@/data/products'
 import { ProductCard } from '@/components/ui/product-card'
 
@@ -46,6 +47,149 @@ function StarRating({ rating = 4.8, count = 0 }) {
   )
 }
 
+const SAMPLE_REVIEWS = [
+  {
+    name: 'Marcus T.',
+    avatar: 'MT',
+    rating: 5,
+    date: 'March 2025',
+    text: "Absolutely incredible build quality. Sets up in minutes and the performance is exactly as advertised. Worth every penny — I've already recommended it to three friends.",
+    verified: true,
+  },
+  {
+    name: 'Sarah K.',
+    avatar: 'SK',
+    rating: 5,
+    date: 'February 2025',
+    text: 'I was skeptical about purchasing high-end gear online but the packaging was perfect and delivery was fast. Zero regrets. Customer support was also top notch when I had a question.',
+    verified: true,
+  },
+  {
+    name: 'DaveGaming',
+    avatar: 'DG',
+    rating: 4,
+    date: 'January 2025',
+    text: 'Great product overall. Took off one star only because setup documentation could be clearer for first-timers, but performance-wise this thing is an absolute beast.',
+    verified: false,
+  },
+  {
+    name: 'Alex M.',
+    avatar: 'AM',
+    rating: 5,
+    date: 'December 2024',
+    text: 'Third purchase from GamingStore. Always reliable, always top-tier. The team helped me pick the right configuration for my needs and delivery was ahead of schedule.',
+    verified: true,
+  },
+]
+
+const AVATAR_COLORS = ['#0056b3', '#7e22ce', '#1e8035', '#c2410c']
+
+function ReviewCard({ review, colorIndex }) {
+  return (
+    <div className="rounded-2xl border p-6" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
+      <div className="flex items-start justify-between gap-4 mb-4">
+        <div className="flex items-center gap-3">
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-black shrink-0"
+            style={{ backgroundColor: AVATAR_COLORS[colorIndex % AVATAR_COLORS.length] }}
+          >
+            {review.avatar}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-ink">{review.name}</span>
+              {review.verified && (
+                <span
+                  className="text-[9px] font-black tracking-wide uppercase px-1.5 py-0.5 rounded-full"
+                  style={{ backgroundColor: '#e9f7ed', color: '#1e8035' }}
+                >
+                  Verified
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] text-muted">{review.date}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-0.5 shrink-0">
+          {Array.from({ length: 5 }, (_, i) => (
+            <svg
+              key={i}
+              className={`w-3.5 h-3.5 ${i < review.rating ? 'text-amber-400' : 'text-gray-200'}`}
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          ))}
+        </div>
+      </div>
+      <p className="text-sm text-muted leading-relaxed">{review.text}</p>
+    </div>
+  )
+}
+
+function ReviewsSection({ rating, reviewCount }) {
+  const ratingInt = Math.round(rating ?? 4.8)
+  const bars = [
+    { stars: 5, pct: 72 },
+    { stars: 4, pct: 18 },
+    { stars: 3, pct: 6 },
+    { stars: 2, pct: 2 },
+    { stars: 1, pct: 2 },
+  ]
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.25 }}
+      className="mt-16"
+    >
+      <div className="mb-6">
+        <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-1" style={{ color: '#0056b3' }}>
+          ◈ What Customers Say
+        </p>
+        <h2 className="text-xl font-black text-ink">Customer Reviews</h2>
+      </div>
+
+      {/* Summary bar */}
+      <div className="flex flex-col sm:flex-row items-start gap-8 mb-8 p-6 rounded-2xl border" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
+        <div className="text-center shrink-0">
+          <p className="text-5xl font-black text-ink">{(rating ?? 4.8).toFixed(1)}</p>
+          <div className="flex justify-center gap-0.5 my-2">
+            {Array.from({ length: 5 }, (_, i) => (
+              <svg key={i} className={`w-4 h-4 ${i < ratingInt ? 'text-amber-400' : 'text-gray-200'}`} viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            ))}
+          </div>
+          {reviewCount > 0 && <p className="text-xs text-muted">{reviewCount.toLocaleString()} reviews</p>}
+        </div>
+        <div className="flex-1 w-full space-y-2">
+          {bars.map(({ stars, pct }) => (
+            <div key={stars} className="flex items-center gap-3">
+              <span className="text-xs text-muted w-6 text-right shrink-0">{stars}★</span>
+              <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#e0e0e0' }}>
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{ width: `${pct}%`, backgroundColor: '#f59e0b' }}
+                />
+              </div>
+              <span className="text-xs text-muted w-8 shrink-0">{pct}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Review cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {SAMPLE_REVIEWS.map((review, i) => (
+          <ReviewCard key={review.name} review={review} colorIndex={i} />
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
 export default function ProductDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -54,6 +198,7 @@ export default function ProductDetailPage() {
   const { toggle, has } = useWishlist()
 
   const product = PRODUCTS.find(p => p.id === id)
+  usePageTitle(product?.title)
   const inWishlist = has(id)
   const recentIds = useRecentlyViewed(id)
   const recentProducts = recentIds.map(rid => PRODUCTS.find(p => p.id === rid)).filter(Boolean)
@@ -319,6 +464,9 @@ export default function ProductDetailPage() {
             </div>
           </motion.div>
         )}
+
+        {/* ── Customer Reviews ── */}
+        <ReviewsSection rating={product.rating} reviewCount={product.reviews} />
 
         {/* ── Related Products ── */}
         {relatedToShow.length > 0 && (

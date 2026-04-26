@@ -13,6 +13,7 @@ import Footer from './components/Footer'
 import CartDrawer from './components/CartDrawer'
 import ToastContainer from './components/ToastContainer'
 import BackToTop from './components/BackToTop'
+import ErrorBoundary from './components/ErrorBoundary'
 import ProductDetailPage from './pages/ProductDetailPage'
 import CheckoutPage from './pages/CheckoutPage'
 import WishlistPage from './pages/WishlistPage'
@@ -47,14 +48,16 @@ function App() {
           <div className="min-h-screen bg-white text-ink">
             <ScrollToTop />
             <Navbar />
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/product/:id" element={<ProductDetailPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/wishlist" element={<WishlistPage />} />
-              <Route path="/builder" element={<BuilderPage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
+            <ErrorBoundary>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/product/:id" element={<ProductDetailPage />} />
+                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/wishlist" element={<WishlistPage />} />
+                <Route path="/builder" element={<BuilderPage />} />
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </ErrorBoundary>
             <Footer />
             <CartDrawer />
             <ToastContainer />

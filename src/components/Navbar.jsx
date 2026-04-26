@@ -339,8 +339,8 @@ export default function Navbar() {
             </div>
           ))}
           <div className="ml-auto flex items-center gap-4">
-            <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors">{t('nav.deals')}</Link>
-            <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors">{t('nav.newArrivals')}</Link>
+            <Link to="/?sort=deals" className="text-xs font-bold transition-colors" style={{ color: '#e53e3e' }} onMouseEnter={(e) => { e.currentTarget.style.color = '#c53030' }} onMouseLeave={(e) => { e.currentTarget.style.color = '#e53e3e' }}>{t('nav.deals')}</Link>
+            <Link to="/?badge=NEW" className="text-xs font-bold text-muted hover:text-ink transition-colors">{t('nav.newArrivals')}</Link>
             <Link
               to="/"
               className="text-xs font-semibold px-3 py-1 rounded-full border transition-colors"
@@ -458,8 +458,8 @@ export default function Navbar() {
 
             {/* Mobile extras */}
             <div className="px-5 py-3 flex gap-4 border-t border-border bg-white">
-              <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.deals')}</Link>
-              <Link to="/" className="text-xs font-bold text-muted hover:text-ink transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.newArrivals')}</Link>
+              <Link to="/?sort=deals" className="text-xs font-bold transition-colors" style={{ color: '#e53e3e' }} onClick={() => setMobileOpen(false)}>{t('nav.deals')}</Link>
+              <Link to="/?badge=NEW" className="text-xs font-bold text-muted hover:text-ink transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.newArrivals')}</Link>
               <Link to="/" className="text-xs font-semibold" style={{ color: '#28a745' }} onClick={() => setMobileOpen(false)}>{t('nav.games')}</Link>
               <Link
                 to="/wishlist"

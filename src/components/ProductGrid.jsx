@@ -5,6 +5,7 @@ import { ProductCard } from '@/components/ui/product-card'
 import SkeletonCard from '@/components/ui/SkeletonCard'
 import QuickViewModal from '@/components/QuickViewModal'
 import { PRODUCTS } from '@/data/products'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const FILTERS = ['All', 'System', 'GPU', 'CPU', 'Monitor', 'Mouse', 'Keyboard', 'Storage', 'Desk', 'Chair']
 
@@ -32,23 +33,40 @@ export default function ProductGrid() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [loading, setLoading]           = useState(true)
   const [quickView, setQuickView]       = useState(null)
-  const [sort, setSort]                 = useState('featured')
   const navigate = useNavigate()
 
   const categoryParam = searchParams.get('category')
   const queryParam    = searchParams.get('q') ?? ''
+  const sortParam     = searchParams.get('sort') ?? 'featured'
+  const badgeParam    = searchParams.get('badge') ?? ''
   const active = categoryParam && FILTERS.includes(categoryParam) ? categoryParam : 'All'
+
+  usePageTitle(
+    queryParam ? `"${queryParam}"` :
+    badgeParam === 'NEW' ? 'New Arrivals' :
+    sortParam === 'deals' ? 'Deals' :
+    active !== 'All' ? active : null
+  )
 
   function setActive(filter) {
     const next = new URLSearchParams()
     if (queryParam) next.set('q', queryParam)
+    if (sortParam !== 'featured') next.set('sort', sortParam)
     if (filter !== 'All') next.set('category', filter)
+    setSearchParams(next, { replace: true })
+  }
+
+  function setSort(value) {
+    const next = new URLSearchParams(searchParams)
+    if (value === 'featured') next.delete('sort')
+    else next.set('sort', value)
     setSearchParams(next, { replace: true })
   }
 
   function clearSearch() {
     const next = new URLSearchParams()
     if (categoryParam) next.set('category', categoryParam)
+    if (sortParam !== 'featured') next.set('sort', sortParam)
     setSearchParams(next, { replace: true })
   }
 
@@ -72,16 +90,18 @@ export default function ProductGrid() {
     .filter(p => {
       const matchCat = active === 'All' || p.category === active
       if (!matchCat) return false
+      if (badgeParam && !p.badge?.toLowerCase().includes(badgeParam.toLowerCase())) return false
+      if (sortParam === 'deals' && !p.oldPrice) return false
       if (!queryParam) return true
       const q = queryParam.toLowerCase()
       return [p.title, p.description, p.spec, p.brand, p.category]
         .some(f => f?.toLowerCase().includes(q))
     })
     .sort((a, b) => {
-      if (sort === 'price-asc')  return parsePrice(a.price) - parsePrice(b.price)
-      if (sort === 'price-desc') return parsePrice(b.price) - parsePrice(a.price)
-      if (sort === 'rating')     return (b.rating ?? 0) - (a.rating ?? 0)
-      if (sort === 'deals')      return (b.oldPrice ? 1 : 0) - (a.oldPrice ? 1 : 0)
+      if (sortParam === 'price-asc')  return parsePrice(a.price) - parsePrice(b.price)
+      if (sortParam === 'price-desc') return parsePrice(b.price) - parsePrice(a.price)
+      if (sortParam === 'rating')     return (b.rating ?? 0) - (a.rating ?? 0)
+      if (sortParam === 'deals')      return parsePrice(b.saving ?? b.oldPrice ?? '0') - parsePrice(a.saving ?? a.oldPrice ?? '0')
       return 0
     })
 
@@ -109,6 +129,34 @@ export default function ProductGrid() {
                 {!loading && (
                   <p className="text-sm text-muted mt-1">
                     {filtered.length} result{filtered.length !== 1 ? 's' : ''} found
+                  </p>
+                )}
+              </>
+            ) : badgeParam === 'NEW' ? (
+              <>
+                <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
+                  ◈ Just Arrived
+                </p>
+                <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
+                  New Arrivals
+                </h2>
+                {!loading && (
+                  <p className="text-sm text-muted mt-1">
+                    {filtered.length} new product{filtered.length !== 1 ? 's' : ''}
+                  </p>
+                )}
+              </>
+            ) : sortParam === 'deals' ? (
+              <>
+                <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#e53e3e' }}>
+                  ◈ Limited Time
+                </p>
+                <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
+                  🔥 Deals & Offers
+                </h2>
+                {!loading && (
+                  <p className="text-sm text-muted mt-1">
+                    {filtered.length} deal{filtered.length !== 1 ? 's' : ''} available
                   </p>
                 )}
               </>
@@ -141,6 +189,17 @@ export default function ProductGrid() {
                 Clear search
               </button>
             )}
+            {(badgeParam || (sortParam === 'deals')) && !queryParam && (
+              <button
+                onClick={() => setSearchParams(new URLSearchParams(), { replace: true })}
+                className="flex items-center gap-1.5 text-sm font-bold text-muted hover:text-ink transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+                Clear filter
+              </button>
+            )}
             {!queryParam && (
               <button
                 onClick={() => setActive('All')}
@@ -153,7 +212,7 @@ export default function ProductGrid() {
             {/* Sort dropdown */}
             {!loading && filtered.length > 0 && (
               <select
-                value={sort}
+                value={sortParam}
                 onChange={(e) => setSort(e.target.value)}
                 className="text-xs font-semibold border rounded-lg px-3 py-1.5 outline-none cursor-pointer transition-colors bg-white text-ink"
                 style={{ borderColor: '#e0e0e0' }}

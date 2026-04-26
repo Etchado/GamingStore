@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { useCart } from '@/context/CartContext'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 /* ─── helpers ─────────────────────────────────────────────── */
 const fmt = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -387,6 +388,7 @@ const SHIPPING_INIT = { firstName: '', lastName: '', email: '', phone: '', addre
 const PAYMENT_INIT  = { cardName: '', cardNumber: '', expiry: '', cvv: '' }
 
 export default function CheckoutPage() {
+  usePageTitle('Checkout')
   const { items, total, setIsOpen } = useCart()
   const navigate = useNavigate()
 

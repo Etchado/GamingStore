@@ -3,8 +3,10 @@ import { motion } from 'motion/react'
 import { useWishlist } from '@/context/WishlistContext'
 import { PRODUCTS } from '@/data/products'
 import { ProductCard } from '@/components/ui/product-card'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 export default function WishlistPage() {
+  usePageTitle('Wishlist')
   const { ids, count } = useWishlist()
   const navigate = useNavigate()
 
