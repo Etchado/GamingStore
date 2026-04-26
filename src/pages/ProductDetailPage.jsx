@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { useWishlist } from '@/context/WishlistContext'
+import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { PRODUCTS } from '@/data/products'
 import { ProductCard } from '@/components/ui/product-card'
 
@@ -51,9 +52,11 @@ export default function ProductDetailPage() {
   const { addItem } = useCart()
   const { addToast } = useToast()
   const { toggle, has } = useWishlist()
-  const inWishlist = has(product?.id)
 
   const product = PRODUCTS.find(p => p.id === id)
+  const inWishlist = has(id)
+  const recentIds = useRecentlyViewed(id)
+  const recentProducts = recentIds.map(rid => PRODUCTS.find(p => p.id === rid)).filter(Boolean)
   const related = PRODUCTS.filter(p => p.id !== id && p.category === product?.category).slice(0, 4)
   const fallbackRelated = PRODUCTS.filter(p => p.id !== id).slice(0, 4)
 
@@ -342,6 +345,29 @@ export default function ProductDetailPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedToShow.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </motion.div>
+        )}
+        {/* ── Recently Viewed ── */}
+        {recentProducts.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+            className="mt-16"
+          >
+            <div className="flex items-end justify-between mb-6">
+              <div>
+                <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-1" style={{ color: '#718096' }}>
+                  ◈ Your History
+                </p>
+                <h2 className="text-xl font-black text-ink">Recently Viewed</h2>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {recentProducts.slice(0, 4).map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>
