@@ -1,108 +1,12 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
+import { useSearchParams, Link } from 'react-router-dom'
 import { ProductCard } from '@/components/ui/product-card'
 import SkeletonCard from '@/components/ui/SkeletonCard'
 import QuickViewModal from '@/components/QuickViewModal'
+import { PRODUCTS } from '@/data/products'
 
 const FILTERS = ['All', 'System', 'GPU', 'CPU', 'Monitor', 'Desk', 'Chair', 'Keyboard']
-
-const PRODUCTS = [
-  {
-    title: 'White Phantom — Custom PC Build',
-    description: 'RTX 4080 Super · Ryzen 9 7900X · 32GB DDR5 · 2TB NVMe · 360mm AIO · White build.',
-    category: 'System',
-    brand: 'Custom Build',
-    spec: 'RTX 4080S / R9-7900X / 32GB DDR5',
-    image: 'https://images.unsplash.com/photo-1759836096334-e65e1706bb59?auto=format&fit=crop&w=800&q=80',
-    price: '$2,499',
-    oldPrice: '$2,799',
-    saving: '$300',
-    rating: 4.9,
-    reviews: 87,
-    badge: 'BESTSELLER',
-  },
-  {
-    title: 'NVIDIA GeForce RTX 4090 24GB',
-    description: 'Ada Lovelace GPU — 16,384 CUDA cores, DLSS 3.5 Frame Generation, 24GB GDDR6X.',
-    category: 'GPU',
-    brand: 'NVIDIA',
-    spec: '24GB GDDR6X · 450W · PCIe 5.0',
-    image: 'https://images.unsplash.com/photo-1621164071312-67bb68821b3f?auto=format&fit=crop&w=800&q=80',
-    price: '$1,599',
-    rating: 4.8,
-    reviews: 234,
-    badge: 'NEW',
-  },
-  {
-    title: 'LG UltraWide 34" Curved QHD',
-    description: '3440×1440 IPS · 144Hz · 1ms GTG · HDR10 · USB-C 90W · Nano IPS panel.',
-    category: 'Monitor',
-    brand: 'LG',
-    spec: '34" 3440×1440 · 144Hz · HDR10',
-    image: 'https://images.unsplash.com/photo-1614179924047-e1ab49a0a0cf?auto=format&fit=crop&w=800&q=80',
-    price: '$899',
-    oldPrice: '$1,099',
-    saving: '$200',
-    rating: 4.7,
-    reviews: 156,
-    badge: '-18%',
-  },
-  {
-    title: 'AMD Ryzen 9 7950X Processor',
-    description: '16 cores / 32 threads · 5.7 GHz boost clock · AM5 platform · PCIe 5.0.',
-    category: 'CPU',
-    brand: 'AMD',
-    spec: '16C/32T · 5.7 GHz Boost · AM5',
-    image: 'https://images.unsplash.com/photo-1674660601127-931afe4c85d9?auto=format&fit=crop&w=800&q=80',
-    price: '$699',
-    rating: 4.8,
-    reviews: 312,
-  },
-  {
-    title: 'ASUS ROG Swift 27" 240Hz',
-    description: '1440p Fast IPS · 240Hz · 1ms GTG · G-Sync Compatible · DisplayHDR 600.',
-    category: 'Monitor',
-    brand: 'ASUS ROG',
-    spec: '27" 2560×1440 · 240Hz · G-Sync',
-    image: 'https://images.unsplash.com/photo-1593640495348-9f86d4e7a719?auto=format&fit=crop&w=800&q=80',
-    price: '$549',
-    rating: 4.6,
-    reviews: 89,
-  },
-  {
-    title: 'Corsair K70 RGB Pro Keyboard',
-    description: 'Cherry MX Red switches · Per-key RGB · Aluminium frame · PBT double-shot keycaps.',
-    category: 'Keyboard',
-    brand: 'Corsair',
-    spec: 'Cherry MX Red · Full-size · USB',
-    image: 'https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=800&q=80',
-    price: '$179',
-    rating: 4.7,
-    reviews: 445,
-  },
-  {
-    title: 'Autonomous SmartDesk Pro',
-    description: 'Electric sit-stand desk · 300 lb capacity · Dual motor · 4-program memory.',
-    category: 'Desk',
-    brand: 'Autonomous',
-    spec: '60"×30" · Dual motor · 72" max',
-    image: 'https://images.unsplash.com/photo-1713618502575-213ce1b24922?auto=format&fit=crop&w=800&q=80',
-    price: '$599',
-    rating: 4.6,
-    reviews: 203,
-  },
-  {
-    title: 'Secretlab TITAN Evo 2025',
-    description: 'SoftWeave Plus fabric · 4D armrests · Cold-cure foam · Lumbar & neck support.',
-    category: 'Chair',
-    brand: 'Secretlab',
-    spec: 'SoftWeave Plus · 4D Armrests',
-    image: 'https://images.unsplash.com/photo-1716967318503-05b7064afa41?auto=format&fit=crop&w=800&q=80',
-    price: '$449',
-    rating: 4.8,
-    reviews: 1024,
-  },
-]
 
 const slideUp = {
   hidden:  { opacity: 0, y: 28 },
@@ -113,9 +17,31 @@ const slideUp = {
 }
 
 export default function ProductGrid() {
-  const [active, setActive]       = useState('All')
-  const [loading, setLoading]     = useState(true)
-  const [quickView, setQuickView] = useState(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [loading, setLoading]           = useState(true)
+  const [quickView, setQuickView]       = useState(null)
+
+  const categoryParam = searchParams.get('category')
+  const active = categoryParam && FILTERS.includes(categoryParam) ? categoryParam : 'All'
+
+  function setActive(filter) {
+    if (filter === 'All') {
+      setSearchParams({}, { replace: true })
+    } else {
+      setSearchParams({ category: filter }, { replace: true })
+    }
+  }
+
+  // Scroll to this section whenever the URL category param changes
+  useEffect(() => {
+    if (categoryParam) {
+      const el = document.getElementById('products')
+      if (el) {
+        const offset = el.getBoundingClientRect().top + window.scrollY - 80
+        window.scrollTo({ top: offset, behavior: 'smooth' })
+      }
+    }
+  }, [categoryParam])
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 1200)
@@ -146,9 +72,14 @@ export default function ProductGrid() {
               Featured Products
             </h2>
           </div>
-          <a href="#" className="hidden sm:inline text-sm font-bold transition-colors" style={{ color: '#0056b3' }}>
+          <Link
+            to="/"
+            className="hidden sm:inline text-sm font-bold transition-colors"
+            style={{ color: '#0056b3' }}
+            onClick={() => setSearchParams({})}
+          >
             View all products →
-          </a>
+          </Link>
         </motion.div>
 
         {/* ── Filter pills ── */}
@@ -212,7 +143,7 @@ export default function ProductGrid() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filtered.map((product, i) => (
               <motion.div
-                key={product.title}
+                key={product.id}
                 custom={i}
                 variants={slideUp}
                 initial="hidden"
@@ -234,8 +165,8 @@ export default function ProductGrid() {
             transition={{ delay: 0.2 }}
             className="mt-14 flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <motion.a
-              href="#"
+            <motion.button
+              onClick={() => setActive('All')}
               whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
               className="px-10 py-3.5 rounded-xl text-white text-sm font-black shadow-sm transition-colors"
               style={{ backgroundColor: '#0056b3' }}
@@ -243,9 +174,9 @@ export default function ProductGrid() {
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
             >
               View All Products →
-            </motion.a>
-            <motion.a
-              href="#"
+            </motion.button>
+            <motion.button
+              onClick={() => setActive('System')}
               whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
               className="px-10 py-3.5 rounded-xl text-sm font-black border-2 transition-colors"
               style={{ borderColor: '#28a745', color: '#1e8035' }}
@@ -253,7 +184,7 @@ export default function ProductGrid() {
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
             >
               Custom PC Builder
-            </motion.a>
+            </motion.button>
           </motion.div>
         )}
 

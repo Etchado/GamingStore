@@ -1,4 +1,5 @@
 import { motion } from 'motion/react'
+import { useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
@@ -50,6 +51,7 @@ const badges = {
 export function ProductCard({ product, onQuickView }) {
   const { addItem } = useCart()
   const { addToast } = useToast()
+  const navigate = useNavigate()
   const badge = badges[product.category] ?? badges.System
 
   function handleAddToCart(e) {
@@ -68,7 +70,11 @@ export function ProductCard({ product, onQuickView }) {
     <motion.article
       whileHover={{ y: -4 }}
       transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-      className="group bg-white rounded-2xl border overflow-hidden flex flex-col h-full"
+      onClick={() => product.id && navigate(`/product/${product.id}`)}
+      className={cn(
+        'group bg-white rounded-2xl border overflow-hidden flex flex-col h-full',
+        product.id && 'cursor-pointer'
+      )}
       style={{
         borderColor: '#e0e0e0',
         boxShadow: '0 1px 3px rgba(0,0,0,0.05)',

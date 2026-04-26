@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
+import { Link } from 'react-router-dom'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 
@@ -152,6 +153,20 @@ export default function QuickViewModal({ product, onClose }) {
                   >
                     Add {qty > 1 ? `${qty} × ` : ''}to Cart
                   </button>
+
+                  {/* View full details */}
+                  {product.id && (
+                    <Link
+                      to={`/product/${product.id}`}
+                      onClick={onClose}
+                      className="w-full py-2.5 rounded-xl text-sm font-bold text-center border-2 transition-colors block"
+                      style={{ borderColor: '#e0e0e0', color: '#4a5568' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#0056b3'; e.currentTarget.style.color = '#0056b3' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e0e0e0'; e.currentTarget.style.color = '#4a5568' }}
+                    >
+                      View Full Details →
+                    </Link>
+                  )}
                 </div>
               </div>
             </motion.div>
