@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
@@ -51,10 +51,10 @@ const badges = {
 export function ProductCard({ product, onQuickView }) {
   const { addItem } = useCart()
   const { addToast } = useToast()
-  const navigate = useNavigate()
   const badge = badges[product.category] ?? badges.System
 
   function handleAddToCart(e) {
+    e.preventDefault()
     e.stopPropagation()
     addItem(product)
     const label = product.title.length > 32 ? product.title.slice(0, 32) + '…' : product.title
@@ -62,34 +62,53 @@ export function ProductCard({ product, onQuickView }) {
   }
 
   function handleWishlist(e) {
+    e.preventDefault()
     e.stopPropagation()
     addToast(`${product.title.slice(0, 28)}… saved to wishlist`, 'wishlist')
+  }
+
+  function handleQuickView(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    onQuickView?.(product)
   }
 
   return (
     <motion.article
       whileHover={{ y: -4 }}
       transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-      onClick={() => product.id && navigate(`/product/${product.id}`)}
-      className={cn(
-        'group bg-white rounded-2xl border overflow-hidden flex flex-col h-full',
-        product.id && 'cursor-pointer'
-      )}
+      className="relative group bg-white rounded-2xl border overflow-hidden flex flex-col h-full"
       style={{
         borderColor: '#e0e0e0',
         boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+        transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
       }}
-      onHoverStart={(e) => {
+      onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,86,179,0.10), 0 2px 8px rgba(0,0,0,0.06)'
         e.currentTarget.style.borderColor = '#cce1f5'
       }}
-      onHoverEnd={(e) => {
+      onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)'
         e.currentTarget.style.borderColor = '#e0e0e0'
       }}
     >
+      {/*
+        Invisible full-card link sitting at z-0.
+        Interactive elements (buttons) are in z-10 containers so they sit above this link.
+        Clicking any non-button area of the card navigates to the detail page.
+        Clicking a button calls preventDefault + stopPropagation to cancel the link.
+      */}
+      {product.id && (
+        <Link
+          to={`/product/${product.id}`}
+          className="absolute inset-0 z-0 rounded-2xl"
+          aria-label={`View details for ${product.title}`}
+          tabIndex={-1}
+        />
+      )}
+
       {/* ── Image ── */}
-      <div className="relative overflow-hidden bg-surface" style={{ aspectRatio: '4/3' }}>
+      <div className="relative z-10 overflow-hidden bg-surface" style={{ aspectRatio: '4/3' }}>
         <img
           src={product.image}
           alt={product.title}
@@ -107,7 +126,7 @@ export function ProductCard({ product, onQuickView }) {
         {/* Wishlist top-right */}
         <button
           onClick={handleWishlist}
-          className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm border border-border"
+          className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm border border-border"
         >
           <svg className="w-3.5 h-3.5 text-gray-400 hover:text-red-500 transition-colors" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -116,9 +135,9 @@ export function ProductCard({ product, onQuickView }) {
 
         {/* Quick View overlay */}
         {onQuickView && (
-          <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-200">
+          <div className="absolute inset-x-0 bottom-0 z-10 translate-y-full group-hover:translate-y-0 transition-transform duration-200">
             <button
-              onClick={(e) => { e.stopPropagation(); onQuickView(product) }}
+              onClick={handleQuickView}
               className="w-full py-2.5 text-xs font-bold text-white bg-black/70 backdrop-blur-sm hover:bg-black/85 transition-colors"
             >
               Quick View
@@ -128,7 +147,7 @@ export function ProductCard({ product, onQuickView }) {
       </div>
 
       {/* ── Body ── */}
-      <div className="p-4 flex flex-col flex-1 gap-2">
+      <div className="relative z-10 p-4 flex flex-col flex-1 gap-2">
 
         {/* Category + Brand row */}
         <div className="flex items-center justify-between">
@@ -173,7 +192,7 @@ export function ProductCard({ product, onQuickView }) {
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={handleAddToCart}
-          className="mt-2 w-full py-2.5 rounded-xl text-sm font-bold text-white transition-colors"
+          className="relative z-10 mt-2 w-full py-2.5 rounded-xl text-sm font-bold text-white transition-colors"
           style={{ backgroundColor: '#0056b3' }}
           onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}

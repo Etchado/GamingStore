@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
-import { useSearchParams, Link } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { ProductCard } from '@/components/ui/product-card'
 import SkeletonCard from '@/components/ui/SkeletonCard'
 import QuickViewModal from '@/components/QuickViewModal'
@@ -32,7 +32,9 @@ export default function ProductGrid() {
     }
   }
 
-  // Scroll to this section whenever the URL category param changes
+  // Scroll to grid only on first mount when arriving with a pre-set category param
+  // (e.g. clicking a CategoryShowcase card from another page).
+  // We do NOT re-scroll on every filter pill click — that would fight the user's scroll position.
   useEffect(() => {
     if (categoryParam) {
       const el = document.getElementById('products')
@@ -41,7 +43,8 @@ export default function ProductGrid() {
         window.scrollTo({ top: offset, behavior: 'smooth' })
       }
     }
-  }, [categoryParam])
+    // Intentionally run only once on mount — eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 1200)
@@ -72,14 +75,13 @@ export default function ProductGrid() {
               Featured Products
             </h2>
           </div>
-          <Link
-            to="/"
+          <button
+            onClick={() => setActive('All')}
             className="hidden sm:inline text-sm font-bold transition-colors"
             style={{ color: '#0056b3' }}
-            onClick={() => setSearchParams({})}
           >
             View all products →
-          </Link>
+          </button>
         </motion.div>
 
         {/* ── Filter pills ── */}

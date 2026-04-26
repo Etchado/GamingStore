@@ -8,11 +8,11 @@ export default function CartDrawer() {
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop — pointerEvents disabled immediately on exit so it can't ghost-block clicks */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, pointerEvents: 'none' }}
+            animate={{ opacity: 1, pointerEvents: 'auto' }}
+            exit={{ opacity: 0, pointerEvents: 'none' }}
             onClick={() => setIsOpen(false)}
             className="fixed inset-0 z-[60] bg-black/30 backdrop-blur-sm"
           />

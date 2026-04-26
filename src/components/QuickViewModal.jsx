@@ -28,11 +28,11 @@ export default function QuickViewModal({ product, onClose }) {
     <AnimatePresence>
       {product && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop — pointerEvents disabled on exit immediately to prevent ghost overlay */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, pointerEvents: 'none' }}
+            animate={{ opacity: 1, pointerEvents: 'auto' }}
+            exit={{ opacity: 0, pointerEvents: 'none' }}
             onClick={onClose}
             className="fixed inset-0 z-[80] bg-black/40 backdrop-blur-sm"
           />
