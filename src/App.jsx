@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import { CartProvider } from './context/CartContext'
 import { ToastProvider } from './context/ToastContext'
+import { WishlistProvider } from './context/WishlistContext'
 import Navbar from './components/Navbar'
 import HeroSection from './components/HeroSection'
 import TrustBar from './components/TrustBar'
@@ -14,6 +15,7 @@ import ToastContainer from './components/ToastContainer'
 import BackToTop from './components/BackToTop'
 import ProductDetailPage from './pages/ProductDetailPage'
 import CheckoutPage from './pages/CheckoutPage'
+import WishlistPage from './pages/WishlistPage'
 import NotFoundPage from './pages/NotFoundPage'
 import './App.css'
 
@@ -39,6 +41,7 @@ function App() {
   return (
     <BrowserRouter>
       <ToastProvider>
+        <WishlistProvider>
         <CartProvider>
           <div className="min-h-screen bg-white text-ink">
             <ScrollToTop />
@@ -47,6 +50,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/product/:id" element={<ProductDetailPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/wishlist" element={<WishlistPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
             <Footer />
@@ -55,6 +59,7 @@ function App() {
             <BackToTop />
           </div>
         </CartProvider>
+        </WishlistProvider>
       </ToastProvider>
     </BrowserRouter>
   )

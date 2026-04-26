@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
+import { useWishlist } from '@/context/WishlistContext'
 import { PRODUCTS } from '@/data/products'
 import { ProductCard } from '@/components/ui/product-card'
 
@@ -48,6 +49,8 @@ export default function ProductDetailPage() {
   const navigate = useNavigate()
   const { addItem } = useCart()
   const { addToast } = useToast()
+  const { toggle, has } = useWishlist()
+  const inWishlist = has(product?.id)
 
   const product = PRODUCTS.find(p => p.id === id)
   const related = PRODUCTS.filter(p => p.id !== id && p.category === product?.category).slice(0, 4)
@@ -81,7 +84,9 @@ export default function ProductDetailPage() {
   }
 
   function handleWishlist() {
-    addToast(`${product.title.slice(0, 28)}… saved to wishlist`, 'wishlist')
+    toggle(product.id)
+    const label = product.title.slice(0, 28) + (product.title.length > 28 ? '…' : '')
+    addToast(inWishlist ? `${label} removed from wishlist` : `${label} saved to wishlist`, 'wishlist')
   }
 
   const relatedToShow = related.length > 0 ? related : fallbackRelated
@@ -259,10 +264,22 @@ export default function ProductDetailPage() {
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={handleWishlist}
-                className="w-12 h-12 rounded-xl border flex items-center justify-center transition-colors hover:border-red-300 hover:bg-red-50"
-                style={{ borderColor: '#e0e0e0' }}
+                className="w-12 h-12 rounded-xl border flex items-center justify-center transition-colors"
+                style={{
+                  borderColor: inWishlist ? '#fca5a5' : '#e0e0e0',
+                  backgroundColor: inWishlist ? '#fff1f1' : 'transparent',
+                }}
+                onMouseEnter={(e) => { if (!inWishlist) { e.currentTarget.style.borderColor = '#fca5a5'; e.currentTarget.style.backgroundColor = '#fff5f5' } }}
+                onMouseLeave={(e) => { if (!inWishlist) { e.currentTarget.style.borderColor = '#e0e0e0'; e.currentTarget.style.backgroundColor = 'transparent' } }}
               >
-                <svg className="w-5 h-5 text-gray-400 hover:text-red-500 transition-colors" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <svg
+                  className="w-5 h-5 transition-colors"
+                  style={{ color: inWishlist ? '#ef4444' : '#9ca3af' }}
+                  fill={inWishlist ? 'currentColor' : 'none'}
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                 </svg>
               </motion.button>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
+import { useWishlist } from '@/context/WishlistContext'
 
 /* ── Star Rating ──────────────────────────────── */
 function StarRating({ rating = 4.8, count = 0 }) {
@@ -51,7 +52,9 @@ const badges = {
 export function ProductCard({ product, onQuickView }) {
   const { addItem } = useCart()
   const { addToast } = useToast()
+  const { toggle, has } = useWishlist()
   const badge = badges[product.category] ?? badges.System
+  const inWishlist = has(product.id)
 
   function handleAddToCart(e) {
     e.preventDefault()
@@ -64,7 +67,9 @@ export function ProductCard({ product, onQuickView }) {
   function handleWishlist(e) {
     e.preventDefault()
     e.stopPropagation()
-    addToast(`${product.title.slice(0, 28)}… saved to wishlist`, 'wishlist')
+    toggle(product.id)
+    const label = product.title.slice(0, 28) + (product.title.length > 28 ? '…' : '')
+    addToast(inWishlist ? `${label} removed from wishlist` : `${label} saved to wishlist`, 'wishlist')
   }
 
   function handleQuickView(e) {
@@ -126,9 +131,17 @@ export function ProductCard({ product, onQuickView }) {
         {/* Wishlist top-right */}
         <button
           onClick={handleWishlist}
-          className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm border border-border"
+          className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center transition-opacity shadow-sm border border-border"
+          style={{ opacity: inWishlist ? 1 : undefined }}
         >
-          <svg className="w-3.5 h-3.5 text-gray-400 hover:text-red-500 transition-colors" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <svg
+            className="w-3.5 h-3.5 transition-colors"
+            style={{ color: inWishlist ? '#ef4444' : '#9ca3af' }}
+            fill={inWishlist ? 'currentColor' : 'none'}
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+          >
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
         </button>
