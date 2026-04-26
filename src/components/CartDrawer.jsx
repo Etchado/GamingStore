@@ -127,11 +127,31 @@ export default function CartDrawer() {
             {/* Footer */}
             {items.length > 0 && (
               <div className="px-6 py-5 border-t border-border space-y-3">
+                {/* Free shipping progress */}
+                {(() => {
+                  const FREE_THRESHOLD = 150
+                  const remaining = Math.max(0, FREE_THRESHOLD - total)
+                  const pct = Math.min(100, (total / FREE_THRESHOLD) * 100)
+                  return remaining > 0 ? (
+                    <div>
+                      <p className="text-xs text-muted mb-1.5">
+                        Add <strong className="text-ink">${remaining.toFixed(0)}</strong> more for <strong className="text-ink">free shipping</strong>
+                      </p>
+                      <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#e0e0e0' }}>
+                        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: '#28a745' }} />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5 text-xs font-bold" style={{ color: '#1e8035' }}>
+                      <span>✓</span> You qualify for free shipping!
+                    </div>
+                  )
+                })()}
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted font-medium">Subtotal ({itemCount} item{itemCount !== 1 ? 's' : ''})</span>
                   <span className="text-base font-black text-ink">${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
-                <p className="text-xs text-muted">Shipping &amp; taxes calculated at checkout.</p>
+                <p className="text-xs text-muted">Taxes calculated at checkout.</p>
                 <button
                   onClick={() => { setIsOpen(false); navigate('/checkout') }}
                   className="w-full py-3.5 rounded-xl text-sm font-black text-white transition-colors"
