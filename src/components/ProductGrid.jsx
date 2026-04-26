@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { ProductCard } from '@/components/ui/product-card'
 import SkeletonCard from '@/components/ui/SkeletonCard'
 import QuickViewModal from '@/components/QuickViewModal'
@@ -20,6 +20,7 @@ export default function ProductGrid() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [loading, setLoading]           = useState(true)
   const [quickView, setQuickView]       = useState(null)
+  const navigate = useNavigate()
 
   const categoryParam = searchParams.get('category')
   const queryParam    = searchParams.get('q') ?? ''
@@ -233,7 +234,7 @@ export default function ProductGrid() {
               View All Products →
             </motion.button>
             <motion.button
-              onClick={() => setActive('System')}
+              onClick={() => navigate('/builder')}
               whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
               className="px-10 py-3.5 rounded-xl text-sm font-black border-2 transition-colors"
               style={{ borderColor: '#28a745', color: '#1e8035' }}

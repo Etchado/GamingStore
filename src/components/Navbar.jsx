@@ -12,7 +12,7 @@ const NAV_ITEMS = [
     cols: [
       { heading: 'PC Builds',   links: [
         { label: 'Prebuilt PCs',      filter: 'System' },
-        { label: 'Custom Builder',    filter: 'System' },
+        { label: 'Custom Builder',    filter: 'System', href: '/builder' },
         { label: 'Mini ITX',          filter: 'System' },
         { label: 'Workstations',      filter: 'System' },
       ]},
@@ -102,7 +102,7 @@ function MegaMenu({ item, onLinkClick }) {
                 {col.links.map((link) => (
                   <li key={link.label}>
                     <Link
-                      to={`/?category=${link.filter}`}
+                      to={link.href ?? `/?category=${link.filter}`}
                       onClick={onLinkClick}
                       className="text-sm text-ink font-medium hover:text-primary-600 transition-colors flex items-center gap-2 group"
                     >
@@ -424,7 +424,7 @@ export default function Navbar() {
                               {col.links.map((link) => (
                                 <li key={link.label}>
                                   <Link
-                                    to={`/?category=${link.filter}`}
+                                    to={link.href ?? `/?category=${link.filter}`}
                                     onClick={() => setMobileOpen(false)}
                                     className="text-sm text-ink hover:text-primary-600 transition-colors"
                                   >

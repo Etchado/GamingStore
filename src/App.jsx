@@ -16,6 +16,7 @@ import BackToTop from './components/BackToTop'
 import ProductDetailPage from './pages/ProductDetailPage'
 import CheckoutPage from './pages/CheckoutPage'
 import WishlistPage from './pages/WishlistPage'
+import BuilderPage from './pages/BuilderPage'
 import NotFoundPage from './pages/NotFoundPage'
 import './App.css'
 
@@ -51,6 +52,7 @@ function App() {
               <Route path="/product/:id" element={<ProductDetailPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/wishlist" element={<WishlistPage />} />
+              <Route path="/builder" element={<BuilderPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
             <Footer />
