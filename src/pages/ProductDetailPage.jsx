@@ -247,7 +247,7 @@ export default function ProductDetailPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="pt-16 lg:pt-26 pb-20 lg:pb-0"
+      className="pt-25 lg:pt-35 pb-20 lg:pb-0"
     >
       {/* ── Breadcrumb ── */}
       <div className="border-b" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>

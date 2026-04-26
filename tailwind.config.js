@@ -50,6 +50,8 @@ export default {
         '18': '4.5rem',   // 72px
         '22': '5.5rem',   // 88px  — navbar height
         '26': '6.5rem',   // 104px — two-row navbar
+        '25': '6.25rem',  // 100px — single-row navbar + announcement bar (64+36)
+        '35': '8.75rem',  // 140px — two-row navbar + announcement bar (104+36)
       },
     },
   },

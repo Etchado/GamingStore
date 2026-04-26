@@ -20,8 +20,7 @@ const stagger = (i) => ({
 
 export default function HeroSection() {
   return (
-    /* pt-26 = 104px to clear two-row navbar */
-    <section className="bg-white pt-26 pb-16 overflow-hidden">
+    <section className="bg-white pt-35 pb-16 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center min-h-[80vh]">
 
         {/* ── Left: Copy ────────────────────────── */}

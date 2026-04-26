@@ -36,7 +36,7 @@ export default function WishlistPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="pt-16 lg:pt-26 min-h-screen"
+      className="pt-25 lg:pt-35 min-h-screen"
       style={{ backgroundColor: '#f8fafc' }}
     >
       {/* Header */}
