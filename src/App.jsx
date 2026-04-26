@@ -65,7 +65,6 @@ function AppShell() {
   return (
     <div className="min-h-screen bg-white text-ink">
       <ScrollToTop />
-      <AnnouncementBar />
       <Navbar />
       <ErrorBoundary>
         <Suspense fallback={<PageLoader />}>

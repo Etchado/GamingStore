@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { useWishlist } from '@/context/WishlistContext'
+import AnnouncementBar from '@/components/AnnouncementBar'
 
 /* ── Nav data ─── */
 const NAV_ITEMS = [
@@ -167,6 +168,7 @@ export default function Navbar() {
       className="fixed top-0 inset-x-0 z-50 bg-white"
       onMouseLeave={() => setActiveMenu(null)}
     >
+      <AnnouncementBar />
 
       {/* ── Row 1: Logo + Search + Icons ── */}
       <div className="border-b border-border">
