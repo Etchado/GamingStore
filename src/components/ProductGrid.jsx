@@ -6,7 +6,19 @@ import SkeletonCard from '@/components/ui/SkeletonCard'
 import QuickViewModal from '@/components/QuickViewModal'
 import { PRODUCTS } from '@/data/products'
 
-const FILTERS = ['All', 'System', 'GPU', 'CPU', 'Monitor', 'Mouse', 'Keyboard', 'Desk', 'Chair']
+const FILTERS = ['All', 'System', 'GPU', 'CPU', 'Monitor', 'Mouse', 'Keyboard', 'Storage', 'Desk', 'Chair']
+
+const SORT_OPTIONS = [
+  { value: 'featured',   label: 'Featured' },
+  { value: 'price-asc',  label: 'Price: Low → High' },
+  { value: 'price-desc', label: 'Price: High → Low' },
+  { value: 'rating',     label: 'Top Rated' },
+  { value: 'deals',      label: '🔥 Best Deals' },
+]
+
+function parsePrice(str) {
+  return parseFloat(str.replace(/[^0-9.]/g, '')) || 0
+}
 
 const slideUp = {
   hidden:  { opacity: 0, y: 28 },
@@ -20,6 +32,7 @@ export default function ProductGrid() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [loading, setLoading]           = useState(true)
   const [quickView, setQuickView]       = useState(null)
+  const [sort, setSort]                 = useState('featured')
   const navigate = useNavigate()
 
   const categoryParam = searchParams.get('category')
@@ -55,14 +68,22 @@ export default function ProductGrid() {
     return () => clearTimeout(t)
   }, [])
 
-  const filtered = PRODUCTS.filter(p => {
-    const matchCat = active === 'All' || p.category === active
-    if (!matchCat) return false
-    if (!queryParam) return true
-    const q = queryParam.toLowerCase()
-    return [p.title, p.description, p.spec, p.brand, p.category]
-      .some(f => f?.toLowerCase().includes(q))
-  })
+  const filtered = PRODUCTS
+    .filter(p => {
+      const matchCat = active === 'All' || p.category === active
+      if (!matchCat) return false
+      if (!queryParam) return true
+      const q = queryParam.toLowerCase()
+      return [p.title, p.description, p.spec, p.brand, p.category]
+        .some(f => f?.toLowerCase().includes(q))
+    })
+    .sort((a, b) => {
+      if (sort === 'price-asc')  return parsePrice(a.price) - parsePrice(b.price)
+      if (sort === 'price-desc') return parsePrice(b.price) - parsePrice(a.price)
+      if (sort === 'rating')     return (b.rating ?? 0) - (a.rating ?? 0)
+      if (sort === 'deals')      return (b.oldPrice ? 1 : 0) - (a.oldPrice ? 1 : 0)
+      return 0
+    })
 
   return (
     <section id="products" className="py-20 px-6" style={{ backgroundColor: '#f8fafc' }}>
@@ -99,10 +120,16 @@ export default function ProductGrid() {
                 <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
                   Featured Products
                 </h2>
+                {!loading && (
+                  <p className="text-sm text-muted mt-1">
+                    {filtered.length} product{filtered.length !== 1 ? 's' : ''}
+                    {active !== 'All' ? ` in ${active}` : ''}
+                  </p>
+                )}
               </>
             )}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             {queryParam && (
               <button
                 onClick={clearSearch}
@@ -122,6 +149,21 @@ export default function ProductGrid() {
               >
                 View all products →
               </button>
+            )}
+            {/* Sort dropdown */}
+            {!loading && filtered.length > 0 && (
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                className="text-xs font-semibold border rounded-lg px-3 py-1.5 outline-none cursor-pointer transition-colors bg-white text-ink"
+                style={{ borderColor: '#e0e0e0' }}
+                onFocus={(e) => { e.target.style.borderColor = '#0056b3' }}
+                onBlur={(e) => { e.target.style.borderColor = '#e0e0e0' }}
+              >
+                {SORT_OPTIONS.map(o => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
             )}
           </div>
         </motion.div>

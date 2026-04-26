@@ -3,10 +3,13 @@ import { motion, AnimatePresence } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
+import { useWishlist } from '@/context/WishlistContext'
 
 export default function QuickViewModal({ product, onClose }) {
   const { addItem } = useCart()
   const { addToast } = useToast()
+  const { toggle, has } = useWishlist()
+  const inWishlist = product ? has(product.id) : false
   const [qty, setQty] = useState(1)
 
   useEffect(() => {
@@ -22,6 +25,12 @@ export default function QuickViewModal({ product, onClose }) {
     const label = product.title.length > 32 ? product.title.slice(0, 32) + '…' : product.title
     addToast(`${label} added to cart`, 'success')
     onClose()
+  }
+
+  function handleWishlist() {
+    toggle(product.id)
+    const label = product.title.slice(0, 28) + (product.title.length > 28 ? '…' : '')
+    addToast(inWishlist ? `${label} removed from wishlist` : `${label} saved to wishlist`, 'wishlist')
   }
 
   return (
@@ -143,16 +152,37 @@ export default function QuickViewModal({ product, onClose }) {
                     </div>
                   </div>
 
-                  {/* Add to cart */}
-                  <button
-                    onClick={handleAddToCart}
-                    className="w-full py-3 rounded-xl text-sm font-black text-white transition-colors mt-auto"
-                    style={{ backgroundColor: '#0056b3' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
-                  >
-                    Add {qty > 1 ? `${qty} × ` : ''}to Cart
-                  </button>
+                  {/* Add to cart + Wishlist */}
+                  <div className="flex gap-2 mt-auto">
+                    <button
+                      onClick={handleAddToCart}
+                      className="flex-1 py-3 rounded-xl text-sm font-black text-white transition-colors"
+                      style={{ backgroundColor: '#0056b3' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
+                    >
+                      Add {qty > 1 ? `${qty} × ` : ''}to Cart
+                    </button>
+                    <button
+                      onClick={handleWishlist}
+                      className="w-11 h-11 rounded-xl border-2 flex items-center justify-center transition-colors shrink-0"
+                      style={{
+                        borderColor: inWishlist ? '#fca5a5' : '#e0e0e0',
+                        backgroundColor: inWishlist ? '#fff1f1' : 'transparent',
+                      }}
+                    >
+                      <svg
+                        className="w-4.5 h-4.5"
+                        style={{ color: inWishlist ? '#ef4444' : '#9ca3af', width: 18, height: 18 }}
+                        fill={inWishlist ? 'currentColor' : 'none'}
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                      </svg>
+                    </button>
+                  </div>
 
                   {/* View full details */}
                   {product.id && (
