@@ -130,8 +130,9 @@ export default function Navbar() {
   const [mobileQuery, setMobileQuery]       = useState('')
   const { itemCount, setIsOpen: openCart }  = useCart()
   const { count: wishlistCount }            = useWishlist()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
+  const isAr = i18n.language?.startsWith('ar')
 
   function toggleMobileItem(label) {
     setMobileExpanded(prev => prev === label ? null : label)
@@ -288,6 +289,17 @@ export default function Navbar() {
                 )}
               </AnimatePresence>
             </motion.button>
+
+            {/* Language toggle */}
+            <button
+              onClick={() => i18n.changeLanguage(isAr ? 'en' : 'ar')}
+              className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-black transition-colors hover:bg-surface"
+              style={{ borderColor: '#e0e0e0', color: '#555' }}
+              title={isAr ? 'Switch to English' : 'التبديل إلى العربية'}
+            >
+              <span className="text-[11px]">{isAr ? '🇺🇸' : '🇸🇦'}</span>
+              {isAr ? 'EN' : 'AR'}
+            </button>
 
             {/* Hamburger — mobile only */}
             <button
