@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { FocusCards } from '@/components/ui/focus-cards'
 
 /* Real Unsplash PC hardware images */
@@ -19,6 +20,7 @@ const stagger = (i) => ({
 })
 
 export default function HeroSection() {
+  const { t } = useTranslation()
   return (
     <section className="bg-white pt-35 pb-16 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center min-h-[80vh]">
@@ -29,7 +31,7 @@ export default function HeroSection() {
           <motion.span {...stagger(0)} className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.12em] uppercase px-3 py-1.5 rounded-full border"
             style={{ background: '#e6f0fa', borderColor: '#99c3eb', color: '#004494' }}>
             <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#0056b3' }} />
-            Premium PC Hardware
+            {t('hero.badge')}
           </motion.span>
 
           {/* Headline */}
@@ -38,20 +40,19 @@ export default function HeroSection() {
             className="mt-6 font-black text-ink tracking-tight leading-[1.06]"
             style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.75rem)' }}
           >
-            Build Your
+            {t('hero.headline1')}
             <br />
             <span
               className="bg-clip-text text-transparent"
               style={{ backgroundImage: 'linear-gradient(135deg, #0056b3 0%, #28a745 100%)' }}
             >
-              Dream Setup
+              {t('hero.headline2')}
             </span>
           </motion.h1>
 
           {/* Sub */}
           <motion.p {...stagger(2)} className="mt-5 text-base text-muted leading-relaxed max-w-[440px]">
-            Premium Custom PCs, cutting-edge components, and ergonomic furniture —
-            everything configured, tested, and delivered ready to perform.
+            {t('hero.sub')}
           </motion.p>
 
           {/* CTAs */}
@@ -65,7 +66,7 @@ export default function HeroSection() {
               onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
             >
-              Configure Now
+              {t('hero.ctaPrimary')}
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
@@ -79,7 +80,7 @@ export default function HeroSection() {
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e9f7ed' }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
               >
-                Browse Systems
+                {t('hero.ctaSecondary')}
               </Link>
             </motion.div>
           </motion.div>
@@ -87,9 +88,9 @@ export default function HeroSection() {
           {/* Stats */}
           <motion.div {...stagger(4)} className="mt-10 grid grid-cols-3 gap-8 max-w-[360px]">
             {[
-              { n: '500+',  l: 'PC Builds'   },
-              { n: '10K+',  l: 'Components'  },
-              { n: '48hr',  l: 'Delivery'    },
+              { n: t('hero.stat1n'), l: t('hero.stat1l') },
+              { n: t('hero.stat2n'), l: t('hero.stat2l') },
+              { n: t('hero.stat3n'), l: t('hero.stat3l') },
             ].map((s) => (
               <div key={s.l} className="text-center">
                 <p className="text-2xl font-black text-ink">{s.n}</p>
@@ -101,7 +102,7 @@ export default function HeroSection() {
           {/* Brand bar */}
           <motion.div {...stagger(5)} className="mt-8 pt-8 border-t border-border">
             <p className="text-[10px] font-black tracking-[0.18em] text-muted uppercase mb-3">
-              Authorized Reseller
+              {t('hero.authorizedReseller')}
             </p>
             <div className="flex flex-wrap gap-2">
               {brands.map((b) => (

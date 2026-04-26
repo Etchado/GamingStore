@@ -14,5 +14,49 @@
     "wishlist": "Wishlist",
     "searchPlaceholder": "Search products, brands, and categories…",
     "searchMobilePlaceholder": "Search products…"
+  },
+  "hero": {
+    "badge": "Premium PC Hardware",
+    "headline1": "Build Your",
+    "headline2": "Dream Setup",
+    "sub": "Premium Custom PCs, cutting-edge components, and ergonomic furniture — everything configured, tested, and delivered ready to perform.",
+    "ctaPrimary": "Configure Now",
+    "ctaSecondary": "Browse Systems",
+    "stat1n": "500+", "stat1l": "PC Builds",
+    "stat2n": "10K+", "stat2l": "Components",
+    "stat3n": "48hr", "stat3l": "Delivery",
+    "authorizedReseller": "Authorized Reseller"
+  },
+  "categories": {
+    "title": "Everything Your Setup Needs",
+    "sub": "Shop by Category",
+    "viewAll": "All categories →"
+  },
+  "cart": {
+    "title": "Your Cart",
+    "empty": "Your cart is empty",
+    "emptySub": "Add some products to get started.",
+    "continueShopping": "Continue Shopping",
+    "checkout": "Checkout",
+    "subtotal": "Subtotal",
+    "freeShippingQualify": "You qualify for free shipping!"
+  },
+  "wishlist": {
+    "title": "Saved Items",
+    "empty": "Your wishlist is empty",
+    "emptySub": "Click the heart icon on any product to save it here for later.",
+    "browse": "Browse Products",
+    "clearAll": "Clear all",
+    "addAllToCart": "Add all to cart →"
+  },
+  "footer": {
+    "tagline": "The premier destination for premium PC hardware, custom builds, and professional setups.",
+    "shopTitle": "Shop",
+    "supportTitle": "Customer Support",
+    "newsletterTitle": "Stay in the Loop",
+    "newsletterSub": "Get the latest deals, new arrivals, and exclusive offers delivered to your inbox.",
+    "subscribe": "Subscribe",
+    "noSpam": "No spam. Unsubscribe anytime.",
+    "subscribed": "✓ You're subscribed!"
   }
 }
