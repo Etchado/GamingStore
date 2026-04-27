@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 
 const cats = [
   {
@@ -38,6 +39,7 @@ const cats = [
 
 export default function CategoryShowcase() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   function handleCategoryClick(filter) {
     navigate(`/?category=${filter}`)
@@ -60,10 +62,10 @@ export default function CategoryShowcase() {
         >
           <div>
             <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
-              Shop by Category
+              {t('categories.sub')}
             </p>
             <h2 className="text-2xl sm:text-3xl font-black text-ink tracking-tight">
-              Everything Your Setup Needs
+              {t('categories.title')}
             </h2>
           </div>
           <button
@@ -71,7 +73,7 @@ export default function CategoryShowcase() {
             className="hidden sm:inline text-sm font-bold transition-colors"
             style={{ color: '#0056b3' }}
           >
-            All categories →
+            {t('categories.viewAll')}
           </button>
         </motion.div>
 

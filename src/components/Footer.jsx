@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 const SHOP_LINKS = [
   { label: 'Custom PC Systems',  href: '/?category=System' },
@@ -94,6 +95,7 @@ function FooterCol({ heading, links }) {
 export default function Footer() {
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
+  const { t } = useTranslation()
 
   function handleSubscribe(e) {
     e.preventDefault()
@@ -122,7 +124,7 @@ export default function Footer() {
             </Link>
 
             <p className="text-sm text-muted leading-relaxed max-w-[220px]">
-              The premier destination for premium PC hardware, custom builds, and professional setups.
+              {t('footer.tagline')}
             </p>
 
             {/* Social icons */}
@@ -141,16 +143,16 @@ export default function Footer() {
           </div>
 
           {/* Col 2 — Shop */}
-          <FooterCol heading="Shop" links={SHOP_LINKS} />
+          <FooterCol heading={t('footer.shopTitle')} links={SHOP_LINKS} />
 
           {/* Col 3 — Support */}
-          <FooterCol heading="Customer Support" links={SUPPORT_LINKS} />
+          <FooterCol heading={t('footer.supportTitle')} links={SUPPORT_LINKS} />
 
           {/* Col 4 — Newsletter */}
           <div>
-            <h4 className="text-sm font-black text-ink tracking-wide mb-4">Stay in the Loop</h4>
+            <h4 className="text-sm font-black text-ink tracking-wide mb-4">{t('footer.newsletterTitle')}</h4>
             <p className="text-sm text-muted leading-relaxed mb-4">
-              Get the latest deals, new arrivals, and exclusive offers delivered to your inbox.
+              {t('footer.newsletterSub')}
             </p>
 
             {subscribed ? (
@@ -160,7 +162,7 @@ export default function Footer() {
                 className="rounded-xl px-4 py-3 text-sm font-bold"
                 style={{ backgroundColor: '#e9f7ed', color: '#1e8035', border: '1px solid #a7dfb7' }}
               >
-                ✓ You're subscribed!
+                {t('footer.subscribed')}
               </motion.div>
             ) : (
               <form onSubmit={handleSubscribe} className="space-y-2">
@@ -181,13 +183,13 @@ export default function Footer() {
                   onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
                 >
-                  Subscribe
+                  {t('footer.subscribe')}
                 </button>
               </form>
             )}
 
             <p className="text-[11px] text-muted mt-3">
-              No spam. Unsubscribe anytime.
+              {t('footer.noSpam')}
             </p>
           </div>
 
