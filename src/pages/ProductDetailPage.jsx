@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { motion } from 'motion/react'
+import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
@@ -44,7 +44,7 @@ function StarRating({ rating = 4.8, count = 0 }) {
       </div>
       <span className="text-sm font-bold text-ink">{rating.toFixed(1)}</span>
       {count > 0 && (
-        <span className="text-sm text-muted">({count.toLocaleString()} {t('product.reviews')})</span>
+        <span className="text-sm text-muted">({count.toLocaleString()} {t('product.reviews.label')})</span>
       )}
     </div>
   )
@@ -57,12 +57,6 @@ const SAMPLE_REVIEWS = [
   { name: 'Alex M.',     avatar: 'AM', rating: 5, date: 'December 2024', verified: true,  textKey: 'review4' },
 ]
 
-const REVIEW_TEXTS = {
-  review1: "Absolutely incredible build quality. Sets up in minutes and the performance is exactly as advertised. Worth every penny — I've already recommended it to three friends.",
-  review2: "I was skeptical about purchasing high-end gear online but the packaging was perfect and delivery was fast. Zero regrets. Customer support was also top notch when I had a question.",
-  review3: "Great product overall. Took off one star only because setup documentation could be clearer for first-timers, but performance-wise this thing is an absolute beast.",
-  review4: "Third purchase from GamingStore. Always reliable, always top-tier. The team helped me pick the right configuration for my needs and delivery was ahead of schedule.",
-}
 
 const AVATAR_COLORS = ['#0056b3', '#7e22ce', '#1e8035', '#c2410c']
 
@@ -102,7 +96,7 @@ function ReviewCard({ review, colorIndex }) {
           ))}
         </div>
       </div>
-      <p className="text-sm text-muted leading-relaxed">{REVIEW_TEXTS[review.textKey]}</p>
+      <p className="text-sm text-muted leading-relaxed">{t(`product.reviews.${review.textKey}`)}</p>
     </div>
   )
 }
@@ -132,7 +126,7 @@ function ReviewsSection({ rating, reviewCount }) {
               </svg>
             ))}
           </div>
-          {reviewCount > 0 && <p className="text-xs text-muted">{reviewCount.toLocaleString()} {t('product.reviews')}</p>}
+          {reviewCount > 0 && <p className="text-xs text-muted">{reviewCount.toLocaleString()} {t('product.reviews.label')}</p>}
         </div>
         <div className="flex-1 w-full space-y-2">
           {bars.map(({ stars, pct }) => (
@@ -168,6 +162,8 @@ export default function ProductDetailPage() {
   const inWishlist = has(id)
   const recentIds = useRecentlyViewed(id)
   const [qty, setQty] = useState(1)
+  const gallery = product?.images?.length > 1 ? product.images : product ? [product.image] : []
+  const [activeImg, setActiveImg] = useState(0)
   const recentProducts = recentIds.map(rid => PRODUCTS.find(p => p.id === rid)).filter(Boolean)
   const related = PRODUCTS.filter(p => p.id !== id && p.category === product?.category).slice(0, 4)
   const fallbackRelated = PRODUCTS.filter(p => p.id !== id).slice(0, 4)
@@ -237,20 +233,94 @@ export default function ProductDetailPage() {
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-20">
 
-          {/* Left: Image */}
+          {/* Left: Image gallery */}
           <motion.div initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="relative">
-            <div className="relative rounded-3xl overflow-hidden border"
+
+            {/* Main image */}
+            <div className="group relative rounded-3xl overflow-hidden border"
               style={{ aspectRatio: '4/3', borderColor: '#e0e0e0', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}>
-              <img src={product.image} alt={product.title} loading="lazy" onError={onImgError} className="w-full h-full object-cover" />
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={activeImg}
+                  src={gallery[activeImg]}
+                  alt={`${product.title} — view ${activeImg + 1}`}
+                  loading="lazy"
+                  onError={onImgError}
+                  className="w-full h-full object-cover"
+                  initial={{ opacity: 0, scale: 1.03 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ duration: 0.28, ease: 'easeInOut' }}
+                />
+              </AnimatePresence>
+
+              {/* Badge — glassmorphism, top-right */}
               {product.badge && (
-                <span className="absolute top-5 left-5 text-[11px] font-black tracking-widest uppercase px-3 py-1.5 rounded-full text-white shadow"
-                  style={{ backgroundColor: '#0056b3' }}>
+                <span
+                  className="absolute top-4 right-4 text-[10px] font-black tracking-widest uppercase px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/30"
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.18)',
+                    color: '#fff',
+                    textShadow: '0 1px 3px rgba(0,0,0,0.55)',
+                  }}
+                >
                   {product.badge}
                 </span>
               )}
+
+              {/* Prev/Next arrows — only when gallery has >1 image */}
+              {gallery.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setActiveImg(i => (i - 1 + gallery.length) % gallery.length)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30 transition-opacity opacity-0 hover:opacity-100 focus:opacity-100 group-hover:opacity-100"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.20)', color: '#fff' }}
+                    aria-label="Previous image"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    onClick={() => setActiveImg(i => (i + 1) % gallery.length)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30 transition-opacity opacity-0 hover:opacity-100 focus:opacity-100 group-hover:opacity-100"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.20)', color: '#fff' }}
+                    aria-label="Next image"
+                  >
+                    ›
+                  </button>
+                </>
+              )}
             </div>
-            <div className="mt-5 grid grid-cols-3 gap-3">
+
+            {/* Thumbnail strip */}
+            {gallery.length > 1 && (
+              <div className="flex gap-2.5 mt-3 overflow-x-auto pb-1">
+                {gallery.map((src, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveImg(i)}
+                    className="relative shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all"
+                    style={{
+                      borderColor: activeImg === i ? '#0056b3' : '#e0e0e0',
+                      opacity: activeImg === i ? 1 : 0.65,
+                    }}
+                    aria-label={`View image ${i + 1}`}
+                    aria-pressed={activeImg === i}
+                  >
+                    <img
+                      src={src}
+                      alt=""
+                      loading="lazy"
+                      onError={onImgError}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Trust chips */}
+            <div className="mt-4 grid grid-cols-3 gap-3">
               {trustChips.map(({ icon, label }) => (
                 <div key={label} className="flex flex-col items-center gap-1.5 py-3 rounded-2xl border text-center"
                   style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
@@ -303,7 +373,7 @@ export default function ProductDetailPage() {
                   <span className="text-sm font-semibold" style={{ color: '#1e8035' }}>
                     {t('product.inStock')}
                     {product.stockCount <= 10 && (
-                      <span className="ml-1 font-medium text-muted">
+                      <span className="ms-1 font-medium text-muted">
                         {t('product.onlyLeft', { count: product.stockCount })}
                       </span>
                     )}

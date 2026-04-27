@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 const CAT_CONFIG = [
   { key: 'pcBuilds',  icon: '🖥️', filter: 'System',  bg: '#e6f0fa', border: '#99c3eb', text: '#004494' },
-  { key: 'gpuCpu',   icon: '⚡',  filter: 'GPU',     bg: '#f3f0ff', border: '#c4b5fd', text: '#5521b5' },
+  { key: 'gpuCpu',   icon: '⚡',  filter: 'GPU,CPU', bg: '#f3f0ff', border: '#c4b5fd', text: '#5521b5' },
   { key: 'monitors', icon: '🖱️', filter: 'Monitor', bg: '#e9f7ed', border: '#a7dfb7', text: '#1e8035' },
   { key: 'furniture',icon: '🪑', filter: 'Desk',    bg: '#fffbeb', border: '#fcd34d', text: '#92400e' },
 ]

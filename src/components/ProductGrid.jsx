@@ -51,7 +51,7 @@ function FilterChip({ label, onRemove }) {
       <button
         onClick={onRemove}
         aria-label={`Remove ${label} filter`}
-        className="ml-0.5 w-3.5 h-3.5 flex items-center justify-center rounded-full hover:bg-blue-200 transition-colors"
+        className="ms-0.5 w-3.5 h-3.5 flex items-center justify-center rounded-full hover:bg-blue-200 transition-colors"
       >
         ✕
       </button>
@@ -133,7 +133,7 @@ function FilterSidebar({
         <h4 className="text-[10px] font-black text-ink mb-3 uppercase tracking-[0.1em]">
           {t('products.advancedFilters.brand')}
         </h4>
-        <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
+        <div className="space-y-2 max-h-52 overflow-y-auto pe-1">
           {BRANDS.map(brand => (
             <label key={brand} className="flex items-center gap-2 cursor-pointer group">
               <input
@@ -241,7 +241,14 @@ export default function ProductGrid() {
     () => (brandsParam ? new Set(brandsParam.split(',')) : new Set()),
     [brandsParam],
   )
-  const active = categoryParam && FILTERS.includes(categoryParam) ? categoryParam : 'All'
+
+  // Support comma-separated multi-category (e.g. GPU,CPU from CategoryShowcase)
+  const activeCategories = useMemo(() => {
+    if (!categoryParam) return []
+    return categoryParam.split(',').filter(c => FILTERS.includes(c))
+  }, [categoryParam])
+  const active = activeCategories.length === 1 ? activeCategories[0] :
+                 activeCategories.length > 1  ? 'multi' : 'All'
 
   const advancedFilterCount =
     (minPriceParam > PRICE_MIN || maxPriceParam < PRICE_MAX ? 1 : 0) +
@@ -250,10 +257,11 @@ export default function ProductGrid() {
     (inStockParam ? 1 : 0)
 
   usePageTitle(
-    queryParam     ? `"${queryParam}"` :
-    badgeParam === 'NEW' ? t('products.newArrivalsTitle') :
+    queryParam          ? `"${queryParam}"` :
+    badgeParam === 'NEW'  ? t('products.newArrivalsTitle') :
     sortParam === 'deals' ? t('products.dealsTitle') :
-    active !== 'All' ? active : null,
+    active === 'multi'    ? activeCategories.join(' & ') :
+    active !== 'All'      ? active : null,
   )
 
   // ── URL setters ──
@@ -345,7 +353,8 @@ export default function ProductGrid() {
   // ── Filtered + sorted products ──
   const filtered = PRODUCTS
     .filter(p => {
-      if (active !== 'All' && p.category !== active) return false
+      if (active === 'multi' && !activeCategories.includes(p.category)) return false
+      if (active !== 'All' && active !== 'multi' && p.category !== active) return false
       if (badgeParam && !p.badge?.toLowerCase().includes(badgeParam.toLowerCase())) return false
       if (sortParam === 'deals' && !p.oldPrice) return false
       const price = parsePrice(p.price)
@@ -778,7 +787,7 @@ export default function ProductGrid() {
                     {t('products.advancedFilters.title')}
                     {advancedFilterCount > 0 && (
                       <span
-                        className="ml-2 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full"
+                        className="ms-2 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full"
                         style={{ backgroundColor: '#0056b3' }}
                       >
                         {advancedFilterCount}
