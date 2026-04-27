@@ -39,10 +39,15 @@
     "continueShopping": "Continue Shopping",
     "checkout": "Checkout",
     "subtotal": "Subtotal",
-    "freeShippingQualify": "You qualify for free shipping!"
+    "taxes": "Taxes calculated at checkout.",
+    "freeShippingMore": "Add <strong>${{amount}}</strong> more for <strong>free shipping</strong>",
+    "freeShippingQualify": "✓ You qualify for free shipping!"
   },
   "wishlist": {
+    "sub": "My Wishlist",
     "title": "Saved Items",
+    "totalValue": "Total value:",
+    "nothingSaved": "Nothing saved yet",
     "empty": "Your wishlist is empty",
     "emptySub": "Click the heart icon on any product to save it here for later.",
     "browse": "Browse Products",

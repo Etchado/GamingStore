@@ -39,10 +39,15 @@
     "continueShopping": "متابعة التسوق",
     "checkout": "الدفع",
     "subtotal": "المجموع الفرعي",
-    "freeShippingQualify": "أنت مؤهل للشحن المجاني!"
+    "taxes": "الضرائب تُحسب عند الدفع.",
+    "freeShippingMore": "أضف <strong>${{amount}}</strong> للحصول على <strong>شحن مجاني</strong>",
+    "freeShippingQualify": "✓ أنت مؤهل للشحن المجاني!"
   },
   "wishlist": {
+    "sub": "قائمة أمنياتي",
     "title": "العناصر المحفوظة",
+    "totalValue": "القيمة الإجمالية:",
+    "nothingSaved": "لم يتم الحفظ بعد",
     "empty": "قائمة أمنياتك فارغة",
     "emptySub": "انقر على أيقونة القلب على أي منتج لحفظه هنا.",
     "browse": "تصفح المنتجات",

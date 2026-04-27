@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 import { useWishlist } from '@/context/WishlistContext'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
@@ -12,7 +13,8 @@ function parsePrice(str) {
 }
 
 export default function WishlistPage() {
-  usePageTitle('Wishlist')
+  const { t } = useTranslation()
+  usePageTitle(t('wishlist.title'))
   const { ids, count, clear } = useWishlist()
   const { addItem } = useCart()
   const { addToast } = useToast()
@@ -43,19 +45,19 @@ export default function WishlistPage() {
       <div className="border-b bg-white" style={{ borderColor: '#e0e0e0' }}>
         <div className="max-w-7xl mx-auto px-6 py-8">
           <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
-            ◈ My Wishlist
+            ◈ {t('wishlist.sub')}
           </p>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <h1 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
-                Saved Items
+                {t('wishlist.title')}
                 {count > 0 && (
                   <span className="ml-3 text-xl font-bold text-muted">({count})</span>
                 )}
               </h1>
               {count > 0 && (
                 <p className="text-sm text-muted mt-1">
-                  Total value: <span className="font-bold text-ink">${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  {t('wishlist.totalValue')} <span className="font-bold text-ink">${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </p>
               )}
             </div>
@@ -68,7 +70,7 @@ export default function WishlistPage() {
                   onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#fca5a5'; e.currentTarget.style.color = '#b91c1c' }}
                   onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e0e0e0'; e.currentTarget.style.color = '#718096' }}
                 >
-                  Clear all
+                  {t('wishlist.clearAll')}
                 </button>
                 <button
                   onClick={handleAddAll}
@@ -77,7 +79,7 @@ export default function WishlistPage() {
                   onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
                 >
-                  Add all to cart →
+                  {t('wishlist.addAllToCart')}
                 </button>
               </div>
             )}
@@ -105,11 +107,11 @@ export default function WishlistPage() {
               </div>
               <div>
                 <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>
-                  ◈ Nothing saved yet
+                  ◈ {t('wishlist.nothingSaved')}
                 </p>
-                <h2 className="text-2xl font-black text-ink mb-2">Your wishlist is empty</h2>
+                <h2 className="text-2xl font-black text-ink mb-2">{t('wishlist.empty')}</h2>
                 <p className="text-sm text-muted max-w-xs mx-auto leading-relaxed">
-                  Click the heart icon on any product to save it here for later.
+                  {t('wishlist.emptySub')}
                 </p>
               </div>
               <button
@@ -119,7 +121,7 @@ export default function WishlistPage() {
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
               >
-                Browse Products
+                {t('wishlist.browse')}
               </button>
             </motion.div>
           ) : (

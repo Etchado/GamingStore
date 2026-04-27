@@ -1,9 +1,11 @@
 import { motion, AnimatePresence } from 'motion/react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 
 export default function CartDrawer() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { items, isOpen, setIsOpen, removeItem, updateQty, itemCount, total } = useCart()
 
   return (
@@ -31,7 +33,7 @@ export default function CartDrawer() {
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <div className="flex items-center gap-2.5">
-                <h2 className="text-base font-black text-ink">Your Cart</h2>
+                <h2 className="text-base font-black text-ink">{t('cart.title')}</h2>
                 {itemCount > 0 && (
                   <span
                     className="w-5 h-5 rounded-full text-[11px] font-black text-white flex items-center justify-center"
@@ -66,15 +68,15 @@ export default function CartDrawer() {
                     </svg>
                   </div>
                   <div>
-                    <p className="font-bold text-ink text-sm">Your cart is empty</p>
-                    <p className="text-xs text-muted mt-1">Add some products to get started.</p>
+                    <p className="font-bold text-ink text-sm">{t('cart.empty')}</p>
+                    <p className="text-xs text-muted mt-1">{t('cart.emptySub')}</p>
                   </div>
                   <button
                     onClick={() => setIsOpen(false)}
                     className="px-6 py-2.5 rounded-xl text-sm font-bold text-white"
                     style={{ backgroundColor: '#0056b3' }}
                   >
-                    Continue Shopping
+                    {t('cart.continueShopping')}
                   </button>
                 </div>
               ) : (
@@ -134,24 +136,25 @@ export default function CartDrawer() {
                   const pct = Math.min(100, (total / FREE_THRESHOLD) * 100)
                   return remaining > 0 ? (
                     <div>
-                      <p className="text-xs text-muted mb-1.5">
-                        Add <strong className="text-ink">${remaining.toFixed(0)}</strong> more for <strong className="text-ink">free shipping</strong>
-                      </p>
+                      <p
+                        className="text-xs text-muted mb-1.5"
+                        dangerouslySetInnerHTML={{ __html: t('cart.freeShippingMore', { amount: remaining.toFixed(0) }) }}
+                      />
                       <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#e0e0e0' }}>
                         <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: '#28a745' }} />
                       </div>
                     </div>
                   ) : (
                     <div className="flex items-center gap-1.5 text-xs font-bold" style={{ color: '#1e8035' }}>
-                      <span>✓</span> You qualify for free shipping!
+                      {t('cart.freeShippingQualify')}
                     </div>
                   )
                 })()}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted font-medium">Subtotal ({itemCount} item{itemCount !== 1 ? 's' : ''})</span>
+                  <span className="text-sm text-muted font-medium">{t('cart.subtotal')} ({itemCount} item{itemCount !== 1 ? 's' : ''})</span>
                   <span className="text-base font-black text-ink">${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
-                <p className="text-xs text-muted">Taxes calculated at checkout.</p>
+                <p className="text-xs text-muted">{t('cart.taxes')}</p>
                 <button
                   onClick={() => { setIsOpen(false); navigate('/checkout') }}
                   className="w-full py-3.5 rounded-xl text-sm font-black text-white transition-colors"
@@ -159,13 +162,13 @@ export default function CartDrawer() {
                   onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
                 >
-                  Checkout — ${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {t('cart.checkout')} — ${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
                   className="w-full py-2.5 rounded-xl text-sm font-semibold text-muted hover:text-ink transition-colors"
                 >
-                  Continue Shopping
+                  {t('cart.continueShopping')}
                 </button>
               </div>
             )}
