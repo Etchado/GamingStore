@@ -59,7 +59,7 @@ const NAV_ITEMS = [
       { headingKey: 'nav.mega.input', links: [
         { labelKey: 'nav.mega.mechanicalKeyboards', filter: 'Keyboard' },
         { labelKey: 'nav.mega.gamingMice',          filter: 'Mouse' },
-        { labelKey: 'nav.mega.headsets',            filter: 'Keyboard' },
+        { labelKey: 'nav.mega.headsets',            filter: 'Headset' },
         { labelKey: 'nav.mega.webcams',             filter: 'Keyboard' },
       ]},
     ],
