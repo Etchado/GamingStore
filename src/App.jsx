@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
-import { useEffect, lazy, Suspense } from 'react'
+import { useEffect, lazy, Suspense, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CartProvider } from './context/CartContext'
 import { ToastProvider } from './context/ToastContext'
 import { WishlistProvider } from './context/WishlistContext'
+import { CompareProvider } from './context/CompareContext'
 import Navbar from './components/Navbar'
 import HeroSection from './components/HeroSection'
 import TrustBar from './components/TrustBar'
@@ -16,6 +17,8 @@ import ToastContainer from './components/ToastContainer'
 import BackToTop from './components/BackToTop'
 import ErrorBoundary from './components/ErrorBoundary'
 import AnnouncementBar from './components/AnnouncementBar'
+import CompareBar from './components/CompareBar'
+import CompareModal from './components/CompareModal'
 import './App.css'
 
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'))
@@ -56,6 +59,7 @@ function HomePage() {
 function AppShell() {
   const { i18n } = useTranslation()
   const isAr = i18n.language?.startsWith('ar')
+  const [compareOpen, setCompareOpen] = useState(false)
 
   useEffect(() => {
     document.documentElement.dir = isAr ? 'rtl' : 'ltr'
@@ -82,6 +86,8 @@ function AppShell() {
       <CartDrawer />
       <ToastContainer />
       <BackToTop />
+      <CompareBar onOpen={() => setCompareOpen(true)} />
+      <CompareModal isOpen={compareOpen} onClose={() => setCompareOpen(false)} />
     </div>
   )
 }
@@ -92,7 +98,9 @@ function App() {
       <ToastProvider>
         <WishlistProvider>
           <CartProvider>
-            <AppShell />
+            <CompareProvider>
+              <AppShell />
+            </CompareProvider>
           </CartProvider>
         </WishlistProvider>
       </ToastProvider>

@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { useWishlist } from '@/context/WishlistContext'
+import { useCompare } from '@/context/CompareContext'
 
 /* ── Star Rating ──────────────────────────────── */
 function StarRating({ rating = 4.8, count = 0 }) {
@@ -54,8 +55,10 @@ export function ProductCard({ product, onQuickView }) {
   const { addItem } = useCart()
   const { addToast } = useToast()
   const { toggle, has } = useWishlist()
+  const { toggle: compareToggle, has: inCompare, maxed } = useCompare()
   const badge = badges[product.category] ?? badges.System
   const inWishlist = has(product.id)
+  const isCompared = inCompare(product.id)
 
   function handleAddToCart(e) {
     e.preventDefault()
@@ -213,6 +216,24 @@ export function ProductCard({ product, onQuickView }) {
         >
           Add to Cart
         </motion.button>
+
+        {/* Compare toggle */}
+        <button
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); compareToggle(product.id) }}
+          disabled={!isCompared && maxed}
+          className="relative z-10 w-full flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-bold rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ color: isCompared ? '#0056b3' : '#9ca3af', backgroundColor: isCompared ? '#e6f0fa' : 'transparent' }}
+          onMouseEnter={(e) => { if (!isCompared && !maxed) e.currentTarget.style.color = '#555' }}
+          onMouseLeave={(e) => { if (!isCompared) e.currentTarget.style.color = '#9ca3af' }}
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+            {isCompared
+              ? <path d="M20 6 9 17l-5-5" />
+              : <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+            }
+          </svg>
+          {isCompared ? 'In comparison' : maxed ? 'Max 3 products' : 'Compare'}
+        </button>
       </div>
     </motion.article>
   )
