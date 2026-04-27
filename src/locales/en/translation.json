@@ -178,6 +178,21 @@
     "notFoundQueryIn": " in {{cat}}",
     "notFoundCat": "No products in the {{cat}} category yet.",
     "clearSearchBtn": "Clear Search",
+    "advancedFilters": {
+      "title": "Filters",
+      "clearAll": "Clear All",
+      "priceRange": "Price Range",
+      "brand": "Brand",
+      "minRating": "Min Rating",
+      "inStockOnly": "In Stock Only",
+      "anyRating": "Any Rating",
+      "showFilters": "Filters",
+      "activeCount_one": "{{count}} filter",
+      "activeCount_other": "{{count}} filters",
+      "close": "Apply & Close",
+      "priceFrom": "From",
+      "priceTo": "To"
+    },
     "sort": {
       "featured": "Featured",
       "priceAsc": "Price: Low → High",

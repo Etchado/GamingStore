@@ -178,6 +178,21 @@
     "notFoundQueryIn": " في {{cat}}",
     "notFoundCat": "لا توجد منتجات في فئة {{cat}} بعد.",
     "clearSearchBtn": "مسح البحث",
+    "advancedFilters": {
+      "title": "التصفية",
+      "clearAll": "مسح الكل",
+      "priceRange": "نطاق السعر",
+      "brand": "العلامة التجارية",
+      "minRating": "الحد الأدنى للتقييم",
+      "inStockOnly": "المتوفر فقط",
+      "anyRating": "أي تقييم",
+      "showFilters": "التصفية",
+      "activeCount_one": "تصفية واحدة",
+      "activeCount_other": "{{count}} تصفيات",
+      "close": "تطبيق وإغلاق",
+      "priceFrom": "من",
+      "priceTo": "إلى"
+    },
     "sort": {
       "featured": "مميز",
       "priceAsc": "السعر: من الأقل",

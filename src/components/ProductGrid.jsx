@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { motion } from 'motion/react'
+import { useState, useEffect, useMemo } from 'react'
+import { motion, AnimatePresence } from 'motion/react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ProductCard } from '@/components/ui/product-card'
@@ -18,6 +18,16 @@ const SORT_KEYS = [
   { value: 'deals',      key: 'products.sort.deals' },
 ]
 
+const BRANDS = [...new Set(PRODUCTS.map(p => p.brand).filter(Boolean))].sort()
+const PRICE_MIN = 0
+const PRICE_MAX = 2500
+const RATING_OPTIONS = [
+  { value: 0,   label: null,    labelKey: 'products.advancedFilters.anyRating' },
+  { value: 4,   label: '4★+',  labelKey: null },
+  { value: 4.5, label: '4.5★+', labelKey: null },
+  { value: 4.8, label: '4.8★+', labelKey: null },
+]
+
 function parsePrice(str) {
   return parseFloat(str.replace(/[^0-9.]/g, '')) || 0
 }
@@ -30,31 +40,230 @@ const slideUp = {
   }),
 }
 
+// ── Filter chip ──────────────────────────────────────────────────────────────
+function FilterChip({ label, onRemove }) {
+  return (
+    <span
+      className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full border"
+      style={{ borderColor: '#0056b3', color: '#0056b3', backgroundColor: '#e6f0fa' }}
+    >
+      {label}
+      <button
+        onClick={onRemove}
+        aria-label={`Remove ${label} filter`}
+        className="ml-0.5 w-3.5 h-3.5 flex items-center justify-center rounded-full hover:bg-blue-200 transition-colors"
+      >
+        ✕
+      </button>
+    </span>
+  )
+}
+
+// ── Filter sidebar ───────────────────────────────────────────────────────────
+function FilterSidebar({
+  minPrice, maxPrice, selectedBrands, minRating, inStock,
+  onMinPrice, onMaxPrice, onToggleBrand, onMinRating, onInStock,
+  onClear, activeCount, onClose,
+}) {
+  const { t } = useTranslation()
+
+  return (
+    <div className="space-y-6">
+      {/* Header row — desktop only */}
+      <div className="hidden lg:flex items-center justify-between">
+        <h3 className="text-sm font-black text-ink">{t('products.advancedFilters.title')}</h3>
+        {activeCount > 0 && (
+          <button
+            onClick={onClear}
+            className="text-xs font-bold transition-colors"
+            style={{ color: '#0056b3' }}
+            onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+            onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+          >
+            {t('products.advancedFilters.clearAll')}
+          </button>
+        )}
+      </div>
+
+      {/* ── Price Range ── */}
+      <div>
+        <h4 className="text-[10px] font-black text-ink mb-3 uppercase tracking-[0.1em]">
+          {t('products.advancedFilters.priceRange')}
+        </h4>
+        <div className="flex justify-between text-xs font-semibold mb-3" style={{ color: '#555' }}>
+          <span>${minPrice.toLocaleString()}</span>
+          <span>${maxPrice.toLocaleString()}</span>
+        </div>
+        <div className="space-y-2">
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-muted w-6">{t('products.advancedFilters.priceFrom')}</span>
+            <input
+              type="range"
+              min={PRICE_MIN}
+              max={PRICE_MAX}
+              step={50}
+              value={minPrice}
+              onChange={e => onMinPrice(Math.min(+e.target.value, maxPrice - 50))}
+              className="flex-1"
+              style={{ accentColor: '#0056b3' }}
+              aria-label="Minimum price"
+            />
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-muted w-6">{t('products.advancedFilters.priceTo')}</span>
+            <input
+              type="range"
+              min={PRICE_MIN}
+              max={PRICE_MAX}
+              step={50}
+              value={maxPrice}
+              onChange={e => onMaxPrice(Math.max(+e.target.value, minPrice + 50))}
+              className="flex-1"
+              style={{ accentColor: '#0056b3' }}
+              aria-label="Maximum price"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="h-px" style={{ backgroundColor: '#e0e0e0' }} />
+
+      {/* ── Brand ── */}
+      <div>
+        <h4 className="text-[10px] font-black text-ink mb-3 uppercase tracking-[0.1em]">
+          {t('products.advancedFilters.brand')}
+        </h4>
+        <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
+          {BRANDS.map(brand => (
+            <label key={brand} className="flex items-center gap-2 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={selectedBrands.has(brand)}
+                onChange={() => onToggleBrand(brand)}
+                style={{ accentColor: '#0056b3' }}
+              />
+              <span className="text-xs text-ink group-hover:text-blue-700 transition-colors leading-tight">
+                {brand}
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="h-px" style={{ backgroundColor: '#e0e0e0' }} />
+
+      {/* ── Min Rating ── */}
+      <div>
+        <h4 className="text-[10px] font-black text-ink mb-3 uppercase tracking-[0.1em]">
+          {t('products.advancedFilters.minRating')}
+        </h4>
+        <div className="space-y-2">
+          {RATING_OPTIONS.map(({ value, label, labelKey }) => (
+            <label key={value} className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="minRating"
+                value={value}
+                checked={minRating === value}
+                onChange={() => onMinRating(value)}
+                style={{ accentColor: '#0056b3' }}
+              />
+              <span className="text-xs text-ink">
+                {labelKey ? t(labelKey) : label}
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="h-px" style={{ backgroundColor: '#e0e0e0' }} />
+
+      {/* ── In Stock toggle ── */}
+      <div className="flex items-center justify-between">
+        <label className="text-xs font-bold text-ink cursor-pointer" htmlFor="inStockToggle">
+          {t('products.advancedFilters.inStockOnly')}
+        </label>
+        <button
+          id="inStockToggle"
+          role="switch"
+          aria-checked={inStock}
+          onClick={() => onInStock(!inStock)}
+          className="relative w-9 h-5 rounded-full transition-colors focus:outline-none focus-visible:ring-2"
+          style={{ backgroundColor: inStock ? '#0056b3' : '#d1d5db' }}
+        >
+          <span
+            className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform"
+            style={{ transform: inStock ? 'translateX(1.125rem)' : 'translateX(0.125rem)' }}
+          />
+        </button>
+      </div>
+
+      {/* Mobile apply button */}
+      {onClose && (
+        <button
+          onClick={onClose}
+          className="lg:hidden w-full py-3 text-sm font-black text-white rounded-xl mt-2"
+          style={{ backgroundColor: '#0056b3' }}
+        >
+          {t('products.advancedFilters.close')}
+          {activeCount > 0 && ` · ${t('products.advancedFilters.activeCount', { count: activeCount })}`}
+        </button>
+      )}
+    </div>
+  )
+}
+
+// ── Main component ───────────────────────────────────────────────────────────
 export default function ProductGrid() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [loading, setLoading]           = useState(true)
   const [quickView, setQuickView]       = useState(null)
-  const navigate = useNavigate()
-  const { t } = useTranslation()
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+  const navigate  = useNavigate()
+  const { t, i18n } = useTranslation()
+  const isRTL = i18n.language?.startsWith('ar')
 
-  const categoryParam = searchParams.get('category')
-  const queryParam    = searchParams.get('q') ?? ''
-  const sortParam     = searchParams.get('sort') ?? 'featured'
-  const badgeParam    = searchParams.get('badge') ?? ''
+  // ── URL params ──
+  const categoryParam  = searchParams.get('category')
+  const queryParam     = searchParams.get('q') ?? ''
+  const sortParam      = searchParams.get('sort') ?? 'featured'
+  const badgeParam     = searchParams.get('badge') ?? ''
+  const minPriceParam  = Number(searchParams.get('minPrice') ?? PRICE_MIN)
+  const maxPriceParam  = Number(searchParams.get('maxPrice') ?? PRICE_MAX)
+  const brandsParam    = searchParams.get('brand') ?? ''
+  const minRatingParam = Number(searchParams.get('minRating') ?? 0)
+  const inStockParam   = searchParams.get('inStock') === '1'
+
+  const selectedBrands = useMemo(
+    () => (brandsParam ? new Set(brandsParam.split(',')) : new Set()),
+    [brandsParam],
+  )
   const active = categoryParam && FILTERS.includes(categoryParam) ? categoryParam : 'All'
 
+  const advancedFilterCount =
+    (minPriceParam > PRICE_MIN || maxPriceParam < PRICE_MAX ? 1 : 0) +
+    (selectedBrands.size > 0 ? 1 : 0) +
+    (minRatingParam > 0 ? 1 : 0) +
+    (inStockParam ? 1 : 0)
+
   usePageTitle(
-    queryParam ? `"${queryParam}"` :
+    queryParam     ? `"${queryParam}"` :
     badgeParam === 'NEW' ? t('products.newArrivalsTitle') :
     sortParam === 'deals' ? t('products.dealsTitle') :
-    active !== 'All' ? active : null
+    active !== 'All' ? active : null,
   )
 
+  // ── URL setters ──
   function setActive(filter) {
     const next = new URLSearchParams()
-    if (queryParam) next.set('q', queryParam)
+    if (queryParam)              next.set('q', queryParam)
     if (sortParam !== 'featured') next.set('sort', sortParam)
-    if (filter !== 'All') next.set('category', filter)
+    if (filter !== 'All')        next.set('category', filter)
+    if (minPriceParam > PRICE_MIN) next.set('minPrice', minPriceParam)
+    if (maxPriceParam < PRICE_MAX) next.set('maxPrice', maxPriceParam)
+    if (brandsParam)             next.set('brand', brandsParam)
+    if (minRatingParam > 0)      next.set('minRating', minRatingParam)
+    if (inStockParam)            next.set('inStock', '1')
     setSearchParams(next, { replace: true })
   }
 
@@ -67,11 +276,41 @@ export default function ProductGrid() {
 
   function clearSearch() {
     const next = new URLSearchParams()
-    if (categoryParam) next.set('category', categoryParam)
-    if (sortParam !== 'featured') next.set('sort', sortParam)
+    if (categoryParam)             next.set('category', categoryParam)
+    if (sortParam !== 'featured')  next.set('sort', sortParam)
+    if (minPriceParam > PRICE_MIN) next.set('minPrice', minPriceParam)
+    if (maxPriceParam < PRICE_MAX) next.set('maxPrice', maxPriceParam)
+    if (brandsParam)               next.set('brand', brandsParam)
+    if (minRatingParam > 0)        next.set('minRating', minRatingParam)
+    if (inStockParam)              next.set('inStock', '1')
     setSearchParams(next, { replace: true })
   }
 
+  function setAdvancedFilter(key, value) {
+    const next = new URLSearchParams(searchParams)
+    if (value === null || value === '' || value === undefined) next.delete(key)
+    else next.set(key, String(value))
+    setSearchParams(next, { replace: true })
+  }
+
+  function clearAdvancedFilters() {
+    const next = new URLSearchParams(searchParams)
+    next.delete('minPrice')
+    next.delete('maxPrice')
+    next.delete('brand')
+    next.delete('minRating')
+    next.delete('inStock')
+    setSearchParams(next, { replace: true })
+  }
+
+  function toggleBrand(brand) {
+    const next = new Set(selectedBrands)
+    if (next.has(brand)) next.delete(brand)
+    else next.add(brand)
+    setAdvancedFilter('brand', next.size > 0 ? [...next].join(',') : null)
+  }
+
+  // ── Effects ──
   useEffect(() => {
     if (categoryParam || queryParam) {
       const el = document.getElementById('products')
@@ -88,16 +327,28 @@ export default function ProductGrid() {
     return () => clearTimeout(timer)
   }, [])
 
+  useEffect(() => {
+    if (!mobileFiltersOpen) return
+    const handler = (e) => { if (e.key === 'Escape') setMobileFiltersOpen(false) }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [mobileFiltersOpen])
+
+  // ── Filtered + sorted products ──
   const filtered = PRODUCTS
     .filter(p => {
-      const matchCat = active === 'All' || p.category === active
-      if (!matchCat) return false
+      if (active !== 'All' && p.category !== active) return false
       if (badgeParam && !p.badge?.toLowerCase().includes(badgeParam.toLowerCase())) return false
       if (sortParam === 'deals' && !p.oldPrice) return false
+      const price = parsePrice(p.price)
+      if (price < minPriceParam) return false
+      if (price > maxPriceParam) return false
+      if (selectedBrands.size > 0 && !selectedBrands.has(p.brand)) return false
+      if (minRatingParam > 0 && (p.rating ?? 0) < minRatingParam) return false
+      if (inStockParam && p.inStock === false) return false
       if (!queryParam) return true
       const q = queryParam.toLowerCase()
-      return [p.title, p.description, p.spec, p.brand, p.category]
-        .some(f => f?.toLowerCase().includes(q))
+      return [p.title, p.description, p.spec, p.brand, p.category].some(f => f?.toLowerCase().includes(q))
     })
     .sort((a, b) => {
       if (sortParam === 'price-asc')  return parsePrice(a.price) - parsePrice(b.price)
@@ -106,6 +357,22 @@ export default function ProductGrid() {
       if (sortParam === 'deals')      return parsePrice(b.saving ?? b.oldPrice ?? '0') - parsePrice(a.saving ?? a.oldPrice ?? '0')
       return 0
     })
+
+  // ── Shared filter sidebar props ──
+  const filterProps = {
+    minPrice: minPriceParam,
+    maxPrice: maxPriceParam,
+    selectedBrands,
+    minRating: minRatingParam,
+    inStock: inStockParam,
+    onMinPrice:    v => setAdvancedFilter('minPrice', v <= PRICE_MIN ? null : v),
+    onMaxPrice:    v => setAdvancedFilter('maxPrice', v >= PRICE_MAX ? null : v),
+    onToggleBrand: toggleBrand,
+    onMinRating:   v => setAdvancedFilter('minRating', v === 0 ? null : v),
+    onInStock:     v => setAdvancedFilter('inStock', v ? '1' : null),
+    onClear:       clearAdvancedFilters,
+    activeCount:   advancedFilterCount,
+  }
 
   return (
     <section id="products" className="py-20 px-6" style={{ backgroundColor: '#f8fafc' }}>
@@ -179,6 +446,7 @@ export default function ProductGrid() {
               </>
             )}
           </div>
+
           <div className="flex items-center gap-3 flex-wrap">
             {queryParam && (
               <button
@@ -191,7 +459,7 @@ export default function ProductGrid() {
                 {t('products.clearSearch')}
               </button>
             )}
-            {(badgeParam || (sortParam === 'deals')) && !queryParam && (
+            {(badgeParam || sortParam === 'deals') && !queryParam && (
               <button
                 onClick={() => setSearchParams(new URLSearchParams(), { replace: true })}
                 className="flex items-center gap-1.5 text-sm font-bold text-muted hover:text-ink transition-colors"
@@ -211,6 +479,28 @@ export default function ProductGrid() {
                 {t('products.viewAll')}
               </button>
             )}
+
+            {/* Mobile Filters button */}
+            <button
+              onClick={() => setMobileFiltersOpen(true)}
+              className="lg:hidden flex items-center gap-1.5 text-xs font-bold border rounded-lg px-3 py-1.5 transition-colors bg-white"
+              style={{ borderColor: '#e0e0e0', color: '#444' }}
+              aria-label={t('products.advancedFilters.showFilters')}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path d="M3 6h18M7 12h10M11 18h2" strokeLinecap="round" />
+              </svg>
+              {t('products.advancedFilters.showFilters')}
+              {advancedFilterCount > 0 && (
+                <span
+                  className="text-white text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none"
+                  style={{ backgroundColor: '#0056b3' }}
+                >
+                  {advancedFilterCount}
+                </span>
+              )}
+            </button>
+
             {/* Sort dropdown */}
             {!loading && filtered.length > 0 && (
               <select
@@ -218,8 +508,8 @@ export default function ProductGrid() {
                 onChange={(e) => setSort(e.target.value)}
                 className="text-xs font-semibold border rounded-lg px-3 py-1.5 outline-none cursor-pointer transition-colors bg-white text-ink"
                 style={{ borderColor: '#e0e0e0' }}
-                onFocus={(e) => { e.target.style.borderColor = '#0056b3' }}
-                onBlur={(e) => { e.target.style.borderColor = '#e0e0e0' }}
+                onFocus={(e)  => { e.target.style.borderColor = '#0056b3' }}
+                onBlur={(e)   => { e.target.style.borderColor = '#e0e0e0' }}
               >
                 {SORT_KEYS.map(o => (
                   <option key={o.value} value={o.value}>{t(o.key)}</option>
@@ -229,7 +519,7 @@ export default function ProductGrid() {
           </div>
         </motion.div>
 
-        {/* ── Filter pills ── */}
+        {/* ── Category filter pills ── */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -253,73 +543,145 @@ export default function ProductGrid() {
         </motion.div>
 
         {/* ── Divider ── */}
-        <div className="h-px mb-10" style={{ backgroundColor: '#e0e0e0' }} />
+        <div className="h-px mb-8" style={{ backgroundColor: '#e0e0e0' }} />
 
-        {/* ── Grid — skeleton / empty / products ── */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }, (_, i) => <SkeletonCard key={i} />)}
-          </div>
-        ) : filtered.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center justify-center py-24 gap-4 text-center"
-          >
-            <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl"
-              style={{ backgroundColor: '#e6f0fa' }}
-            >
-              🔍
-            </div>
-            <div>
-              <p className="text-base font-bold text-ink">{t('products.notFound')}</p>
-              <p className="text-sm text-muted mt-1">
-                {queryParam ? (
-                  <>
-                    {t('products.notFoundQuery', { q: queryParam })}
-                    {active !== 'All' && t('products.notFoundQueryIn', { cat: t(`products.filters.${active.toLowerCase()}`) })}
-                  </>
-                ) : (
-                  t('products.notFoundCat', { cat: t(`products.filters.${active.toLowerCase()}`) })
-                )}
-              </p>
-            </div>
-            <div className="flex gap-3 flex-wrap justify-center">
-              {queryParam && (
-                <button
-                  onClick={clearSearch}
-                  className="px-6 py-2.5 rounded-xl text-sm font-bold border"
-                  style={{ borderColor: '#e0e0e0', color: '#555' }}
+        {/* ── Main layout: sidebar + grid ── */}
+        <div className={`flex gap-8 items-start ${isRTL ? 'flex-row-reverse' : ''}`}>
+
+          {/* Desktop filter sidebar */}
+          <aside className="hidden lg:block w-52 shrink-0 sticky top-24">
+            <FilterSidebar {...filterProps} />
+          </aside>
+
+          {/* Product area */}
+          <div className="flex-1 min-w-0">
+
+            {/* Active filter chips */}
+            <AnimatePresence>
+              {advancedFilterCount > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="flex flex-wrap gap-2 mb-6 overflow-hidden"
                 >
-                  {t('products.clearSearchBtn')}
-                </button>
+                  {(minPriceParam > PRICE_MIN || maxPriceParam < PRICE_MAX) && (
+                    <FilterChip
+                      label={`$${minPriceParam.toLocaleString()} – $${maxPriceParam.toLocaleString()}`}
+                      onRemove={() => {
+                        setAdvancedFilter('minPrice', null)
+                        setAdvancedFilter('maxPrice', null)
+                      }}
+                    />
+                  )}
+                  {[...selectedBrands].map(brand => (
+                    <FilterChip key={brand} label={brand} onRemove={() => toggleBrand(brand)} />
+                  ))}
+                  {minRatingParam > 0 && (
+                    <FilterChip
+                      label={`${minRatingParam}★+`}
+                      onRemove={() => setAdvancedFilter('minRating', null)}
+                    />
+                  )}
+                  {inStockParam && (
+                    <FilterChip
+                      label={t('products.advancedFilters.inStockOnly')}
+                      onRemove={() => setAdvancedFilter('inStock', null)}
+                    />
+                  )}
+                  {advancedFilterCount > 1 && (
+                    <button
+                      onClick={clearAdvancedFilters}
+                      className="text-xs font-bold transition-colors"
+                      style={{ color: '#718096' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = '#e53e3e')}
+                      onMouseLeave={e => (e.currentTarget.style.color = '#718096')}
+                    >
+                      {t('products.advancedFilters.clearAll')}
+                    </button>
+                  )}
+                </motion.div>
               )}
-              <button
-                onClick={() => setActive('All')}
-                className="px-6 py-2.5 rounded-xl text-sm font-bold text-white"
-                style={{ backgroundColor: '#0056b3' }}
-              >
-                {t('products.viewAllBtn')}
-              </button>
-            </div>
-          </motion.div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filtered.map((product, i) => (
+            </AnimatePresence>
+
+            {/* Grid / skeleton / empty */}
+            {loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 8 }, (_, i) => <SkeletonCard key={i} />)}
+              </div>
+            ) : filtered.length === 0 ? (
               <motion.div
-                key={product.id}
-                custom={i}
-                variants={slideUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.1 }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex flex-col items-center justify-center py-24 gap-4 text-center"
               >
-                <ProductCard product={product} onQuickView={setQuickView} />
+                <div
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl"
+                  style={{ backgroundColor: '#e6f0fa' }}
+                >
+                  🔍
+                </div>
+                <div>
+                  <p className="text-base font-bold text-ink">{t('products.notFound')}</p>
+                  <p className="text-sm text-muted mt-1">
+                    {queryParam ? (
+                      <>
+                        {t('products.notFoundQuery', { q: queryParam })}
+                        {active !== 'All' && t('products.notFoundQueryIn', { cat: t(`products.filters.${active.toLowerCase()}`) })}
+                      </>
+                    ) : advancedFilterCount > 0 ? (
+                      t('products.advancedFilters.clearAll')
+                    ) : (
+                      t('products.notFoundCat', { cat: t(`products.filters.${active.toLowerCase()}`) })
+                    )}
+                  </p>
+                </div>
+                <div className="flex gap-3 flex-wrap justify-center">
+                  {advancedFilterCount > 0 && (
+                    <button
+                      onClick={clearAdvancedFilters}
+                      className="px-6 py-2.5 rounded-xl text-sm font-bold border"
+                      style={{ borderColor: '#e0e0e0', color: '#555' }}
+                    >
+                      {t('products.advancedFilters.clearAll')}
+                    </button>
+                  )}
+                  {queryParam && (
+                    <button
+                      onClick={clearSearch}
+                      className="px-6 py-2.5 rounded-xl text-sm font-bold border"
+                      style={{ borderColor: '#e0e0e0', color: '#555' }}
+                    >
+                      {t('products.clearSearchBtn')}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setActive('All')}
+                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-white"
+                    style={{ backgroundColor: '#0056b3' }}
+                  >
+                    {t('products.viewAllBtn')}
+                  </button>
+                </div>
               </motion.div>
-            ))}
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filtered.map((product, i) => (
+                  <motion.div
+                    key={product.id}
+                    custom={i}
+                    variants={slideUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.1 }}
+                  >
+                    <ProductCard product={product} onQuickView={setQuickView} />
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* ── Bottom CTAs ── */}
         {!loading && (
@@ -335,8 +697,8 @@ export default function ProductGrid() {
               whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
               className="px-10 py-3.5 rounded-xl text-white text-sm font-black shadow-sm transition-colors"
               style={{ backgroundColor: '#0056b3' }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
+              onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#004494' }}
+              onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#0056b3' }}
             >
               {t('products.viewAllBtn')}
             </motion.button>
@@ -345,8 +707,8 @@ export default function ProductGrid() {
               whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
               className="px-10 py-3.5 rounded-xl text-sm font-black border-2 transition-colors"
               style={{ borderColor: '#28a745', color: '#1e8035' }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e9f7ed' }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
+              onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#e9f7ed' }}
+              onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent' }}
             >
               {t('products.customBuilder')}
             </motion.button>
@@ -355,7 +717,59 @@ export default function ProductGrid() {
 
       </div>
 
-      {/* Quick View Modal — fixed position, renders above everything */}
+      {/* ── Mobile filter drawer ── */}
+      <AnimatePresence>
+        {mobileFiltersOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+              onClick={() => setMobileFiltersOpen(false)}
+              aria-hidden="true"
+            />
+            <motion.div
+              initial={{ x: isRTL ? '100%' : '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: isRTL ? '100%' : '-100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className={`fixed top-0 ${isRTL ? 'right-0' : 'left-0'} h-full w-72 bg-white z-50 overflow-y-auto shadow-2xl lg:hidden`}
+              role="dialog"
+              aria-modal="true"
+              aria-label={t('products.advancedFilters.title')}
+            >
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="text-base font-black text-ink">
+                    {t('products.advancedFilters.title')}
+                    {advancedFilterCount > 0 && (
+                      <span
+                        className="ml-2 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full"
+                        style={{ backgroundColor: '#0056b3' }}
+                      >
+                        {advancedFilterCount}
+                      </span>
+                    )}
+                  </h2>
+                  <button
+                    onClick={() => setMobileFiltersOpen(false)}
+                    className="w-8 h-8 flex items-center justify-center rounded-full text-muted hover:text-ink hover:bg-gray-100 transition-colors"
+                    aria-label="Close filters"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <FilterSidebar
+                  {...filterProps}
+                  onClose={() => setMobileFiltersOpen(false)}
+                />
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       <QuickViewModal product={quickView} onClose={() => setQuickView(null)} />
     </section>
   )
