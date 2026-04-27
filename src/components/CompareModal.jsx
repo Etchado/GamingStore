@@ -177,7 +177,7 @@ export default function CompareModal({ isOpen, onClose }) {
                         <th key={p.id} className="pb-2 px-2 sm:px-3 relative" style={{ width: `${100 / products.length}%` }}>
                           <button
                             onClick={() => remove(p.id)}
-                            className="absolute top-0 right-2 w-5 h-5 flex items-center justify-center rounded-full text-muted hover:text-red-500 hover:bg-red-50 transition-colors text-xs"
+                            className="absolute top-0 end-2 w-5 h-5 flex items-center justify-center rounded-full text-muted hover:text-red-500 hover:bg-red-50 transition-colors text-xs"
                             aria-label={`Remove ${p.title} from comparison`}
                           >
                             ✕

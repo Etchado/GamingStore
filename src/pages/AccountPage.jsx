@@ -44,7 +44,7 @@ function Dashboard({ userName, onSignOut }) {
 
   const tabs = [
     { key: 'orders',  label: t('account.myOrders') },
-    { key: 'profile', label: 'Profile' },
+    { key: 'profile', label: t('account.profile') },
   ]
 
   return (

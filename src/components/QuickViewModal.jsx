@@ -73,7 +73,7 @@ export default function QuickViewModal({ product, onClose }) {
                     className="w-full h-full object-cover"
                   />
                   {product.badge && (
-                    <span className="absolute top-4 left-4 text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full text-white" style={{ backgroundColor: '#0056b3' }}>
+                    <span className="absolute top-4 start-4 text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full text-white" style={{ backgroundColor: '#0056b3' }}>
                       {product.badge}
                     </span>
                   )}

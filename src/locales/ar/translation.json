@@ -181,6 +181,11 @@
     "loadMore": "تحميل المزيد",
     "more": "المزيد",
     "showing": "عرض {{shown}} من {{total}}",
+    "addedToCart": "أُضيف إلى السلة",
+    "savedToWishlist": "حُفظ في المفضلة",
+    "removedFromWishlist": "أُزيل من المفضلة",
+    "quickView": "عرض سريع",
+    "save": "وفّر",
     "advancedFilters": {
       "title": "التصفية",
       "clearAll": "مسح الكل",
@@ -370,7 +375,8 @@
     "editProfile": "تعديل الملف الشخصي",
     "savedAddresses": "العناوين المحفوظة",
     "paymentMethods": "طرق الدفع",
-    "featureComingSoon": "قريباً في تحديث مستقبلي."
+    "featureComingSoon": "قريباً في تحديث مستقبلي.",
+    "profile": "الملف الشخصي"
   },
   "pages": {
     "account": "حسابي",

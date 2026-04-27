@@ -130,7 +130,7 @@ export const ProductCard = ({ product, translate }) => {
         style={{ border: '1px solid rgba(57,255,20,0.5)', boxShadow: 'inset 0 0 20px rgba(57,255,20,0.1)' }}
       />
       <h2
-        className="absolute bottom-4 left-4 opacity-0 group-hover/product:opacity-100 text-white font-bold text-lg transition-opacity duration-300"
+        className="absolute bottom-4 start-4 opacity-0 group-hover/product:opacity-100 text-white font-bold text-lg transition-opacity duration-300"
         style={{ textShadow: '0 0 8px #39ff14' }}
       >
         {product.title}

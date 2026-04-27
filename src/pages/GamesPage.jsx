@@ -277,7 +277,7 @@ function GameCard({ game, onAdd }) {
 
 export default function GamesPage() {
   const { t } = useTranslation()
-  useSEO({ title: t('pages.games'), description: 'Browse top PC game titles, exclusives, and digital downloads at GamingStore.' })
+  useSEO({ title: t('pages.games'), description: t('gamesPage.desc') })
 
   const { addItem } = useCart()
   const { addToast } = useToast()

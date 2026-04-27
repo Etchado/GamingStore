@@ -396,12 +396,12 @@ const PAYMENT_INIT  = { cardName: '', cardNumber: '', expiry: '', cvv: '' }
 
 export default function CheckoutPage() {
   const { t } = useTranslation()
-  usePageTitle(t('checkout.step2'))
   const { items, total, setIsOpen } = useCart()
   const navigate = useNavigate()
 
   const [searchParams]          = useSearchParams()
   const step                    = Math.min(Math.max(parseInt(searchParams.get('step') || '1', 10), 1), 3)
+  usePageTitle(t(`checkout.step${step}`))
   const [shipping, setShipping] = useState(SHIPPING_INIT)
   const [payment, setPayment]   = useState(PAYMENT_INIT)
   const [errors, setErrors]     = useState({})

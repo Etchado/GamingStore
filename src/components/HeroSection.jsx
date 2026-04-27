@@ -137,7 +137,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, scale: 0.88, x: 12 }}
             animate={{ opacity: 1, scale: 1,    x: 0  }}
             transition={{ delay: 0.7, type: 'spring', stiffness: 160 }}
-            className="absolute top-4 right-4 rounded-2xl px-4 py-3 flex items-center gap-3 border border-white/30 backdrop-blur-sm"
+            className="absolute top-4 end-4 rounded-2xl px-4 py-3 flex items-center gap-3 border border-white/30 backdrop-blur-sm"
             style={{ backgroundColor: 'rgba(255,255,255,0.16)' }}
           >
             <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base shrink-0"
@@ -157,7 +157,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, scale: 0.88, x: -12 }}
             animate={{ opacity: 1, scale: 1,    x: 0  }}
             transition={{ delay: 0.85, type: 'spring', stiffness: 160 }}
-            className="absolute bottom-4 left-4 rounded-2xl px-4 py-3 flex items-center gap-2.5 border border-white/30 backdrop-blur-sm"
+            className="absolute bottom-4 start-4 rounded-2xl px-4 py-3 flex items-center gap-2.5 border border-white/30 backdrop-blur-sm"
             style={{ backgroundColor: 'rgba(255,255,255,0.16)' }}
           >
             <div className="text-amber-300 flex" aria-hidden="true">★★★★★</div>

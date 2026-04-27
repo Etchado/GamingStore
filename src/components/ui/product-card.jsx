@@ -67,7 +67,7 @@ export function ProductCard({ product, onQuickView }) {
     e.stopPropagation()
     addItem(product)
     const label = product.title.length > 32 ? product.title.slice(0, 32) + '…' : product.title
-    addToast(`${label} added to cart`, 'success')
+    addToast(`${label} — ${t('products.addedToCart')}`, 'success')
   }
 
   function handleWishlist(e) {
@@ -75,7 +75,7 @@ export function ProductCard({ product, onQuickView }) {
     e.stopPropagation()
     toggle(product.id)
     const label = product.title.slice(0, 28) + (product.title.length > 28 ? '…' : '')
-    addToast(inWishlist ? `${label} removed from wishlist` : `${label} saved to wishlist`, 'wishlist')
+    addToast(`${label} — ${inWishlist ? t('products.removedFromWishlist') : t('products.savedToWishlist')}`, 'wishlist')
   }
 
   function handleQuickView(e) {
@@ -129,7 +129,7 @@ export function ProductCard({ product, onQuickView }) {
 
         {/* Badge top-left */}
         {product.badge && (
-          <span className="absolute top-3 left-3 text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-full text-white shadow-sm" style={{ backgroundColor: '#0056b3' }}>
+          <span className="absolute top-3 start-3 text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-full text-white shadow-sm" style={{ backgroundColor: '#0056b3' }}>
             {product.badge}
           </span>
         )}
@@ -137,7 +137,7 @@ export function ProductCard({ product, onQuickView }) {
         {/* Wishlist top-right — always visible when wishlisted, hover-only otherwise */}
         <button
           onClick={handleWishlist}
-          className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center transition-opacity shadow-sm border border-border opacity-0 group-hover:opacity-100"
+          className="absolute top-3 end-3 z-10 w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center transition-opacity shadow-sm border border-border opacity-0 group-hover:opacity-100"
           style={{ opacity: inWishlist ? 1 : undefined }}
         >
           <svg
@@ -159,7 +159,7 @@ export function ProductCard({ product, onQuickView }) {
               onClick={handleQuickView}
               className="w-full py-2.5 text-xs font-bold text-white bg-black/70 backdrop-blur-sm hover:bg-black/85 transition-colors"
             >
-              Quick View
+              {t('products.quickView')}
             </button>
           </div>
         )}
@@ -203,7 +203,7 @@ export function ProductCard({ product, onQuickView }) {
             <span className="text-xs text-muted line-through">{product.oldPrice}</span>
           )}
           {product.saving && (
-            <span className="text-[11px] font-bold" style={{ color: '#28a745' }}>Save {product.saving}</span>
+            <span className="text-[11px] font-bold" style={{ color: '#28a745' }}>{t('products.save')} {product.saving}</span>
           )}
         </div>
 

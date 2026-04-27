@@ -258,7 +258,7 @@ export default function ProductDetailPage() {
               {/* Badge — glassmorphism, top-right */}
               {product.badge && (
                 <span
-                  className="absolute top-4 right-4 text-[10px] font-black tracking-widest uppercase px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/30"
+                  className="absolute top-4 end-4 text-[10px] font-black tracking-widest uppercase px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/30"
                   style={{
                     backgroundColor: 'rgba(255,255,255,0.18)',
                     color: '#fff',
@@ -274,7 +274,7 @@ export default function ProductDetailPage() {
                 <>
                   <button
                     onClick={() => setActiveImg(i => (i - 1 + gallery.length) % gallery.length)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30 transition-opacity opacity-0 hover:opacity-100 focus:opacity-100 group-hover:opacity-100"
+                    className="absolute start-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30 transition-opacity opacity-0 hover:opacity-100 focus:opacity-100 group-hover:opacity-100"
                     style={{ backgroundColor: 'rgba(255,255,255,0.20)', color: '#fff' }}
                     aria-label="Previous image"
                   >
@@ -282,7 +282,7 @@ export default function ProductDetailPage() {
                   </button>
                   <button
                     onClick={() => setActiveImg(i => (i + 1) % gallery.length)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30 transition-opacity opacity-0 hover:opacity-100 focus:opacity-100 group-hover:opacity-100"
+                    className="absolute end-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30 transition-opacity opacity-0 hover:opacity-100 focus:opacity-100 group-hover:opacity-100"
                     style={{ backgroundColor: 'rgba(255,255,255,0.20)', color: '#fff' }}
                     aria-label="Next image"
                   >

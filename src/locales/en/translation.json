@@ -181,6 +181,11 @@
     "loadMore": "Load More",
     "more": "more",
     "showing": "Showing {{shown}} of {{total}}",
+    "addedToCart": "added to cart",
+    "savedToWishlist": "saved to wishlist",
+    "removedFromWishlist": "removed from wishlist",
+    "quickView": "Quick View",
+    "save": "Save",
     "advancedFilters": {
       "title": "Filters",
       "clearAll": "Clear All",
@@ -370,7 +375,8 @@
     "editProfile": "Edit Profile",
     "savedAddresses": "Saved Addresses",
     "paymentMethods": "Payment Methods",
-    "featureComingSoon": "Coming soon in a future update."
+    "featureComingSoon": "Coming soon in a future update.",
+    "profile": "Profile"
   },
   "pages": {
     "account": "My Account",
