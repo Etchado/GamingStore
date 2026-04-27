@@ -178,6 +178,9 @@
     "notFoundQueryIn": " in {{cat}}",
     "notFoundCat": "No products in the {{cat}} category yet.",
     "clearSearchBtn": "Clear Search",
+    "loadMore": "Load More",
+    "more": "more",
+    "showing": "Showing {{shown}} of {{total}}",
     "advancedFilters": {
       "title": "Filters",
       "clearAll": "Clear All",
@@ -209,6 +212,7 @@
       "mouse": "Mouse",
       "keyboard": "Keyboard",
       "storage": "Storage",
+      "headset": "Headset",
       "desk": "Desk",
       "chair": "Chair"
     }

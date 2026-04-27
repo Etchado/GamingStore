@@ -8,7 +8,7 @@ import QuickViewModal from '@/components/QuickViewModal'
 import { PRODUCTS } from '@/data/products'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
-const FILTERS = ['All', 'System', 'GPU', 'CPU', 'Monitor', 'Mouse', 'Keyboard', 'Storage', 'Desk', 'Chair']
+const FILTERS = ['All', 'System', 'GPU', 'CPU', 'Monitor', 'Mouse', 'Keyboard', 'Headset', 'Storage', 'Desk', 'Chair']
 
 const SORT_KEYS = [
   { value: 'featured',   key: 'products.sort.featured' },
@@ -214,11 +214,14 @@ function FilterSidebar({
 }
 
 // ── Main component ───────────────────────────────────────────────────────────
+const PAGE_SIZE = 8
+
 export default function ProductGrid() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [loading, setLoading]           = useState(true)
   const [quickView, setQuickView]       = useState(null)
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const navigate  = useNavigate()
   const { t, i18n } = useTranslation()
   const isRTL = i18n.language?.startsWith('ar')
@@ -333,6 +336,11 @@ export default function ProductGrid() {
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
   }, [mobileFiltersOpen])
+
+  // Reset pagination when any filter/sort/search changes
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE)
+  }, [categoryParam, queryParam, sortParam, badgeParam, minPriceParam, maxPriceParam, brandsParam, minRatingParam, inStockParam])
 
   // ── Filtered + sorted products ──
   const filtered = PRODUCTS
@@ -665,20 +673,45 @@ export default function ProductGrid() {
                 </div>
               </motion.div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filtered.map((product, i) => (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filtered.slice(0, visibleCount).map((product, i) => (
+                    <motion.div
+                      key={product.id}
+                      custom={i}
+                      variants={slideUp}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, amount: 0.1 }}
+                    >
+                      <ProductCard product={product} onQuickView={setQuickView} />
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Load more */}
+                {visibleCount < filtered.length && (
                   <motion.div
-                    key={product.id}
-                    custom={i}
-                    variants={slideUp}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.1 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex flex-col items-center gap-3 mt-10"
                   >
-                    <ProductCard product={product} onQuickView={setQuickView} />
+                    <p className="text-xs text-muted">
+                      {t('products.showing', { shown: Math.min(visibleCount, filtered.length), total: filtered.length })}
+                    </p>
+                    <motion.button
+                      whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                      onClick={() => setVisibleCount(c => c + PAGE_SIZE)}
+                      className="px-10 py-3 rounded-xl border-2 text-sm font-black transition-colors"
+                      style={{ borderColor: '#0056b3', color: '#0056b3' }}
+                      onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#e6f0fa' }}
+                      onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent' }}
+                    >
+                      {t('products.loadMore')} ({filtered.length - visibleCount} {t('products.more')})
+                    </motion.button>
                   </motion.div>
-                ))}
-              </div>
+                )}
+              </>
             )}
           </div>
         </div>

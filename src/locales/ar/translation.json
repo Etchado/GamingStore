@@ -178,6 +178,9 @@
     "notFoundQueryIn": " في {{cat}}",
     "notFoundCat": "لا توجد منتجات في فئة {{cat}} بعد.",
     "clearSearchBtn": "مسح البحث",
+    "loadMore": "تحميل المزيد",
+    "more": "المزيد",
+    "showing": "عرض {{shown}} من {{total}}",
     "advancedFilters": {
       "title": "التصفية",
       "clearAll": "مسح الكل",
@@ -209,6 +212,7 @@
       "mouse": "ماوس",
       "keyboard": "لوحة المفاتيح",
       "storage": "التخزين",
+      "headset": "سماعات",
       "desk": "مكاتب",
       "chair": "كراسي"
     }
