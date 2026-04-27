@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
@@ -400,12 +400,20 @@ export default function CheckoutPage() {
   const { items, total, setIsOpen } = useCart()
   const navigate = useNavigate()
 
-  const [step, setStep]         = useState(1)
+  const [searchParams]          = useSearchParams()
+  const step                    = Math.min(Math.max(parseInt(searchParams.get('step') || '1', 10), 1), 3)
   const [shipping, setShipping] = useState(SHIPPING_INIT)
   const [payment, setPayment]   = useState(PAYMENT_INIT)
   const [errors, setErrors]     = useState({})
   const [orderId]               = useState(genOrderId)
   const [placing, setPlacing]   = useState(false)
+
+  // Guard against direct URL access to later steps (e.g. refresh on /checkout?step=2)
+  useEffect(() => {
+    if (step > 1 && !shipping.firstName.trim()) {
+      navigate('/checkout', { replace: true })
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const subtotal     = total
   const shippingCost = subtotal >= 199 ? 0 : 15
@@ -444,7 +452,7 @@ export default function CheckoutPage() {
     const e = validateShipping()
     if (Object.keys(e).length) { setErrors(e); return }
     setErrors({})
-    setStep(2)
+    navigate('/checkout?step=2')
   }
 
   function handlePlaceOrder() {
@@ -452,7 +460,10 @@ export default function CheckoutPage() {
     if (Object.keys(e).length) { setErrors(e); return }
     setErrors({})
     setPlacing(true)
-    setTimeout(() => { setPlacing(false); setStep(3) }, 1400)
+    setTimeout(() => {
+      setPlacing(false)
+      navigate('/checkout?step=3', { replace: true })
+    }, 1400)
   }
 
   if (items.length === 0 && step !== 3) {
@@ -525,7 +536,7 @@ export default function CheckoutPage() {
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-lg font-black text-ink">{t('checkout.step2')}</h2>
                     <button
-                      onClick={() => { setErrors({}); setStep(1) }}
+                      onClick={() => { setErrors({}); navigate('/checkout') }}
                       className="text-xs font-bold transition-colors"
                       style={{ color: '#0056b3' }}
                     >
