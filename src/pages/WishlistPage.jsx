@@ -52,7 +52,7 @@ export default function WishlistPage() {
               <h1 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
                 {t('wishlist.title')}
                 {count > 0 && (
-                  <span className="ml-3 text-xl font-bold text-muted">({count})</span>
+                  <span className="ms-3 text-xl font-bold text-muted">({count})</span>
                 )}
               </h1>
               {count > 0 && (

@@ -43,7 +43,7 @@ export default function AnnouncementBar() {
                 {item.cta && (
                   <Link
                     to={item.cta.href}
-                    className="ml-2 underline underline-offset-2 font-bold hover:text-white/80 transition-colors"
+                    className="ms-2 underline underline-offset-2 font-bold hover:text-white/80 transition-colors"
                   >
                     {item.cta.label} →
                   </Link>

@@ -241,7 +241,13 @@
     "specifications": "Specifications",
     "reviewsSub": "What Customers Say",
     "reviewsTitle": "Customer Reviews",
-    "reviews": "reviews",
+    "reviews": {
+      "label": "reviews",
+      "review1": "Absolutely incredible build quality. Sets up in minutes and the performance is exactly as advertised. Worth every penny — I've already recommended it to three friends.",
+      "review2": "I was skeptical about purchasing high-end gear online but the packaging was perfect and delivery was fast. Zero regrets. Customer support was also top notch when I had a question.",
+      "review3": "Great product overall. Took off one star only because setup documentation could be clearer for first-timers, but performance-wise this thing is an absolute beast.",
+      "review4": "Third purchase from GamingStore. Always reliable, always top-tier. The team helped me pick the right configuration for my needs and delivery was ahead of schedule."
+    },
     "verified": "Verified",
     "relatedSub": "You Might Also Like",
     "relatedTitle": "Related Products",

@@ -475,9 +475,9 @@ export default function Navbar() {
               <Link
                 to="/account"
                 onClick={() => setMobileOpen(false)}
-                className="text-xs font-semibold text-muted hover:text-ink transition-colors ml-auto"
+                className="text-xs font-semibold text-muted hover:text-ink transition-colors ms-auto"
               >
-                <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                <svg className="w-4 h-4 inline me-1" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>

@@ -32,7 +32,7 @@ function StarRating({ rating = 4.8, count = 0 }) {
       </div>
       <span className="text-xs text-muted font-medium leading-none">
         {rating.toFixed(1)}
-        {count > 0 && <span className="ml-0.5 text-gray-400">({count.toLocaleString()})</span>}
+        {count > 0 && <span className="ms-0.5 text-gray-400">({count.toLocaleString()})</span>}
       </span>
     </div>
   )

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useToast } from '@/context/ToastContext'
 
 const SHOP_KEYS = [
   { key: 'shop.customPCs',  href: '/?category=System' },
@@ -87,17 +88,27 @@ function FooterCol({ heading, links }) {
   )
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 export default function Footer() {
-  const [email, setEmail] = useState('')
+  const [email, setEmail]         = useState('')
   const [subscribed, setSubscribed] = useState(false)
+  const [emailError, setEmailError] = useState('')
   const { t } = useTranslation()
+  const { addToast } = useToast()
 
   const shopLinks    = SHOP_KEYS.map(({ key, href }) => ({ label: t(`footer.${key}`), href }))
   const supportLinks = SUPPORT_KEYS.map(({ key, href }) => ({ label: t(`footer.${key}`), href }))
 
   function handleSubscribe(e) {
     e.preventDefault()
-    if (email) setSubscribed(true)
+    if (!email || !EMAIL_RE.test(email)) {
+      setEmailError(t('checkout.errEmail'))
+      return
+    }
+    setEmailError('')
+    setSubscribed(true)
+    addToast(t('footer.subscribed'), 'success')
   }
 
   return (
@@ -163,17 +174,23 @@ export default function Footer() {
                 {t('footer.subscribed')}
               </motion.div>
             ) : (
-              <form onSubmit={handleSubscribe} className="space-y-2">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  required
-                  className="w-full px-4 py-2.5 rounded-xl border border-border text-sm outline-none transition-all bg-white"
-                  onFocus={(e) => { e.target.style.borderColor = '#0056b3'; e.target.style.boxShadow = '0 0 0 3px rgba(0,86,179,0.12)' }}
-                  onBlur={(e)  => { e.target.style.borderColor = '#e0e0e0'; e.target.style.boxShadow = 'none' }}
-                />
+              <form onSubmit={handleSubscribe} className="space-y-2" noValidate>
+                <div>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); setEmailError('') }}
+                    placeholder="your@email.com"
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all bg-white"
+                    style={{ borderColor: emailError ? '#e53e3e' : '#e0e0e0' }}
+                    onFocus={(e) => { e.target.style.borderColor = emailError ? '#e53e3e' : '#0056b3'; e.target.style.boxShadow = '0 0 0 3px rgba(0,86,179,0.12)' }}
+                    onBlur={(e)  => { e.target.style.borderColor = emailError ? '#e53e3e' : '#e0e0e0'; e.target.style.boxShadow = 'none' }}
+                    aria-describedby={emailError ? 'footer-email-error' : undefined}
+                  />
+                  {emailError && (
+                    <p id="footer-email-error" className="text-xs mt-1" style={{ color: '#e53e3e' }}>{emailError}</p>
+                  )}
+                </div>
                 <button
                   type="submit"
                   className="w-full py-2.5 rounded-xl text-sm font-black text-white transition-colors"
