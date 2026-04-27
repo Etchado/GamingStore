@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
@@ -52,6 +53,7 @@ const badges = {
 
 /* ── ProductCard ──────────────────────────────── */
 export function ProductCard({ product, onQuickView }) {
+  const { t } = useTranslation()
   const { addItem } = useCart()
   const { addToast } = useToast()
   const { toggle, has } = useWishlist()
@@ -214,7 +216,7 @@ export function ProductCard({ product, onQuickView }) {
           onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
         >
-          Add to Cart
+          {t('compare.addToCart')}
         </motion.button>
 
         {/* Compare toggle */}
@@ -232,7 +234,7 @@ export function ProductCard({ product, onQuickView }) {
               : <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
             }
           </svg>
-          {isCompared ? 'In comparison' : maxed ? 'Max 3 products' : 'Compare'}
+          {isCompared ? t('compare.inComparison') : maxed ? t('compare.maxProducts') : t('compare.compare')}
         </button>
       </div>
     </motion.article>

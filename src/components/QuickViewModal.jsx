@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { useWishlist } from '@/context/WishlistContext'
 
 export default function QuickViewModal({ product, onClose }) {
+  const { t } = useTranslation()
   const { addItem } = useCart()
   const { addToast } = useToast()
   const { toggle, has } = useWishlist()
@@ -107,7 +109,7 @@ export default function QuickViewModal({ product, onClose }) {
                       ))}
                     </div>
                     <span className="text-xs text-muted">
-                      {product.rating.toFixed(1)} ({product.reviews?.toLocaleString()} reviews)
+                      {product.rating.toFixed(1)} ({product.reviews?.toLocaleString()} {t('quickView.reviews')})
                     </span>
                   </div>
 
@@ -134,7 +136,7 @@ export default function QuickViewModal({ product, onClose }) {
 
                   {/* Qty */}
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-ink">Qty:</span>
+                    <span className="text-sm font-semibold text-ink">{t('quickView.qty')}</span>
                     <div className="flex items-center border border-border rounded-xl overflow-hidden">
                       <button
                         onClick={() => setQty(q => Math.max(1, q - 1))}
@@ -161,7 +163,7 @@ export default function QuickViewModal({ product, onClose }) {
                       onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
                       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
                     >
-                      Add {qty > 1 ? `${qty} × ` : ''}to Cart
+                      {qty > 1 ? t('quickView.addToCartQty', { qty }) : t('quickView.addToCart')}
                     </button>
                     <button
                       onClick={handleWishlist}
@@ -194,7 +196,7 @@ export default function QuickViewModal({ product, onClose }) {
                       onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#0056b3'; e.currentTarget.style.color = '#0056b3' }}
                       onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e0e0e0'; e.currentTarget.style.color = '#4a5568' }}
                     >
-                      View Full Details →
+                      {t('quickView.viewFullDetails')}
                     </Link>
                   )}
                 </div>

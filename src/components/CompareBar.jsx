@@ -1,8 +1,10 @@
 import { motion, AnimatePresence } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 import { useCompare } from '@/context/CompareContext'
 import { PRODUCTS } from '@/data/products'
 
 export default function CompareBar({ onOpen }) {
+  const { t } = useTranslation()
   const { ids, remove, clear, count } = useCompare()
 
   if (count < 1) return null
@@ -50,7 +52,7 @@ export default function CompareBar({ onOpen }) {
                         </button>
                       </>
                     ) : (
-                      <p className="text-[11px] text-muted text-center w-full">+ Add product</p>
+                      <p className="text-[11px] text-muted text-center w-full">{t('compare.addProduct')}</p>
                     )}
                   </div>
                 )
@@ -63,7 +65,7 @@ export default function CompareBar({ onOpen }) {
                 onClick={clear}
                 className="text-xs font-bold text-muted hover:text-ink transition-colors whitespace-nowrap hidden sm:block"
               >
-                Clear
+                {t('compare.clear')}
               </button>
               <button
                 onClick={onOpen}
@@ -73,7 +75,7 @@ export default function CompareBar({ onOpen }) {
                 onMouseEnter={(e) => { if (count >= 2) e.currentTarget.style.backgroundColor = '#004494' }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
               >
-                Compare ({count})
+                {t('compare.compareBtn', { count })}
               </button>
             </div>
           </div>

@@ -1,13 +1,16 @@
 import { motion } from 'motion/react'
-
-const items = [
-  { icon: '🚚', title: 'Free Shipping',     sub: 'On orders over $199'         },
-  { icon: '🔧', title: 'Expert Assembly',   sub: 'Tested before shipping'       },
-  { icon: '🛡️', title: '2-Year Warranty',   sub: 'Full parts & labour covered'  },
-  { icon: '💬', title: '24/7 Support',      sub: 'Expert tech assistance'       },
-]
+import { useTranslation } from 'react-i18next'
 
 export default function TrustBar() {
+  const { t } = useTranslation()
+
+  const items = [
+    { icon: '🚚', title: t('trust.shipping'),  sub: t('trust.shippingSub')  },
+    { icon: '🔧', title: t('trust.assembly'),  sub: t('trust.assemblySub')  },
+    { icon: '🛡️', title: t('trust.warranty'),  sub: t('trust.warrantySub')  },
+    { icon: '💬', title: t('trust.support'),   sub: t('trust.supportSub')   },
+  ]
+
   return (
     <section className="border-y" style={{ backgroundColor: '#f8fafc', borderColor: '#e0e0e0' }}>
       <div className="max-w-7xl mx-auto px-6 py-8">

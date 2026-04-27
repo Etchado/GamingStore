@@ -54,6 +54,46 @@
     "clearAll": "مسح الكل",
     "addAllToCart": "إضافة الكل إلى السلة →"
   },
+  "trust": {
+    "shipping": "شحن مجاني",
+    "shippingSub": "للطلبات فوق $199",
+    "assembly": "تجميع متخصص",
+    "assemblySub": "مختبر قبل الشحن",
+    "warranty": "ضمان سنتين",
+    "warrantySub": "يشمل قطع الغيار والعمالة",
+    "support": "دعم 24/7",
+    "supportSub": "مساعدة تقنية متخصصة"
+  },
+  "notFound": {
+    "title": "الصفحة غير موجودة",
+    "sub": "يبدو أن هذه الصفحة انتقلت إلى مكان آخر. دعنا نعيدك إلى المتجر.",
+    "backToStore": "العودة إلى المتجر",
+    "goBack": "الرجوع"
+  },
+  "quickView": {
+    "qty": "الكمية:",
+    "addToCart": "أضف إلى السلة",
+    "addToCartQty": "أضف {{qty}} × إلى السلة",
+    "viewFullDetails": "عرض التفاصيل الكاملة →",
+    "reviews": "مراجعة"
+  },
+  "compare": {
+    "title": "مقارنة المنتجات",
+    "sub": "قارن بين 3 منتجات جنباً إلى جنب",
+    "inComparison": "في المقارنة",
+    "compare": "مقارنة",
+    "maxProducts": "الحد الأقصى 3 منتجات",
+    "addProduct": "+ أضف منتجاً",
+    "clear": "مسح",
+    "compareBtn": "مقارنة ({{count}})",
+    "price": "السعر",
+    "rating": "التقييم",
+    "brand": "العلامة التجارية",
+    "category": "الفئة",
+    "specifications": "المواصفات",
+    "badge": "الشارة",
+    "addToCart": "أضف إلى السلة"
+  },
   "products": {
     "searchResultsSub": "نتائج البحث",
     "newArrivalsSub": "وصل حديثاً",

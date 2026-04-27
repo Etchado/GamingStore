@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
 export default function NotFoundPage() {
-  usePageTitle('Page Not Found')
+  const { t } = useTranslation()
+  usePageTitle(t('notFound.title'))
   const navigate = useNavigate()
 
   return (
@@ -28,11 +30,10 @@ export default function NotFoundPage() {
           ◈ Error 404
         </p>
         <h1 className="text-5xl sm:text-6xl font-black text-ink mb-4">
-          Page Not Found
+          {t('notFound.title')}
         </h1>
         <p className="text-muted text-sm max-w-sm mx-auto leading-relaxed">
-          Looks like this page respawned somewhere else. Let's get you back to
-          the action.
+          {t('notFound.sub')}
         </p>
       </div>
 
@@ -44,7 +45,7 @@ export default function NotFoundPage() {
           onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
         >
-          Back to Store
+          {t('notFound.backToStore')}
         </button>
         <button
           onClick={() => navigate(-1)}
@@ -53,7 +54,7 @@ export default function NotFoundPage() {
           onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f5f5f5' }}
           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
         >
-          Go Back
+          {t('notFound.goBack')}
         </button>
       </div>
     </motion.div>

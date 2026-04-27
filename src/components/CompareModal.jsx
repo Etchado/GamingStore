@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'motion/react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useCompare } from '@/context/CompareContext'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
@@ -24,18 +25,19 @@ function StarRow({ rating = 0, count = 0 }) {
   )
 }
 
-const ROWS = [
-  { key: 'image',    label: '' },
-  { key: 'price',    label: 'Price' },
-  { key: 'rating',   label: 'Rating' },
-  { key: 'brand',    label: 'Brand' },
-  { key: 'category', label: 'Category' },
-  { key: 'spec',     label: 'Specifications' },
-  { key: 'badge',    label: 'Badge' },
-  { key: 'action',   label: '' },
+const ROW_KEYS = [
+  { key: 'image',    labelKey: '' },
+  { key: 'price',    labelKey: 'compare.price' },
+  { key: 'rating',   labelKey: 'compare.rating' },
+  { key: 'brand',    labelKey: 'compare.brand' },
+  { key: 'category', labelKey: 'compare.category' },
+  { key: 'spec',     labelKey: 'compare.specifications' },
+  { key: 'badge',    labelKey: 'compare.badge' },
+  { key: 'action',   labelKey: '' },
 ]
 
 function Cell({ row, product }) {
+  const { t } = useTranslation()
   const { addItem } = useCart()
   const { addToast } = useToast()
 
@@ -96,7 +98,7 @@ function Cell({ row, product }) {
           onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
         >
-          Add to Cart
+          {t('compare.addToCart')}
         </button>
       )
     default:

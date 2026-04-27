@@ -54,6 +54,46 @@
     "clearAll": "Clear all",
     "addAllToCart": "Add all to cart →"
   },
+  "trust": {
+    "shipping": "Free Shipping",
+    "shippingSub": "On orders over $199",
+    "assembly": "Expert Assembly",
+    "assemblySub": "Tested before shipping",
+    "warranty": "2-Year Warranty",
+    "warrantySub": "Full parts & labour covered",
+    "support": "24/7 Support",
+    "supportSub": "Expert tech assistance"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "sub": "Looks like this page respawned somewhere else. Let's get you back to the action.",
+    "backToStore": "Back to Store",
+    "goBack": "Go Back"
+  },
+  "quickView": {
+    "qty": "Qty:",
+    "addToCart": "Add to Cart",
+    "addToCartQty": "Add {{qty}} × to Cart",
+    "viewFullDetails": "View Full Details →",
+    "reviews": "reviews"
+  },
+  "compare": {
+    "title": "Product Comparison",
+    "sub": "Compare up to 3 products side by side",
+    "inComparison": "In comparison",
+    "compare": "Compare",
+    "maxProducts": "Max 3 products",
+    "addProduct": "+ Add product",
+    "clear": "Clear",
+    "compareBtn": "Compare ({{count}})",
+    "price": "Price",
+    "rating": "Rating",
+    "brand": "Brand",
+    "category": "Category",
+    "specifications": "Specifications",
+    "badge": "Badge",
+    "addToCart": "Add to Cart"
+  },
   "products": {
     "searchResultsSub": "Search Results",
     "newArrivalsSub": "Just Arrived",
