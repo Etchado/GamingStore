@@ -141,6 +141,41 @@
       "chair": "Chair"
     }
   },
+  "announcement": {
+    "freeShipping": "🚚 Free shipping on all orders over $150",
+    "deals": "🔥 Limited-time deals — up to 30% off selected products",
+    "newArrivals": "⭐ New arrivals just dropped — explore the latest gear",
+    "shopDeals": "Shop Deals",
+    "viewNew": "View New",
+    "dismiss": "Dismiss"
+  },
+  "product": {
+    "home": "Home",
+    "products": "Products",
+    "warranty": "2-Year Warranty",
+    "freeShipping": "Free Shipping",
+    "returns": "30-Day Returns",
+    "inStock": "In Stock",
+    "onlyLeft": "— only {{count}} left",
+    "outOfStock": "Out of Stock",
+    "qty": "Qty:",
+    "addToCart": "Add to Cart",
+    "addToCartQty": "Add {{qty}} × to Cart",
+    "save": "Save {{amount}}",
+    "specifications": "Specifications",
+    "reviewsSub": "What Customers Say",
+    "reviewsTitle": "Customer Reviews",
+    "reviews": "reviews",
+    "verified": "Verified",
+    "relatedSub": "You Might Also Like",
+    "relatedTitle": "Related Products",
+    "viewAll": "View all →",
+    "recentSub": "Your History",
+    "recentTitle": "Recently Viewed",
+    "notFound": "Product not found",
+    "notFoundSub": "This product may have been removed or the link is incorrect.",
+    "backToStore": "Back to Store"
+  },
   "checkout": {
     "step1": "Shipping", "step2": "Payment", "step3": "Confirmed",
     "orderSummary": "Order Summary",

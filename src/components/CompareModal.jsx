@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -15,6 +16,7 @@ function StarRow({ rating = 0, count = 0 }) {
             key={i}
             className={`w-3.5 h-3.5 ${i < Math.round(rating) ? 'text-amber-400' : 'text-gray-200'}`}
             fill="currentColor" viewBox="0 0 20 20"
+            aria-hidden="true"
           >
             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
           </svg>
@@ -107,8 +109,16 @@ function Cell({ row, product }) {
 }
 
 export default function CompareModal({ isOpen, onClose }) {
+  const { t } = useTranslation()
   const { ids, remove } = useCompare()
   const products = ids.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean)
+
+  useEffect(() => {
+    if (!isOpen) return
+    const handler = (e) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [isOpen, onClose])
 
   return (
     <AnimatePresence>
@@ -121,10 +131,14 @@ export default function CompareModal({ isOpen, onClose }) {
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="fixed inset-0 z-[80] bg-black/50 backdrop-blur-sm"
+            aria-hidden="true"
           />
 
           {/* Modal */}
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label={t('compare.title')}
             initial={{ opacity: 0, scale: 0.96, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 20 }}
@@ -135,11 +149,12 @@ export default function CompareModal({ isOpen, onClose }) {
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: '#e0e0e0' }}>
               <div>
-                <h2 className="text-base font-black text-ink">Product Comparison</h2>
-                <p className="text-xs text-muted mt-0.5">Compare up to 3 products side by side</p>
+                <h2 className="text-base font-black text-ink">{t('compare.title')}</h2>
+                <p className="text-xs text-muted mt-0.5">{t('compare.sub')}</p>
               </div>
               <button
                 onClick={onClose}
+                aria-label="Close comparison"
                 className="w-8 h-8 rounded-xl flex items-center justify-center text-muted hover:text-ink hover:bg-surface transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
@@ -160,7 +175,7 @@ export default function CompareModal({ isOpen, onClose }) {
                           <button
                             onClick={() => remove(p.id)}
                             className="absolute top-0 right-2 w-5 h-5 flex items-center justify-center rounded-full text-muted hover:text-red-500 hover:bg-red-50 transition-colors text-xs"
-                            title="Remove from comparison"
+                            aria-label={`Remove ${p.title} from comparison`}
                           >
                             ✕
                           </button>
@@ -169,13 +184,13 @@ export default function CompareModal({ isOpen, onClose }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {ROWS.map((row) => (
+                    {ROW_KEYS.map((row) => (
                       <tr key={row.key} className="border-t" style={{ borderColor: '#f0f0f0' }}>
                         {/* Row label */}
                         <td className="py-3 pr-4 text-right align-middle">
-                          {row.label && (
+                          {row.labelKey && (
                             <span className="text-[11px] font-black tracking-wide uppercase text-muted whitespace-nowrap">
-                              {row.label}
+                              {t(row.labelKey)}
                             </span>
                           )}
                         </td>

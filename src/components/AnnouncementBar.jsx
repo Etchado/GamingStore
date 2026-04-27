@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Link } from 'react-router-dom'
-
-const ANNOUNCEMENTS = [
-  { id: 1, text: '🚚 Free shipping on all orders over $150', cta: null },
-  { id: 2, text: '🔥 Limited-time deals — up to 30% off selected products', cta: { label: 'Shop Deals', href: '/?sort=deals' } },
-  { id: 3, text: '⭐ New arrivals just dropped — explore the latest gear', cta: { label: 'View New', href: '/?badge=NEW' } },
-]
+import { useTranslation } from 'react-i18next'
 
 export default function AnnouncementBar() {
+  const { t } = useTranslation()
   const [dismissed, setDismissed] = useState(false)
   const [idx, setIdx] = useState(0)
+
+  const ANNOUNCEMENTS = [
+    { id: 1, text: t('announcement.freeShipping'), cta: null },
+    { id: 2, text: t('announcement.deals'), cta: { label: t('announcement.shopDeals'), href: '/?sort=deals' } },
+    { id: 3, text: t('announcement.newArrivals'), cta: { label: t('announcement.viewNew'), href: '/?badge=NEW' } },
+  ]
 
   if (dismissed) return null
 
@@ -32,6 +34,7 @@ export default function AnnouncementBar() {
               <button
                 onClick={() => setIdx(i => (i - 1 + ANNOUNCEMENTS.length) % ANNOUNCEMENTS.length)}
                 className="text-white/60 hover:text-white transition-colors shrink-0 hidden sm:block"
+                aria-label="Previous announcement"
               >
                 ‹
               </button>
@@ -49,6 +52,7 @@ export default function AnnouncementBar() {
               <button
                 onClick={() => setIdx(i => (i + 1) % ANNOUNCEMENTS.length)}
                 className="text-white/60 hover:text-white transition-colors shrink-0 hidden sm:block"
+                aria-label="Next announcement"
               >
                 ›
               </button>
@@ -56,7 +60,7 @@ export default function AnnouncementBar() {
             <button
               onClick={() => setDismissed(true)}
               className="text-white/60 hover:text-white transition-colors shrink-0"
-              aria-label="Dismiss"
+              aria-label={t('announcement.dismiss')}
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                 <path d="M18 6 6 18M6 6l12 12" />

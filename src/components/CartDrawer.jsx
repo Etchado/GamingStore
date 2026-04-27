@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -7,6 +8,13 @@ export default function CartDrawer() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { items, isOpen, setIsOpen, removeItem, updateQty, itemCount, total } = useCart()
+
+  useEffect(() => {
+    if (!isOpen) return
+    const handler = (e) => { if (e.key === 'Escape') setIsOpen(false) }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [isOpen, setIsOpen])
 
   return (
     <AnimatePresence>
@@ -23,6 +31,9 @@ export default function CartDrawer() {
 
           {/* Panel */}
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label={t('cart.title')}
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
@@ -45,9 +56,10 @@ export default function CartDrawer() {
               </div>
               <button
                 onClick={() => setIsOpen(false)}
+                aria-label="Close cart"
                 className="w-8 h-8 rounded-xl flex items-center justify-center text-muted hover:text-ink hover:bg-surface transition-colors"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M18 6 6 18M6 6l12 12" />
                 </svg>
               </button>

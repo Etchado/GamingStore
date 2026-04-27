@@ -141,6 +141,41 @@
       "chair": "كراسي"
     }
   },
+  "announcement": {
+    "freeShipping": "🚚 شحن مجاني على جميع الطلبات فوق $150",
+    "deals": "🔥 عروض محدودة — خصم يصل إلى 30% على منتجات مختارة",
+    "newArrivals": "⭐ منتجات جديدة وصلت للتو — استكشف أحدث الأجهزة",
+    "shopDeals": "تسوق العروض",
+    "viewNew": "عرض الجديد",
+    "dismiss": "إغلاق"
+  },
+  "product": {
+    "home": "الرئيسية",
+    "products": "المنتجات",
+    "warranty": "ضمان سنتين",
+    "freeShipping": "شحن مجاني",
+    "returns": "إرجاع خلال 30 يوماً",
+    "inStock": "متوفر",
+    "onlyLeft": "— {{count}} قطعة فقط",
+    "outOfStock": "غير متوفر",
+    "qty": "الكمية:",
+    "addToCart": "أضف إلى السلة",
+    "addToCartQty": "أضف {{qty}} × إلى السلة",
+    "save": "وفّر {{amount}}",
+    "specifications": "المواصفات",
+    "reviewsSub": "ماذا يقول العملاء",
+    "reviewsTitle": "مراجعات العملاء",
+    "reviews": "مراجعة",
+    "verified": "موثّق",
+    "relatedSub": "قد يعجبك أيضاً",
+    "relatedTitle": "منتجات ذات صلة",
+    "viewAll": "عرض الكل →",
+    "recentSub": "سجلك",
+    "recentTitle": "شاهدت مؤخراً",
+    "notFound": "المنتج غير موجود",
+    "notFoundSub": "ربما تم إزالة هذا المنتج أو الرابط غير صحيح.",
+    "backToStore": "العودة إلى المتجر"
+  },
   "checkout": {
     "step1": "الشحن", "step2": "الدفع", "step3": "مؤكد",
     "orderSummary": "ملخص الطلب",
