@@ -1,25 +1,26 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
-/* ─── helpers ─────────────────────────────────────────────── */
 const fmt = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 function genOrderId() {
   return 'GS-' + Math.random().toString(36).slice(2, 8).toUpperCase()
 }
 
-/* ─── Step indicator ──────────────────────────────────────── */
-const STEPS = ['Shipping', 'Payment', 'Confirmed']
-
+/* ── Step indicator ── */
 function StepBar({ current }) {
+  const { t } = useTranslation()
+  const STEPS = [t('checkout.step1'), t('checkout.step2'), t('checkout.step3')]
+
   return (
     <div className="flex items-center gap-0 mb-10">
       {STEPS.map((label, i) => {
-        const idx   = i + 1
-        const done  = idx < current
+        const idx    = i + 1
+        const done   = idx < current
         const active = idx === current
         return (
           <div key={label} className="flex items-center flex-1 last:flex-none">
@@ -57,7 +58,7 @@ function StepBar({ current }) {
   )
 }
 
-/* ─── Field component ─────────────────────────────────────── */
+/* ── Field component ── */
 function Field({ label, error, children }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -84,25 +85,25 @@ function Input({ error, ...props }) {
   )
 }
 
-/* ─── Order Summary sidebar ───────────────────────────────── */
+/* ── Order Summary sidebar ── */
 function OrderSummary({ items, subtotal, shipping, tax, total }) {
+  const { t } = useTranslation()
   return (
     <div className="rounded-2xl border overflow-hidden" style={{ borderColor: '#e0e0e0' }}>
       <div className="px-5 py-4 border-b" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
-        <h3 className="text-sm font-black text-ink">Order Summary</h3>
+        <h3 className="text-sm font-black text-ink">{t('checkout.orderSummary')}</h3>
       </div>
       <div className="px-5 py-4 space-y-3 max-h-64 overflow-y-auto">
         {items.map(({ product, qty }) => (
           <div key={product.id ?? product.title} className="flex items-center gap-3">
             <img
-              src={product.image}
-              alt={product.title}
+              src={product.image} alt={product.title}
               className="w-12 h-12 rounded-xl object-cover shrink-0 bg-surface border"
               style={{ borderColor: '#e0e0e0' }}
             />
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-ink line-clamp-1">{product.title}</p>
-              <p className="text-[11px] text-muted">Qty: {qty}</p>
+              <p className="text-[11px] text-muted">{t('checkout.qty')} {qty}</p>
             </div>
             <span className="text-xs font-black shrink-0" style={{ color: '#0056b3' }}>
               ${fmt(parseFloat(product.price.replace(/[^0-9.]/g, '')) * qty)}
@@ -112,20 +113,20 @@ function OrderSummary({ items, subtotal, shipping, tax, total }) {
       </div>
       <div className="px-5 py-4 border-t space-y-2" style={{ borderColor: '#e0e0e0' }}>
         <div className="flex justify-between text-sm text-muted">
-          <span>Subtotal</span><span className="text-ink font-semibold">${fmt(subtotal)}</span>
+          <span>{t('checkout.subtotal')}</span><span className="text-ink font-semibold">${fmt(subtotal)}</span>
         </div>
         <div className="flex justify-between text-sm text-muted">
-          <span>Shipping</span>
+          <span>{t('checkout.shipping')}</span>
           <span className={shipping === 0 ? 'text-green-600 font-bold' : 'text-ink font-semibold'}>
-            {shipping === 0 ? 'FREE' : `$${fmt(shipping)}`}
+            {shipping === 0 ? t('checkout.free') : `$${fmt(shipping)}`}
           </span>
         </div>
         <div className="flex justify-between text-sm text-muted">
-          <span>Est. Tax (8%)</span><span className="text-ink font-semibold">${fmt(tax)}</span>
+          <span>{t('checkout.tax')}</span><span className="text-ink font-semibold">${fmt(tax)}</span>
         </div>
         <div className="h-px" style={{ backgroundColor: '#e0e0e0' }} />
         <div className="flex justify-between">
-          <span className="text-sm font-black text-ink">Total</span>
+          <span className="text-sm font-black text-ink">{t('checkout.total')}</span>
           <span className="text-base font-black" style={{ color: '#0056b3' }}>${fmt(total)}</span>
         </div>
       </div>
@@ -133,33 +134,36 @@ function OrderSummary({ items, subtotal, shipping, tax, total }) {
   )
 }
 
-/* ─── Step 1: Shipping ────────────────────────────────────── */
+/* ── Step 1: Shipping ── */
 function ShippingStep({ data, onChange, errors }) {
+  const { t } = useTranslation()
   const field = (name) => ({
     value: data[name],
     error: errors[name],
     onChange: (e) => onChange(name, e.target.value),
   })
 
+  const COUNTRIES = ['United States', 'Canada', 'United Kingdom', 'Germany', 'France', 'Australia', 'Saudi Arabia', 'UAE', 'Other']
+
   return (
     <div className="space-y-5">
       <div>
         <p className="text-[11px] font-black tracking-[0.15em] uppercase mb-1" style={{ color: '#0056b3' }}>
-          Contact
+          {t('checkout.contact')}
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="First Name" error={errors.firstName}>
+          <Field label={t('checkout.firstName')} error={errors.firstName}>
             <Input placeholder="John" {...field('firstName')} />
           </Field>
-          <Field label="Last Name" error={errors.lastName}>
+          <Field label={t('checkout.lastName')} error={errors.lastName}>
             <Input placeholder="Doe" {...field('lastName')} />
           </Field>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-          <Field label="Email" error={errors.email}>
+          <Field label={t('checkout.email')} error={errors.email}>
             <Input placeholder="john@example.com" type="email" {...field('email')} />
           </Field>
-          <Field label="Phone" error={errors.phone}>
+          <Field label={t('checkout.phone')} error={errors.phone}>
             <Input placeholder="+1 555 000 0000" type="tel" {...field('phone')} />
           </Field>
         </div>
@@ -167,32 +171,32 @@ function ShippingStep({ data, onChange, errors }) {
 
       <div>
         <p className="text-[11px] font-black tracking-[0.15em] uppercase mb-1 mt-2" style={{ color: '#0056b3' }}>
-          Shipping Address
+          {t('checkout.shippingAddress')}
         </p>
         <div className="space-y-4">
-          <Field label="Address" error={errors.address}>
+          <Field label={t('checkout.address')} error={errors.address}>
             <Input placeholder="123 Main Street, Apt 4B" {...field('address')} />
           </Field>
           <div className="grid grid-cols-2 gap-4">
-            <Field label="City" error={errors.city}>
+            <Field label={t('checkout.city')} error={errors.city}>
               <Input placeholder="New York" {...field('city')} />
             </Field>
-            <Field label="State / Province" error={errors.state}>
+            <Field label={t('checkout.stateProvince')} error={errors.state}>
               <Input placeholder="NY" {...field('state')} />
             </Field>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <Field label="ZIP / Postal Code" error={errors.zip}>
+            <Field label={t('checkout.zipCode')} error={errors.zip}>
               <Input placeholder="10001" {...field('zip')} />
             </Field>
-            <Field label="Country" error={errors.country}>
+            <Field label={t('checkout.country')} error={errors.country}>
               <select
                 value={data.country}
                 onChange={(e) => onChange('country', e.target.value)}
                 className={inputClass(errors.country) + ' cursor-pointer'}
               >
-                <option value="">Select country</option>
-                {['United States', 'Canada', 'United Kingdom', 'Germany', 'France', 'Australia', 'Saudi Arabia', 'UAE', 'Other'].map(c => (
+                <option value="">{t('checkout.selectCountry')}</option>
+                {COUNTRIES.map(c => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
@@ -204,8 +208,10 @@ function ShippingStep({ data, onChange, errors }) {
   )
 }
 
-/* ─── Step 2: Payment ─────────────────────────────────────── */
+/* ── Step 2: Payment ── */
 function PaymentStep({ data, onChange, errors }) {
+  const { t } = useTranslation()
+
   function handleCardNumber(e) {
     const raw = e.target.value.replace(/\D/g, '').slice(0, 16)
     const formatted = raw.replace(/(.{4})/g, '$1 ').trim()
@@ -222,10 +228,7 @@ function PaymentStep({ data, onChange, errors }) {
     <div className="space-y-5">
       <div
         className="rounded-2xl p-5 flex flex-col justify-between"
-        style={{
-          background: 'linear-gradient(135deg, #0056b3 0%, #003375 100%)',
-          minHeight: 160,
-        }}
+        style={{ background: 'linear-gradient(135deg, #0056b3 0%, #003375 100%)', minHeight: 160 }}
       >
         <div className="flex justify-between items-start">
           <svg className="w-10 h-10 opacity-70" viewBox="0 0 40 40" fill="none">
@@ -233,7 +236,7 @@ function PaymentStep({ data, onChange, errors }) {
             <circle cx="15" cy="20" r="8" fill="white" fillOpacity="0.5" />
             <circle cx="25" cy="20" r="8" fill="white" fillOpacity="0.3" />
           </svg>
-          <span className="text-white text-xs font-bold opacity-60 uppercase tracking-widest">Credit Card</span>
+          <span className="text-white text-xs font-bold opacity-60 uppercase tracking-widest">{t('checkout.creditCard')}</span>
         </div>
         <div>
           <p className="text-white font-mono text-lg tracking-[0.2em] font-bold">
@@ -243,11 +246,11 @@ function PaymentStep({ data, onChange, errors }) {
           </p>
           <div className="flex justify-between mt-3">
             <div>
-              <p className="text-white/50 text-[10px] uppercase tracking-widest">Cardholder</p>
+              <p className="text-white/50 text-[10px] uppercase tracking-widest">{t('checkout.cardholder')}</p>
               <p className="text-white text-sm font-bold">{data.cardName || 'FULL NAME'}</p>
             </div>
             <div className="text-right">
-              <p className="text-white/50 text-[10px] uppercase tracking-widest">Expires</p>
+              <p className="text-white/50 text-[10px] uppercase tracking-widest">{t('checkout.expires')}</p>
               <p className="text-white text-sm font-bold">{data.expiry || 'MM/YY'}</p>
             </div>
           </div>
@@ -255,7 +258,7 @@ function PaymentStep({ data, onChange, errors }) {
       </div>
 
       <div className="space-y-4">
-        <Field label="Cardholder Name" error={errors.cardName}>
+        <Field label={t('checkout.cardholderName')} error={errors.cardName}>
           <Input
             placeholder="John Doe"
             value={data.cardName}
@@ -263,7 +266,7 @@ function PaymentStep({ data, onChange, errors }) {
             onChange={(e) => onChange('cardName', e.target.value.toUpperCase())}
           />
         </Field>
-        <Field label="Card Number" error={errors.cardNumber}>
+        <Field label={t('checkout.cardNumber')} error={errors.cardNumber}>
           <Input
             placeholder="0000 0000 0000 0000"
             value={data.cardNumber}
@@ -273,7 +276,7 @@ function PaymentStep({ data, onChange, errors }) {
           />
         </Field>
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Expiry (MM/YY)" error={errors.expiry}>
+          <Field label={t('checkout.expiry')} error={errors.expiry}>
             <Input
               placeholder="MM/YY"
               value={data.expiry}
@@ -282,7 +285,7 @@ function PaymentStep({ data, onChange, errors }) {
               maxLength={5}
             />
           </Field>
-          <Field label="CVV" error={errors.cvv}>
+          <Field label={t('checkout.cvv')} error={errors.cvv}>
             <Input
               placeholder="•••"
               value={data.cvv}
@@ -302,14 +305,15 @@ function PaymentStep({ data, onChange, errors }) {
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
           <path d="M7 11V7a5 5 0 0 1 10 0v4" />
         </svg>
-        Your payment info is encrypted and never stored. This is a demo — no real charge will occur.
+        {t('checkout.securityNote')}
       </div>
     </div>
   )
 }
 
-/* ─── Step 3: Confirmed ───────────────────────────────────── */
+/* ── Step 3: Confirmed ── */
 function ConfirmedStep({ orderId, shipping, items }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { clearCart } = useCart()
 
@@ -333,10 +337,11 @@ function ConfirmedStep({ orderId, shipping, items }) {
       </motion.div>
 
       <div>
-        <h2 className="text-2xl font-black text-ink">Order Confirmed!</h2>
-        <p className="text-muted text-sm mt-2">
-          Thank you, <strong className="text-ink">{shipping.firstName}</strong>. Your order is on its way.
-        </p>
+        <h2 className="text-2xl font-black text-ink">{t('checkout.orderConfirmed')}</h2>
+        <p
+          className="text-muted text-sm mt-2"
+          dangerouslySetInnerHTML={{ __html: t('checkout.thankYou', { name: shipping.firstName }) }}
+        />
       </div>
 
       <div
@@ -344,18 +349,18 @@ function ConfirmedStep({ orderId, shipping, items }) {
         style={{ backgroundColor: '#f8fafc', border: '1px solid #e0e0e0' }}
       >
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-black uppercase tracking-widest text-muted">Order ID</span>
+          <span className="text-xs font-black uppercase tracking-widest text-muted">{t('checkout.orderId')}</span>
           <span className="text-sm font-black" style={{ color: '#0056b3' }}>{orderId}</span>
         </div>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-black uppercase tracking-widest text-muted">Ship To</span>
+          <span className="text-xs font-black uppercase tracking-widest text-muted">{t('checkout.shipTo')}</span>
           <span className="text-sm font-semibold text-ink text-right max-w-[60%] leading-snug">
             {shipping.address}, {shipping.city}, {shipping.country}
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-xs font-black uppercase tracking-widest text-muted">Est. Delivery</span>
-          <span className="text-sm font-semibold text-ink">3 – 5 Business Days</span>
+          <span className="text-xs font-black uppercase tracking-widest text-muted">{t('checkout.estDelivery')}</span>
+          <span className="text-sm font-semibold text-ink">{t('checkout.deliveryTime')}</span>
         </div>
       </div>
 
@@ -377,18 +382,19 @@ function ConfirmedStep({ orderId, shipping, items }) {
         onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
         onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
       >
-        Continue Shopping
+        {t('checkout.continueShopping')}
       </motion.button>
     </div>
   )
 }
 
-/* ─── Main CheckoutPage ───────────────────────────────────── */
+/* ── Main CheckoutPage ── */
 const SHIPPING_INIT = { firstName: '', lastName: '', email: '', phone: '', address: '', city: '', state: '', zip: '', country: '' }
 const PAYMENT_INIT  = { cardName: '', cardNumber: '', expiry: '', cvv: '' }
 
 export default function CheckoutPage() {
-  usePageTitle('Checkout')
+  const { t } = useTranslation()
+  usePageTitle(t('checkout.step2'))
   const { items, total, setIsOpen } = useCart()
   const navigate = useNavigate()
 
@@ -399,37 +405,36 @@ export default function CheckoutPage() {
   const [orderId]               = useState(genOrderId)
   const [placing, setPlacing]   = useState(false)
 
-  const subtotal = total
+  const subtotal     = total
   const shippingCost = subtotal >= 199 ? 0 : 15
-  const tax = subtotal * 0.08
-  const grandTotal = subtotal + shippingCost + tax
+  const tax          = subtotal * 0.08
+  const grandTotal   = subtotal + shippingCost + tax
 
-  /* ── Validation ── */
   function validateShipping() {
     const e = {}
-    if (!shipping.firstName.trim()) e.firstName = 'Required'
-    if (!shipping.lastName.trim())  e.lastName  = 'Required'
-    if (!shipping.email.trim())     e.email     = 'Required'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(shipping.email)) e.email = 'Invalid email'
-    if (!shipping.phone.trim())     e.phone     = 'Required'
-    if (!shipping.address.trim())   e.address   = 'Required'
-    if (!shipping.city.trim())      e.city      = 'Required'
-    if (!shipping.state.trim())     e.state     = 'Required'
-    if (!shipping.zip.trim())       e.zip       = 'Required'
-    if (!shipping.country)          e.country   = 'Required'
+    if (!shipping.firstName.trim()) e.firstName = t('checkout.errRequired')
+    if (!shipping.lastName.trim())  e.lastName  = t('checkout.errRequired')
+    if (!shipping.email.trim())     e.email     = t('checkout.errRequired')
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(shipping.email)) e.email = t('checkout.errEmail')
+    if (!shipping.phone.trim())     e.phone     = t('checkout.errRequired')
+    if (!shipping.address.trim())   e.address   = t('checkout.errRequired')
+    if (!shipping.city.trim())      e.city      = t('checkout.errRequired')
+    if (!shipping.state.trim())     e.state     = t('checkout.errRequired')
+    if (!shipping.zip.trim())       e.zip       = t('checkout.errRequired')
+    if (!shipping.country)          e.country   = t('checkout.errRequired')
     return e
   }
 
   function validatePayment() {
     const e = {}
-    if (!payment.cardName.trim())  e.cardName  = 'Required'
+    if (!payment.cardName.trim())  e.cardName   = t('checkout.errRequired')
     const digits = payment.cardNumber.replace(/\s/g, '')
-    if (!digits)                   e.cardNumber = 'Required'
-    else if (digits.length < 16)   e.cardNumber = 'Must be 16 digits'
-    if (!payment.expiry)           e.expiry = 'Required'
-    else if (!/^\d{2}\/\d{2}$/.test(payment.expiry)) e.expiry = 'Use MM/YY format'
-    if (!payment.cvv)              e.cvv = 'Required'
-    else if (payment.cvv.length < 3) e.cvv = 'Min 3 digits'
+    if (!digits)                   e.cardNumber = t('checkout.errRequired')
+    else if (digits.length < 16)   e.cardNumber = t('checkout.errCard16')
+    if (!payment.expiry)           e.expiry     = t('checkout.errRequired')
+    else if (!/^\d{2}\/\d{2}$/.test(payment.expiry)) e.expiry = t('checkout.errExpiryFormat')
+    if (!payment.cvv)              e.cvv        = t('checkout.errRequired')
+    else if (payment.cvv.length < 3) e.cvv      = t('checkout.errCvvMin')
     return e
   }
 
@@ -445,14 +450,9 @@ export default function CheckoutPage() {
     if (Object.keys(e).length) { setErrors(e); return }
     setErrors({})
     setPlacing(true)
-    // Simulate a brief processing delay
-    setTimeout(() => {
-      setPlacing(false)
-      setStep(3)
-    }, 1400)
+    setTimeout(() => { setPlacing(false); setStep(3) }, 1400)
   }
 
-  /* ── Empty cart guard ── */
   if (items.length === 0 && step !== 3) {
     return (
       <div className="pt-25 lg:pt-35 min-h-[70vh] flex flex-col items-center justify-center gap-5 text-center px-6">
@@ -460,15 +460,11 @@ export default function CheckoutPage() {
           🛒
         </div>
         <div>
-          <h1 className="text-xl font-black text-ink">Your cart is empty</h1>
-          <p className="text-sm text-muted mt-1">Add some products before checking out.</p>
+          <h1 className="text-xl font-black text-ink">{t('checkout.emptyCart')}</h1>
+          <p className="text-sm text-muted mt-1">{t('checkout.emptyCartSub')}</p>
         </div>
-        <Link
-          to="/"
-          className="px-8 py-3 rounded-xl text-sm font-bold text-white"
-          style={{ backgroundColor: '#0056b3' }}
-        >
-          Browse Products
+        <Link to="/" className="px-8 py-3 rounded-xl text-sm font-bold text-white" style={{ backgroundColor: '#0056b3' }}>
+          {t('checkout.browseProducts')}
         </Link>
       </div>
     )
@@ -476,21 +472,20 @@ export default function CheckoutPage() {
 
   return (
     <div className="pt-25 lg:pt-35 min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
-      {/* ── Breadcrumb ── */}
+      {/* Breadcrumb */}
       <div className="border-b bg-white" style={{ borderColor: '#e0e0e0' }}>
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center gap-2 text-xs text-muted font-medium">
-          <Link to="/" className="hover:text-ink transition-colors">Home</Link>
+          <Link to="/" className="hover:text-ink transition-colors">{t('checkout.home')}</Link>
           <span className="text-gray-300">›</span>
-          <Link to="/" onClick={() => setIsOpen(true)} className="hover:text-ink transition-colors">Cart</Link>
+          <Link to="/" onClick={() => setIsOpen(true)} className="hover:text-ink transition-colors">{t('nav.cart')}</Link>
           <span className="text-gray-300">›</span>
-          <span className="text-ink">Checkout</span>
+          <span className="text-ink">{t('checkout.step2').replace('Payment', t('checkout.step1') === 'Shipping' ? 'Checkout' : 'الدفع')}</span>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 items-start">
 
-          {/* ── Left: Form ── */}
           <motion.div
             key={step}
             initial={{ opacity: 0, x: -16 }}
@@ -504,7 +499,7 @@ export default function CheckoutPage() {
             <AnimatePresence mode="wait">
               {step === 1 && (
                 <motion.div key="shipping" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
-                  <h2 className="text-lg font-black text-ink mb-6">Shipping Information</h2>
+                  <h2 className="text-lg font-black text-ink mb-6">{t('checkout.shippingInfo')}</h2>
                   <ShippingStep
                     data={shipping}
                     onChange={(k, v) => { setShipping(s => ({ ...s, [k]: v })); setErrors(e => ({ ...e, [k]: '' })) }}
@@ -518,7 +513,7 @@ export default function CheckoutPage() {
                     onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
                     onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
                   >
-                    Continue to Payment →
+                    {t('checkout.continueToPayment')}
                   </motion.button>
                 </motion.div>
               )}
@@ -526,13 +521,13 @@ export default function CheckoutPage() {
               {step === 2 && (
                 <motion.div key="payment" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-lg font-black text-ink">Payment</h2>
+                    <h2 className="text-lg font-black text-ink">{t('checkout.step2')}</h2>
                     <button
                       onClick={() => { setErrors({}); setStep(1) }}
                       className="text-xs font-bold transition-colors"
                       style={{ color: '#0056b3' }}
                     >
-                      ← Edit Shipping
+                      {t('checkout.editShipping')}
                     </button>
                   </div>
                   <PaymentStep
@@ -555,10 +550,10 @@ export default function CheckoutPage() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
-                        Processing…
+                        {t('checkout.processing')}
                       </>
                     ) : (
-                      `Place Order — $${fmt(grandTotal)}`
+                      t('checkout.placeOrder', { amount: fmt(grandTotal) })
                     )}
                   </motion.button>
                 </motion.div>
@@ -572,20 +567,16 @@ export default function CheckoutPage() {
             </AnimatePresence>
           </motion.div>
 
-          {/* ── Right: Order summary (hidden on confirmation) ── */}
           {step < 3 && (
             <div className="lg:sticky lg:top-28">
               <OrderSummary
-                items={items}
-                subtotal={subtotal}
-                shipping={shippingCost}
-                tax={tax}
-                total={grandTotal}
+                items={items} subtotal={subtotal} shipping={shippingCost} tax={tax} total={grandTotal}
               />
               {subtotal < 199 && (
-                <p className="mt-3 text-xs text-center text-muted">
-                  Add <strong className="text-ink">${fmt(199 - subtotal)}</strong> more for free shipping
-                </p>
+                <p
+                  className="mt-3 text-xs text-center text-muted"
+                  dangerouslySetInnerHTML={{ __html: t('checkout.addMoreFreeShipping', { amount: fmt(199 - subtotal) }) }}
+                />
               )}
             </div>
           )}

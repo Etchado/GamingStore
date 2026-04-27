@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -8,14 +9,14 @@ import { BUILDER_CATEGORIES, BUILDER_PARTS, TIER_LABELS } from '@/data/builderPa
 
 /* ── Tier badge ── */
 function TierBadge({ tier }) {
-  const t = TIER_LABELS[tier]
-  if (!t) return null
+  const tierData = TIER_LABELS[tier]
+  if (!tierData) return null
   return (
     <span
       className="text-[9px] font-black tracking-wider uppercase px-2 py-0.5 rounded-full"
-      style={{ background: t.bg, color: t.text }}
+      style={{ background: tierData.bg, color: tierData.text }}
     >
-      {t.label}
+      {tierData.label}
     </span>
   )
 }
@@ -35,11 +36,7 @@ function PartCard({ part, selected, onSelect }) {
       onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.borderColor = '#a8c8f0' }}
       onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.borderColor = '#e0e0e0' }}
     >
-      <img
-        src={part.image}
-        alt={part.name}
-        className="w-16 h-16 rounded-xl object-cover shrink-0 bg-surface"
-      />
+      <img src={part.image} alt={part.name} className="w-16 h-16 rounded-xl object-cover shrink-0 bg-surface" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <TierBadge tier={part.tier} />
@@ -52,10 +49,7 @@ function PartCard({ part, selected, onSelect }) {
           ${part.price.toLocaleString()}
         </p>
         {isSelected && (
-          <div
-            className="mt-1 w-5 h-5 rounded-full flex items-center justify-center ml-auto"
-            style={{ backgroundColor: '#0056b3' }}
-          >
+          <div className="mt-1 w-5 h-5 rounded-full flex items-center justify-center ml-auto" style={{ backgroundColor: '#0056b3' }}>
             <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
               <path d="M20 6 9 17l-5-5" />
             </svg>
@@ -68,6 +62,7 @@ function PartCard({ part, selected, onSelect }) {
 
 /* ── Category row ── */
 function CategoryRow({ cat, selected, open, onToggle, onSelect }) {
+  const { t } = useTranslation()
   const hasSelection = !!selected
 
   return (
@@ -75,7 +70,6 @@ function CategoryRow({ cat, selected, open, onToggle, onSelect }) {
       className="rounded-2xl border overflow-hidden transition-all"
       style={{ borderColor: open ? '#0056b3' : hasSelection ? '#a8c8f0' : '#e0e0e0' }}
     >
-      {/* Row header */}
       <button
         onClick={onToggle}
         className="w-full flex items-center gap-4 px-5 py-4 text-left transition-colors"
@@ -87,7 +81,7 @@ function CategoryRow({ cat, selected, open, onToggle, onSelect }) {
           {hasSelection ? (
             <p className="text-sm font-bold text-ink mt-0.5 truncate">{selected.name}</p>
           ) : (
-            <p className="text-sm text-muted mt-0.5">Click to choose a component</p>
+            <p className="text-sm text-muted mt-0.5">{t('builder.clickToChoose')}</p>
           )}
         </div>
         <div className="shrink-0 flex items-center gap-3">
@@ -101,23 +95,19 @@ function CategoryRow({ cat, selected, open, onToggle, onSelect }) {
               className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full"
               style={{ backgroundColor: '#fff3cd', color: '#856404' }}
             >
-              Required
+              {t('builder.required')}
             </span>
           )}
           <svg
             className="w-4 h-4 text-muted transition-transform duration-200"
             style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2.5}
-            viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
           >
             <path d="m6 9 6 6 6-6" />
           </svg>
         </div>
       </button>
 
-      {/* Part picker */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -146,20 +136,22 @@ function CategoryRow({ cat, selected, open, onToggle, onSelect }) {
 
 /* ── Build summary sidebar ── */
 function BuildSummary({ selections, onAddToCart, adding }) {
+  const { t } = useTranslation()
   const total = Object.values(selections).reduce((s, p) => s + (p?.price ?? 0), 0)
   const selected = Object.values(selections).filter(Boolean)
   const complete = selected.length === BUILDER_CATEGORIES.length
   const pct = Math.round((selected.length / BUILDER_CATEGORIES.length) * 100)
+  const remaining = BUILDER_CATEGORIES.length - selected.length
 
   return (
     <div className="rounded-2xl border overflow-hidden" style={{ borderColor: '#e0e0e0' }}>
-      {/* Header */}
       <div className="px-5 py-4 border-b" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-black text-ink">Your Build</h3>
-          <span className="text-xs font-bold text-muted">{selected.length}/{BUILDER_CATEGORIES.length} parts</span>
+          <h3 className="text-sm font-black text-ink">{t('builder.yourBuild')}</h3>
+          <span className="text-xs font-bold text-muted">
+            {t('builder.parts', { selected: selected.length, total: BUILDER_CATEGORIES.length })}
+          </span>
         </div>
-        {/* Progress bar */}
         <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
           <motion.div
             className="h-full rounded-full"
@@ -170,11 +162,10 @@ function BuildSummary({ selections, onAddToCart, adding }) {
           />
         </div>
         <p className="text-[11px] text-muted mt-1.5">
-          {complete ? '✓ Build complete — ready to order!' : `${pct}% complete`}
+          {complete ? t('builder.buildComplete') : t('builder.percentComplete', { pct })}
         </p>
       </div>
 
-      {/* Parts list */}
       <div className="px-5 py-4 space-y-2.5 max-h-72 overflow-y-auto">
         {BUILDER_CATEGORIES.map((cat) => {
           const part = selections[cat.key]
@@ -186,7 +177,7 @@ function BuildSummary({ selections, onAddToCart, adding }) {
                 {part ? (
                   <p className="text-xs font-semibold text-ink truncate">{part.name}</p>
                 ) : (
-                  <p className="text-xs text-muted italic">Not selected</p>
+                  <p className="text-xs text-muted italic">{t('builder.notSelected')}</p>
                 )}
               </div>
               {part && (
@@ -199,13 +190,10 @@ function BuildSummary({ selections, onAddToCart, adding }) {
         })}
       </div>
 
-      {/* Total + CTA */}
       <div className="px-5 py-4 border-t space-y-3" style={{ borderColor: '#e0e0e0' }}>
         <div className="flex justify-between items-baseline">
-          <span className="text-sm font-black text-ink">Total</span>
-          <span className="text-xl font-black" style={{ color: '#0056b3' }}>
-            ${total.toLocaleString()}
-          </span>
+          <span className="text-sm font-black text-ink">{t('builder.total')}</span>
+          <span className="text-xl font-black" style={{ color: '#0056b3' }}>${total.toLocaleString()}</span>
         </div>
 
         <motion.button
@@ -223,19 +211,17 @@ function BuildSummary({ selections, onAddToCart, adding }) {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
               </svg>
-              Adding…
+              {t('builder.adding')}
             </>
           ) : complete ? (
-            'Add Build to Cart →'
+            t('builder.addBuildToCart')
           ) : (
-            `Select ${BUILDER_CATEGORIES.length - selected.length} more part${BUILDER_CATEGORIES.length - selected.length !== 1 ? 's' : ''}`
+            t('builder.selectMoreParts', { count: remaining })
           )}
         </motion.button>
 
         {!complete && (
-          <p className="text-[11px] text-center text-muted">
-            Complete all required components to order.
-          </p>
+          <p className="text-[11px] text-center text-muted">{t('builder.completeAll')}</p>
         )}
       </div>
     </div>
@@ -244,7 +230,8 @@ function BuildSummary({ selections, onAddToCart, adding }) {
 
 /* ── Page ── */
 export default function BuilderPage() {
-  usePageTitle('Custom PC Builder')
+  const { t } = useTranslation()
+  usePageTitle(t('builder.sub'))
   const navigate = useNavigate()
   const { addItem } = useCart()
   const { addToast } = useToast()
@@ -294,6 +281,12 @@ export default function BuilderPage() {
     }, 800)
   }
 
+  const trustItems = [
+    { icon: '🛡️', label: t('builder.warranty') },
+    { icon: '🔧', label: t('builder.assembly') },
+    { icon: '🚚', label: t('builder.freeShipping') },
+  ]
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -302,20 +295,17 @@ export default function BuilderPage() {
       className="pt-25 lg:pt-35 min-h-screen"
       style={{ backgroundColor: '#f8fafc' }}
     >
-      {/* Hero header */}
       <div className="border-b bg-white" style={{ borderColor: '#e0e0e0' }}>
         <div className="max-w-7xl mx-auto px-6 py-8">
           <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
-            ◈ Custom PC Builder
+            ◈ {t('builder.sub')}
           </p>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <h1 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
-                Build Your Dream PC
+                {t('builder.title')}
               </h1>
-              <p className="text-sm text-muted mt-2 max-w-lg">
-                Pick every component. We handle assembly and shipping — every build is tested before it leaves.
-              </p>
+              <p className="text-sm text-muted mt-2 max-w-lg">{t('builder.desc')}</p>
             </div>
             <div className="flex items-center gap-3 shrink-0">
               {Object.keys(selections).length > 0 && (
@@ -326,7 +316,7 @@ export default function BuilderPage() {
                   onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#fca5a5'; e.currentTarget.style.color = '#b91c1c' }}
                   onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e0e0e0'; e.currentTarget.style.color = '#718096' }}
                 >
-                  Reset Build
+                  {t('builder.resetBuild')}
                 </button>
               )}
               <button
@@ -334,7 +324,7 @@ export default function BuilderPage() {
                 className="hidden sm:inline text-sm font-bold transition-colors"
                 style={{ color: '#0056b3' }}
               >
-                ← Back to Store
+                {t('builder.backToStore')}
               </button>
             </div>
           </div>
@@ -344,7 +334,6 @@ export default function BuilderPage() {
       <div className="max-w-7xl mx-auto px-6 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-8 items-start">
 
-          {/* ── Left: Component rows ── */}
           <div className="space-y-3">
             {BUILDER_CATEGORIES.map((cat) => (
               <CategoryRow
@@ -358,21 +347,11 @@ export default function BuilderPage() {
             ))}
           </div>
 
-          {/* ── Right: Sticky summary ── */}
           <div className="lg:sticky lg:top-28">
-            <BuildSummary
-              selections={selections}
-              onAddToCart={handleAddToCart}
-              adding={adding}
-            />
+            <BuildSummary selections={selections} onAddToCart={handleAddToCart} adding={adding} />
 
-            {/* Trust row */}
             <div className="mt-4 grid grid-cols-3 gap-2">
-              {[
-                { icon: '🛡️', label: '2-Year Warranty' },
-                { icon: '🔧', label: 'Expert Assembly' },
-                { icon: '🚚', label: 'Free Shipping' },
-              ].map(({ icon, label }) => (
+              {trustItems.map(({ icon, label }) => (
                 <div
                   key={label}
                   className="flex flex-col items-center gap-1 py-3 rounded-2xl border text-center"

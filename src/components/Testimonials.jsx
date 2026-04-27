@@ -1,42 +1,11 @@
 import { motion } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 
-const REVIEWS = [
-  {
-    name: 'Alex M.',
-    product: 'White Phantom Custom PC',
-    rating: 5,
-    text: 'Arrived fully assembled and tested. The cable management is immaculate — I\'ve built PCs for 10 years and this is cleaner than anything I\'ve done myself.',
-    avatar: 'AM',
-    avatarBg: '#e6f0fa',
-    avatarColor: '#004494',
-  },
-  {
-    name: 'Sarah K.',
-    product: 'LG UltraWide 34" Monitor',
-    rating: 5,
-    text: 'The ultrawide changed everything about my workflow. Colors are perfect out of the box and the USB-C charging is a game-changer for my laptop setup.',
-    avatar: 'SK',
-    avatarBg: '#e9f7ed',
-    avatarColor: '#1e8035',
-  },
-  {
-    name: 'James R.',
-    product: 'Secretlab TITAN Evo 2025',
-    rating: 5,
-    text: 'Best chair I\'ve ever owned. After 8 hours of gaming and work, zero back pain. The lumbar support is exactly what my chiropractor ordered.',
-    avatar: 'JR',
-    avatarBg: '#fdf4ff',
-    avatarColor: '#7e22ce',
-  },
-  {
-    name: 'Nour A.',
-    product: 'RTX 4090 24GB',
-    rating: 5,
-    text: 'GamingStore had it in stock when nobody else did, shipped in 2 days. Running everything maxed at 4K without breaking a sweat. Absolutely worth it.',
-    avatar: 'NA',
-    avatarBg: '#fff3e0',
-    avatarColor: '#c2410c',
-  },
+const REVIEW_META = [
+  { name: 'Alex M.',  product: 'White Phantom Custom PC',    avatar: 'AM', avatarBg: '#e6f0fa', avatarColor: '#004494', key: 'review1' },
+  { name: 'Sarah K.', product: 'LG UltraWide 34" Monitor',  avatar: 'SK', avatarBg: '#e9f7ed', avatarColor: '#1e8035', key: 'review2' },
+  { name: 'James R.', product: 'Secretlab TITAN Evo 2025',  avatar: 'JR', avatarBg: '#fdf4ff', avatarColor: '#7e22ce', key: 'review3' },
+  { name: 'Nour A.',  product: 'RTX 4090 24GB',             avatar: 'NA', avatarBg: '#fff3e0', avatarColor: '#c2410c', key: 'review4' },
 ]
 
 function Stars({ count }) {
@@ -52,6 +21,8 @@ function Stars({ count }) {
 }
 
 export default function Testimonials() {
+  const { t } = useTranslation()
+
   return (
     <section className="py-20 px-6 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -64,18 +35,19 @@ export default function Testimonials() {
           className="text-center mb-12"
         >
           <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
-            ◈ Customer Stories
+            ◈ {t('testimonials.sub')}
           </p>
           <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
-            Trusted by Builders Worldwide
+            {t('testimonials.title')}
           </h2>
-          <p className="text-sm text-muted mt-3">
-            Over <strong className="text-ink font-bold">12,000+ happy customers</strong> — here's what they say.
-          </p>
+          <p
+            className="text-sm text-muted mt-3"
+            dangerouslySetInnerHTML={{ __html: t('testimonials.subtext') }}
+          />
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {REVIEWS.map((r, i) => (
+          {REVIEW_META.map((r, i) => (
             <motion.div
               key={r.name}
               initial={{ opacity: 0, y: 20 }}
@@ -85,8 +57,8 @@ export default function Testimonials() {
               className="bg-white rounded-2xl border p-5 flex flex-col gap-3 hover:shadow-md transition-shadow"
               style={{ borderColor: '#e0e0e0' }}
             >
-              <Stars count={r.rating} />
-              <p className="text-sm text-ink leading-relaxed flex-1">"{r.text}"</p>
+              <Stars count={5} />
+              <p className="text-sm text-ink leading-relaxed flex-1">"{t(`testimonials.${r.key}`)}"</p>
               <div className="border-t pt-3 flex items-center gap-3" style={{ borderColor: '#f0f0f0' }}>
                 <div
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-black shrink-0"
@@ -96,7 +68,7 @@ export default function Testimonials() {
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-bold text-ink leading-none">{r.name}</p>
-                  <p className="text-[11px] text-muted mt-0.5 truncate">Bought: {r.product}</p>
+                  <p className="text-[11px] text-muted mt-0.5 truncate">{t('testimonials.bought')} {r.product}</p>
                 </div>
               </div>
             </motion.div>
