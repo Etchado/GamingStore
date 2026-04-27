@@ -131,7 +131,7 @@ function ReviewsSection({ rating, reviewCount }) {
         <div className="flex-1 w-full space-y-2">
           {bars.map(({ stars, pct }) => (
             <div key={stars} className="flex items-center gap-3">
-              <span className="text-xs text-muted w-6 text-right shrink-0">{stars}★</span>
+              <span className="text-xs text-muted w-6 text-end shrink-0">{stars}★</span>
               <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#e0e0e0' }}>
                 <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: '#f59e0b' }} />
               </div>

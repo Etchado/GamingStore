@@ -251,7 +251,7 @@ function PaymentStep({ data, onChange, errors }) {
               <p className="text-white/50 text-[10px] uppercase tracking-widest">{t('checkout.cardholder')}</p>
               <p className="text-white text-sm font-bold">{data.cardName || 'FULL NAME'}</p>
             </div>
-            <div className="text-right">
+            <div className="text-end">
               <p className="text-white/50 text-[10px] uppercase tracking-widest">{t('checkout.expires')}</p>
               <p className="text-white text-sm font-bold">{data.expiry || 'MM/YY'}</p>
             </div>
@@ -347,7 +347,7 @@ function ConfirmedStep({ orderId, shipping, items }) {
       </div>
 
       <div
-        className="w-full rounded-2xl px-6 py-4 text-left"
+        className="w-full rounded-2xl px-6 py-4 text-start"
         style={{ backgroundColor: '#f8fafc', border: '1px solid #e0e0e0' }}
       >
         <div className="flex items-center justify-between mb-3">
@@ -356,7 +356,7 @@ function ConfirmedStep({ orderId, shipping, items }) {
         </div>
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs font-black uppercase tracking-widest text-muted">{t('checkout.shipTo')}</span>
-          <span className="text-sm font-semibold text-ink text-right max-w-[60%] leading-snug">
+          <span className="text-sm font-semibold text-ink text-end max-w-[60%] leading-snug">
             {shipping.address}, {shipping.city}, {shipping.country}
           </span>
         </div>
@@ -370,7 +370,7 @@ function ConfirmedStep({ orderId, shipping, items }) {
         {items.map(({ product, qty }) => (
           <div key={product.id ?? product.title} className="flex items-center gap-3">
             <img src={product.image} alt={product.title} loading="lazy" onError={onImgError} className="w-10 h-10 rounded-xl object-cover shrink-0 bg-surface" />
-            <p className="text-xs font-semibold text-ink flex-1 text-left line-clamp-1">{product.title}</p>
+            <p className="text-xs font-semibold text-ink flex-1 text-start line-clamp-1">{product.title}</p>
             <span className="text-xs text-muted shrink-0">×{qty}</span>
           </div>
         ))}

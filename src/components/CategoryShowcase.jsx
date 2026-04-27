@@ -62,7 +62,7 @@ export default function CategoryShowcase() {
             >
               <button
                 onClick={() => handleCategoryClick(c.filter)}
-                className="w-full text-left block rounded-2xl border p-5 transition-shadow hover:shadow-card-hover cursor-pointer"
+                className="w-full text-start block rounded-2xl border p-5 transition-shadow hover:shadow-card-hover cursor-pointer"
                 style={{ background: c.bg, borderColor: c.border }}
               >
                 <div className="text-3xl mb-3" aria-hidden="true">{c.icon}</div>

@@ -28,12 +28,12 @@ function FAQSection() {
   }))
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16">
+    <div className="max-w-3xl mx-auto px-6 pt-4 pb-16">
       <Crumb label={t('pages.faq')} />
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>◈ {t('pages.faq')}</p>
-        <h1 className="text-3xl sm:text-4xl font-black text-ink tracking-tight mb-2">{t('pages.faqDesc').split('.')[0]}</h1>
+        <h1 className="text-3xl sm:text-4xl font-black text-ink tracking-tight mb-2">{t('faqPage.title')}</h1>
         <p className="text-sm text-muted mb-10">{t('pages.faqDesc')}</p>
 
         <div className="space-y-3">
@@ -44,7 +44,7 @@ function FAQSection() {
               style={{ borderColor: open === i ? '#99c3eb' : '#e0e0e0', backgroundColor: open === i ? '#f8fbff' : '#fff' }}
             >
               <button
-                className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
+                className="w-full flex items-center justify-between gap-4 px-5 py-4 text-start"
                 onClick={() => setOpen(open === i ? null : i)}
                 aria-expanded={open === i}
               >
@@ -75,7 +75,7 @@ function FAQSection() {
         </div>
 
         <div className="mt-12 rounded-2xl p-6 text-center" style={{ backgroundColor: '#e6f0fa', border: '1px solid #99c3eb' }}>
-          <p className="text-sm font-bold text-ink mb-2">Still have questions?</p>
+          <p className="text-sm font-bold text-ink mb-2">{t('faqPage.stillHaveQuestions')}</p>
           <p className="text-xs text-muted mb-4">{t('contactPage.infoSub')}</p>
           <Link
             to="/contact"
@@ -125,7 +125,7 @@ function ContactSection() {
   const blurStyle  = (e, err) => { e.target.style.borderColor = err ? '#e53e3e' : '#e0e0e0'; e.target.style.boxShadow = 'none' }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-16">
+    <div className="max-w-5xl mx-auto px-6 pt-4 pb-16">
       <Crumb label={t('pages.contact')} />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-10 items-start">
@@ -243,8 +243,11 @@ function ContactSection() {
             ))}
           </div>
           <div className="rounded-2xl p-5 text-center" style={{ backgroundColor: '#e9f7ed', border: '1px solid #a7dfb7' }}>
-            <p className="text-xs font-bold text-ink mb-1">Need urgent help?</p>
-            <p className="text-xs text-muted">Visit our <Link to="/faq" className="font-bold" style={{ color: '#1e8035' }}>FAQ</Link> for instant answers to common questions.</p>
+            <p className="text-xs font-bold text-ink mb-1">{t('faqPage.needUrgentHelp')}</p>
+            <p className="text-xs text-muted">
+              <Link to="/faq" className="font-bold" style={{ color: '#1e8035' }}>{t('pages.faq')}</Link>
+              {' — '}{t('pages.faqDesc')}
+            </p>
           </div>
         </motion.div>
       </div>
@@ -291,7 +294,7 @@ function TrackOrderSection() {
   const statusColors = ['#6366f1', '#f59e0b', '#0056b3', '#8b5cf6', '#1e8035']
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-16">
+    <div className="max-w-2xl mx-auto px-6 pt-4 pb-16">
       <Crumb label={t('pages.trackOrder')} />
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
@@ -353,7 +356,7 @@ function TrackOrderSection() {
               <div className="px-6 py-5 space-y-5">
                 <p className="text-sm font-semibold text-ink">{result.product}</p>
 
-                <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
                   {[
                     { l: t('trackOrderPage.estDelivery'), v: result.estDelivery },
                     { l: t('trackOrderPage.carrier'),    v: result.carrier },
@@ -426,7 +429,7 @@ function ReturnsSection() {
   ]
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16">
+    <div className="max-w-3xl mx-auto px-6 pt-4 pb-16">
       <Crumb label={t('pages.returns')} />
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>◈ {t('pages.returns')}</p>
@@ -482,7 +485,7 @@ function WarrantySection() {
   ]
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16">
+    <div className="max-w-3xl mx-auto px-6 pt-4 pb-16">
       <Crumb label={t('pages.warranty')} />
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>◈ {t('pages.warranty')}</p>
@@ -526,7 +529,7 @@ function LocationsSection() {
   }))
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-16">
+    <div className="max-w-4xl mx-auto px-6 pt-4 pb-16">
       <Crumb label={t('pages.locations')} />
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>◈ {t('pages.locations')}</p>
@@ -583,7 +586,7 @@ function GenericPlaceholder({ pathname }) {
   useSEO({ title: t(meta.titleKey) })
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-16">
+    <div className="max-w-2xl mx-auto px-6 pt-4 pb-16">
       <Crumb label={t(meta.titleKey)} />
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}
         className="text-center py-10"
@@ -602,7 +605,7 @@ function GenericPlaceholder({ pathname }) {
             {t('pages.contact')}
           </Link>
         </div>
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 text-start">
           {[
             { icon: '📧', label: t('pages.emailUs'),  val: 'support@gamingstore.com' },
             { icon: '📞', label: t('pages.callUs'),   val: '+1 (800) 123-4567' },
@@ -625,7 +628,7 @@ export default function SupportPage() {
   const { pathname } = useLocation()
 
   return (
-    <div className="min-h-[80vh] pt-28" style={{ backgroundColor: '#f8fafc' }}>
+    <div className="min-h-[80vh] pt-25 lg:pt-35" style={{ backgroundColor: '#f8fafc' }}>
       {pathname === '/faq'          && <FAQSection />}
       {pathname === '/contact'      && <ContactSection />}
       {pathname === '/track-order'  && <TrackOrderSection />}

@@ -442,6 +442,10 @@
     "cookies": "Cookie Settings"
   },
   "faqPage": {
+    "title": "Frequently Asked Questions",
+    "stillHaveQuestions": "Still have questions?",
+    "needUrgentHelp": "Need urgent help?",
+    "needUrgentHelpSub": "Visit our {{faqLink}} for instant answers to common questions.",
     "q1": "What payment methods do you accept?",
     "a1": "We accept all major credit cards (Visa, Mastercard, Amex), PayPal, Apple Pay, and Google Pay. All transactions are secured with 256-bit SSL encryption.",
     "q2": "How long does shipping take?",

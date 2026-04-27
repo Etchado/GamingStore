@@ -29,7 +29,7 @@ function PartCard({ part, selected, onSelect }) {
     <motion.button
       whileTap={{ scale: 0.98 }}
       onClick={() => onSelect(part)}
-      className="w-full text-left flex items-center gap-4 p-4 rounded-2xl border-2 transition-all"
+      className="w-full text-start flex items-center gap-4 p-4 rounded-2xl border-2 transition-all"
       style={{
         borderColor:     isSelected ? '#0056b3' : '#e0e0e0',
         backgroundColor: isSelected ? '#f0f7ff' : '#fff',
@@ -45,7 +45,7 @@ function PartCard({ part, selected, onSelect }) {
         <p className="text-sm font-bold text-ink leading-snug">{part.name}</p>
         <p className="text-[11px] text-muted mt-0.5">{part.spec}</p>
       </div>
-      <div className="shrink-0 text-right">
+      <div className="shrink-0 text-end">
         <p className="text-base font-black" style={{ color: '#0056b3' }}>
           ${part.price.toLocaleString()}
         </p>
@@ -73,7 +73,7 @@ function CategoryRow({ cat, selected, open, onToggle, onSelect }) {
     >
       <button
         onClick={onToggle}
-        className="w-full flex items-center gap-4 px-5 py-4 text-left transition-colors"
+        className="w-full flex items-center gap-4 px-5 py-4 text-start transition-colors"
         style={{ backgroundColor: open ? '#f0f7ff' : '#fff' }}
       >
         <span className="text-2xl w-8 text-center shrink-0">{cat.icon}</span>

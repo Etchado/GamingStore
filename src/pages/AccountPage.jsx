@@ -138,7 +138,7 @@ function Dashboard({ userName, onSignOut }) {
                             <p className="text-sm font-bold text-ink line-clamp-1">{order.product}</p>
                             <p className="text-xs text-muted mt-0.5">{order.id} · {order.date}</p>
                           </div>
-                          <div className="flex items-center gap-3 shrink-0">
+                          <div className="flex flex-col items-end sm:flex-row sm:items-center gap-1 sm:gap-3 shrink-0">
                             <span className="text-sm font-black" style={{ color: '#0056b3' }}>{order.price}</span>
                             <span className="text-[11px] font-black px-2.5 py-1 rounded-full" style={{ backgroundColor: style.bg, color: style.color }}>
                               {t(`account.${statusKey}`)}
@@ -167,7 +167,7 @@ function Dashboard({ userName, onSignOut }) {
                   ].map(({ icon, label }) => (
                     <button
                       key={label}
-                      className="flex items-center gap-3 p-4 rounded-xl border text-left hover:shadow-sm transition-shadow"
+                      className="flex items-center gap-3 p-4 rounded-xl border text-start hover:shadow-sm transition-shadow"
                       style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}
                     >
                       <span className="text-xl">{icon}</span>
@@ -243,7 +243,7 @@ export default function AccountPage() {
 
   if (loggedInAs) {
     return (
-      <div className="min-h-[80vh] px-4 pt-28 pb-16" style={{ backgroundColor: '#f8fafc' }}>
+      <div className="min-h-[80vh] px-4 pt-25 lg:pt-35 pb-16" style={{ backgroundColor: '#f8fafc' }}>
         {/* Breadcrumb */}
         <div className="max-w-4xl mx-auto mb-6">
           <div className="flex items-center gap-1.5 text-xs text-muted">
@@ -259,7 +259,7 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 pt-28" style={{ backgroundColor: '#f8fafc' }}>
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 pt-25 lg:pt-35" style={{ backgroundColor: '#f8fafc' }}>
       <div className="w-full max-w-md">
 
         {/* Breadcrumb */}

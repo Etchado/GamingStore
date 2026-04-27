@@ -190,7 +190,7 @@ export default function CompareModal({ isOpen, onClose }) {
                     {ROW_KEYS.map((row) => (
                       <tr key={row.key} className="border-t" style={{ borderColor: '#f0f0f0' }}>
                         {/* Row label */}
-                        <td className="py-3 pr-4 text-right align-middle">
+                        <td className="py-3 pe-4 text-end align-middle">
                           {row.labelKey && (
                             <span className="text-[11px] font-black tracking-wide uppercase text-muted whitespace-nowrap">
                               {t(row.labelKey)}
