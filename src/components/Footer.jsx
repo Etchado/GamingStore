@@ -15,17 +15,21 @@ const SHOP_KEYS = [
 ]
 
 const SUPPORT_KEYS = [
-  { key: 'support.faq',          href: '#' },
-  { key: 'support.contact',      href: '#' },
-  { key: 'support.returns',      href: '#' },
-  { key: 'support.trackOrder',   href: '#' },
-  { key: 'support.liveChat',     href: '#' },
-  { key: 'support.builderGuide', href: '#' },
-  { key: 'support.warranty',     href: '#' },
-  { key: 'support.locations',    href: '#' },
+  { key: 'support.faq',          href: '/faq' },
+  { key: 'support.contact',      href: '/contact' },
+  { key: 'support.returns',      href: '/returns' },
+  { key: 'support.trackOrder',   href: '/track-order' },
+  { key: 'support.liveChat',     href: '/live-chat' },
+  { key: 'support.builderGuide', href: '/builder-guide' },
+  { key: 'support.warranty',     href: '/warranty' },
+  { key: 'support.locations',    href: '/locations' },
 ]
 
-const BOTTOM_LINKS = ['privacy', 'terms', 'cookies']
+const BOTTOM_LINKS = [
+  { key: 'privacy', href: '/privacy' },
+  { key: 'terms',   href: '/terms' },
+  { key: 'cookies', href: '/cookies' },
+]
 
 const SOCIALS = [
   {
@@ -197,10 +201,10 @@ export default function Footer() {
             {t('footer.copyright', { year: new Date().getFullYear() })}
           </p>
           <div className="flex items-center gap-6">
-            {BOTTOM_LINKS.map((key) => (
-              <a key={key} href="#" className="text-xs text-muted hover:text-ink transition-colors">
+            {BOTTOM_LINKS.map(({ key, href }) => (
+              <Link key={key} to={href} className="text-xs text-muted hover:text-ink transition-colors">
                 {t(`footer.${key}`)}
-              </a>
+              </Link>
             ))}
           </div>
         </div>

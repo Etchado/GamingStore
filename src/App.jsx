@@ -26,6 +26,9 @@ const CheckoutPage      = lazy(() => import('./pages/CheckoutPage'))
 const WishlistPage      = lazy(() => import('./pages/WishlistPage'))
 const BuilderPage       = lazy(() => import('./pages/BuilderPage'))
 const NotFoundPage      = lazy(() => import('./pages/NotFoundPage'))
+const AccountPage       = lazy(() => import('./pages/AccountPage'))
+const GamesPage         = lazy(() => import('./pages/GamesPage'))
+const SupportPage       = lazy(() => import('./pages/SupportPage'))
 
 function PageLoader() {
   return (
@@ -78,6 +81,19 @@ function AppShell() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/wishlist" element={<WishlistPage />} />
             <Route path="/builder" element={<BuilderPage />} />
+            <Route path="/account" element={<AccountPage />} />
+            <Route path="/games" element={<GamesPage />} />
+            <Route path="/faq"          element={<SupportPage />} />
+            <Route path="/contact"      element={<SupportPage />} />
+            <Route path="/returns"      element={<SupportPage />} />
+            <Route path="/track-order"  element={<SupportPage />} />
+            <Route path="/live-chat"    element={<SupportPage />} />
+            <Route path="/builder-guide" element={<SupportPage />} />
+            <Route path="/warranty"     element={<SupportPage />} />
+            <Route path="/locations"    element={<SupportPage />} />
+            <Route path="/privacy"      element={<SupportPage />} />
+            <Route path="/terms"        element={<SupportPage />} />
+            <Route path="/cookies"      element={<SupportPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>

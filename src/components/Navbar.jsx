@@ -235,13 +235,13 @@ export default function Navbar() {
           {/* Icons */}
           <div className="flex items-center gap-1 sm:gap-2 ml-auto md:ml-0 shrink-0">
             {/* User — hidden on mobile */}
-            <button className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-muted hover:text-ink hover:bg-surface transition-colors">
+            <Link to="/account" className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-muted hover:text-ink hover:bg-surface transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
               <span className="text-xs font-semibold hidden sm:inline">{t('nav.account')}</span>
-            </button>
+            </Link>
 
             {/* Wishlist */}
             <Link
@@ -472,13 +472,17 @@ export default function Navbar() {
               >
                 ♡ {t('nav.wishlist')}{wishlistCount > 0 && <span className="text-red-500 font-black">({wishlistCount})</span>}
               </Link>
-              <button className="text-xs font-semibold text-muted hover:text-ink transition-colors ml-auto">
+              <Link
+                to="/account"
+                onClick={() => setMobileOpen(false)}
+                className="text-xs font-semibold text-muted hover:text-ink transition-colors ml-auto"
+              >
                 <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
                 {t('nav.account')}
-              </button>
+              </Link>
             </div>
           </motion.div>
         )}
