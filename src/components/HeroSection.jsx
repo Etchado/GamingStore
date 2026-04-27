@@ -145,8 +145,8 @@ export default function HeroSection() {
               🖥️
             </div>
             <div>
-              <p className="text-xs font-black text-ink">Starting at <span style={{ color: '#0056b3' }}>$1,299</span></p>
-              <p className="text-[11px] text-muted">Custom PC Builds</p>
+              <p className="text-xs font-black text-ink">{t('hero.floatStarting')} <span style={{ color: '#0056b3' }}>$1,299</span></p>
+              <p className="text-[11px] text-muted">{t('hero.floatBuilds')}</p>
             </div>
           </motion.div>
 
@@ -158,10 +158,10 @@ export default function HeroSection() {
             className="absolute -top-5 -right-5 bg-white rounded-2xl border border-border px-4 py-3 flex items-center gap-2.5"
             style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
           >
-            <div className="text-amber-400 flex">★★★★★</div>
+            <div className="text-amber-400 flex" aria-hidden="true">★★★★★</div>
             <div>
-              <p className="text-xs font-black text-ink">4.9 / 5.0</p>
-              <p className="text-[11px] text-muted">2,400+ Reviews</p>
+              <p className="text-xs font-black text-ink">{t('hero.floatRating')}</p>
+              <p className="text-[11px] text-muted">{t('hero.floatReviews')}</p>
             </div>
           </motion.div>
         </motion.div>

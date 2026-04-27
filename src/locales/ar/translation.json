@@ -13,7 +13,8 @@
     "cart": "السلة",
     "wishlist": "المفضلة",
     "searchPlaceholder": "ابحث عن المنتجات والعلامات التجارية…",
-    "searchMobilePlaceholder": "ابحث عن منتجات…"
+    "searchMobilePlaceholder": "ابحث عن منتجات…",
+    "allCategories": "جميع الفئات"
   },
   "hero": {
     "badge": "أجهزة كمبيوتر متميزة",
@@ -25,12 +26,28 @@
     "stat1n": "+500", "stat1l": "جهاز كمبيوتر",
     "stat2n": "+10K", "stat2l": "مكون",
     "stat3n": "48 ساعة", "stat3l": "توصيل",
-    "authorizedReseller": "موزع معتمد"
+    "authorizedReseller": "موزع معتمد",
+    "floatStarting": "يبدأ من",
+    "floatBuilds": "أجهزة كمبيوتر مخصصة",
+    "floatRating": "4.9 / 5.0",
+    "floatReviews": "+2,400 مراجعة"
   },
   "categories": {
     "title": "كل ما تحتاجه لإعدادك",
     "sub": "تسوق حسب الفئة",
-    "viewAll": "جميع الفئات →"
+    "viewAll": "جميع الفئات →",
+    "pcBuilds": "أجهزة كمبيوتر مخصصة",
+    "pcBuildsSub": "جاهزة ومخصصة",
+    "pcBuildsCount": "120+ نظام",
+    "gpuCpu": "كرت الشاشة والمعالج",
+    "gpuCpuSub": "أحدث إصدارات NVIDIA وAMD وIntel",
+    "gpuCpuCount": "300+ قطعة",
+    "monitors": "شاشات",
+    "monitorsSub": "لوحات 4K وعريضة و240Hz",
+    "monitorsCount": "80+ شاشة",
+    "furniture": "أثاث",
+    "furnitureSub": "مكاتب وكراسي مريحة",
+    "furnitureCount": "60+ قطعة"
   },
   "cart": {
     "title": "سلة التسوق",
@@ -269,6 +286,30 @@
     "newsletterSub": "احصل على أحدث العروض والمنتجات الجديدة والعروض الحصرية في بريدك الإلكتروني.",
     "subscribe": "اشترك",
     "noSpam": "لا رسائل غير مرغوب فيها. إلغاء الاشتراك في أي وقت.",
-    "subscribed": "✓ تم اشتراكك!"
+    "subscribed": "✓ تم اشتراكك!",
+    "shop": {
+      "customPCs": "أجهزة كمبيوتر مخصصة",
+      "gpus": "كروت الشاشة",
+      "cpus": "المعالجات",
+      "monitors": "شاشات الألعاب",
+      "peripherals": "لوحات المفاتيح والفأرة",
+      "furniture": "أثاث مريح",
+      "newArrivals": "وافدون جدد",
+      "deals": "عروض وتخفيضات"
+    },
+    "support": {
+      "faq": "الأسئلة الشائعة",
+      "contact": "اتصل بنا",
+      "returns": "الإرجاع والاسترداد",
+      "trackOrder": "تتبع طلبي",
+      "liveChat": "الدردشة المباشرة",
+      "builderGuide": "دليل تجميع الكمبيوتر",
+      "warranty": "معلومات الضمان",
+      "locations": "مواقع المتجر"
+    },
+    "copyright": "© {{year}} GamingStore. جميع الحقوق محفوظة.",
+    "privacy": "سياسة الخصوصية",
+    "terms": "شروط الخدمة",
+    "cookies": "إعدادات ملفات الارتباط"
   }
 }

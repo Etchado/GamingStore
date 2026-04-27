@@ -6,8 +6,9 @@ import { useCart } from '@/context/CartContext'
 
 export default function CartDrawer() {
   const navigate = useNavigate()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { items, isOpen, setIsOpen, removeItem, updateQty, itemCount, total } = useCart()
+  const isRTL = i18n.language?.startsWith('ar')
 
   useEffect(() => {
     if (!isOpen) return
@@ -34,12 +35,12 @@ export default function CartDrawer() {
             role="dialog"
             aria-modal="true"
             aria-label={t('cart.title')}
-            initial={{ x: '100%' }}
+            initial={{ x: isRTL ? '-100%' : '100%' }}
             animate={{ x: 0 }}
-            exit={{ x: '100%' }}
+            exit={{ x: isRTL ? '-100%' : '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md z-[70] bg-white flex flex-col"
-            style={{ boxShadow: '-8px 0 40px rgba(0,0,0,0.12)' }}
+            className={`fixed ${isRTL ? 'left-0' : 'right-0'} top-0 h-full w-full max-w-md z-[70] bg-white flex flex-col`}
+            style={{ boxShadow: isRTL ? '8px 0 40px rgba(0,0,0,0.12)' : '-8px 0 40px rgba(0,0,0,0.12)' }}
           >
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">

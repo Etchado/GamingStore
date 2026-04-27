@@ -13,7 +13,8 @@
     "cart": "Cart",
     "wishlist": "Wishlist",
     "searchPlaceholder": "Search products, brands, and categories…",
-    "searchMobilePlaceholder": "Search products…"
+    "searchMobilePlaceholder": "Search products…",
+    "allCategories": "All Categories"
   },
   "hero": {
     "badge": "Premium PC Hardware",
@@ -25,12 +26,28 @@
     "stat1n": "500+", "stat1l": "PC Builds",
     "stat2n": "10K+", "stat2l": "Components",
     "stat3n": "48hr", "stat3l": "Delivery",
-    "authorizedReseller": "Authorized Reseller"
+    "authorizedReseller": "Authorized Reseller",
+    "floatStarting": "Starting at",
+    "floatBuilds": "Custom PC Builds",
+    "floatRating": "4.9 / 5.0",
+    "floatReviews": "2,400+ Reviews"
   },
   "categories": {
     "title": "Everything Your Setup Needs",
     "sub": "Shop by Category",
-    "viewAll": "All categories →"
+    "viewAll": "All categories →",
+    "pcBuilds": "Custom PCs",
+    "pcBuildsSub": "Pre-configured & bespoke",
+    "pcBuildsCount": "120+ systems",
+    "gpuCpu": "GPU & CPU",
+    "gpuCpuSub": "Latest-gen NVIDIA, AMD, Intel",
+    "gpuCpuCount": "300+ parts",
+    "monitors": "Monitors",
+    "monitorsSub": "4K, Ultrawide & 240Hz panels",
+    "monitorsCount": "80+ displays",
+    "furniture": "Furniture",
+    "furnitureSub": "Ergonomic desks & chairs",
+    "furnitureCount": "60+ pieces"
   },
   "cart": {
     "title": "Your Cart",
@@ -269,6 +286,30 @@
     "newsletterSub": "Get the latest deals, new arrivals, and exclusive offers delivered to your inbox.",
     "subscribe": "Subscribe",
     "noSpam": "No spam. Unsubscribe anytime.",
-    "subscribed": "✓ You're subscribed!"
+    "subscribed": "✓ You're subscribed!",
+    "shop": {
+      "customPCs": "Custom PC Systems",
+      "gpus": "Graphics Cards",
+      "cpus": "Processors (CPU)",
+      "monitors": "Gaming Monitors",
+      "peripherals": "Keyboards & Mice",
+      "furniture": "Ergonomic Furniture",
+      "newArrivals": "New Arrivals",
+      "deals": "Deals & Clearance"
+    },
+    "support": {
+      "faq": "FAQ",
+      "contact": "Contact Us",
+      "returns": "Returns & Refunds",
+      "trackOrder": "Track My Order",
+      "liveChat": "Live Chat",
+      "builderGuide": "PC Builder Guide",
+      "warranty": "Warranty Info",
+      "locations": "Store Locations"
+    },
+    "copyright": "© {{year}} GamingStore. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "cookies": "Cookie Settings"
   }
 }

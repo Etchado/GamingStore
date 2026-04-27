@@ -3,38 +3,29 @@ import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
-const SHOP_LINKS = [
-  { label: 'Custom PC Systems',  href: '/?category=System' },
-  { label: 'Graphics Cards',     href: '/?category=GPU' },
-  { label: 'Processors (CPU)',   href: '/?category=CPU' },
-  { label: 'Gaming Monitors',    href: '/?category=Monitor' },
-  { label: 'Keyboards & Mice',   href: '/?category=Keyboard' },
-  { label: 'Ergonomic Furniture',href: '/?category=Desk' },
-  { label: 'New Arrivals',       href: '/?badge=NEW' },
-  { label: 'Deals & Clearance',  href: '/?sort=deals' },
+const SHOP_KEYS = [
+  { key: 'shop.customPCs',  href: '/?category=System' },
+  { key: 'shop.gpus',       href: '/?category=GPU' },
+  { key: 'shop.cpus',       href: '/?category=CPU' },
+  { key: 'shop.monitors',   href: '/?category=Monitor' },
+  { key: 'shop.peripherals',href: '/?category=Keyboard' },
+  { key: 'shop.furniture',  href: '/?category=Desk' },
+  { key: 'shop.newArrivals',href: '/?badge=NEW' },
+  { key: 'shop.deals',      href: '/?sort=deals' },
 ]
 
-const SUPPORT_LINKS = [
-  { label: 'FAQ',               href: '#' },
-  { label: 'Contact Us',        href: '#' },
-  { label: 'Returns & Refunds', href: '#' },
-  { label: 'Track My Order',    href: '#' },
-  { label: 'Live Chat',         href: '#' },
-  { label: 'PC Builder Guide',  href: '#' },
-  { label: 'Warranty Info',     href: '#' },
-  { label: 'Store Locations',   href: '#' },
+const SUPPORT_KEYS = [
+  { key: 'support.faq',          href: '#' },
+  { key: 'support.contact',      href: '#' },
+  { key: 'support.returns',      href: '#' },
+  { key: 'support.trackOrder',   href: '#' },
+  { key: 'support.liveChat',     href: '#' },
+  { key: 'support.builderGuide', href: '#' },
+  { key: 'support.warranty',     href: '#' },
+  { key: 'support.locations',    href: '#' },
 ]
 
-const COMPANY_LINKS = [
-  { label: 'About Us',       href: '#' },
-  { label: 'Careers',        href: '#' },
-  { label: 'Press',          href: '#' },
-  { label: 'Blog',           href: '#' },
-  { label: 'Partners',       href: '#' },
-  { label: 'Affiliate',      href: '#' },
-  { label: 'Privacy Policy', href: '#' },
-  { label: 'Terms of Use',   href: '#' },
-]
+const BOTTOM_LINKS = ['privacy', 'terms', 'cookies']
 
 const SOCIALS = [
   {
@@ -80,10 +71,10 @@ function FooterCol({ heading, links }) {
     <div>
       <h4 className="text-sm font-black text-ink tracking-wide mb-4">{heading}</h4>
       <ul className="space-y-2.5">
-        {links.map((l) => (
-          <li key={l.label}>
-            <Link to={l.href} className="text-sm text-muted hover:text-ink transition-colors">
-              {l.label}
+        {links.map(({ label, href }) => (
+          <li key={label}>
+            <Link to={href} className="text-sm text-muted hover:text-ink transition-colors">
+              {label}
             </Link>
           </li>
         ))}
@@ -96,6 +87,9 @@ export default function Footer() {
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
   const { t } = useTranslation()
+
+  const shopLinks    = SHOP_KEYS.map(({ key, href }) => ({ label: t(`footer.${key}`), href }))
+  const supportLinks = SUPPORT_KEYS.map(({ key, href }) => ({ label: t(`footer.${key}`), href }))
 
   function handleSubscribe(e) {
     e.preventDefault()
@@ -119,7 +113,7 @@ export default function Footer() {
                 </svg>
               </div>
               <span className="font-black text-ink text-base tracking-tight">
-                Gaming<span style={{ color: '#0056b3' }}>Store</span>
+                {t('nav.brandFirst')}<span style={{ color: '#0056b3' }}>{t('nav.brandSecond')}</span>
               </span>
             </Link>
 
@@ -143,10 +137,10 @@ export default function Footer() {
           </div>
 
           {/* Col 2 — Shop */}
-          <FooterCol heading={t('footer.shopTitle')} links={SHOP_LINKS} />
+          <FooterCol heading={t('footer.shopTitle')} links={shopLinks} />
 
           {/* Col 3 — Support */}
-          <FooterCol heading={t('footer.supportTitle')} links={SUPPORT_LINKS} />
+          <FooterCol heading={t('footer.supportTitle')} links={supportLinks} />
 
           {/* Col 4 — Newsletter */}
           <div>
@@ -200,12 +194,12 @@ export default function Footer() {
       <div className="border-t" style={{ borderColor: '#e0e0e0' }}>
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-muted">
-            © {new Date().getFullYear()} GamingStore. All rights reserved.
+            {t('footer.copyright', { year: new Date().getFullYear() })}
           </p>
           <div className="flex items-center gap-6">
-            {['Privacy Policy', 'Terms of Service', 'Cookie Settings'].map((l) => (
-              <a key={l} href="#" className="text-xs text-muted hover:text-ink transition-colors">
-                {l}
+            {BOTTOM_LINKS.map((key) => (
+              <a key={key} href="#" className="text-xs text-muted hover:text-ink transition-colors">
+                {t(`footer.${key}`)}
               </a>
             ))}
           </div>

@@ -236,17 +236,36 @@ export default function BuilderPage() {
   const { addItem } = useCart()
   const { addToast } = useToast()
 
-  const [selections, setSelections] = useState({})
-  const [openCat, setOpenCat]       = useState(BUILDER_CATEGORIES[0].key)
-  const [adding, setAdding]         = useState(false)
+  const [selections, setSelections] = useState(() => {
+    try {
+      const stored = localStorage.getItem('builder_selections')
+      return stored ? JSON.parse(stored) : {}
+    } catch { return {} }
+  })
+  const [openCat, setOpenCat] = useState(() => {
+    const firstEmpty = BUILDER_CATEGORIES.find(c => {
+      try {
+        const stored = localStorage.getItem('builder_selections')
+        const s = stored ? JSON.parse(stored) : {}
+        return !s[c.key]
+      } catch { return true }
+    })
+    return firstEmpty?.key ?? null
+  })
+  const [adding, setAdding] = useState(false)
 
   function handleReset() {
     setSelections({})
+    localStorage.removeItem('builder_selections')
     setOpenCat(BUILDER_CATEGORIES[0].key)
   }
 
   function handleSelect(catKey, part) {
-    setSelections(prev => ({ ...prev, [catKey]: part }))
+    setSelections(prev => {
+      const next = { ...prev, [catKey]: part }
+      try { localStorage.setItem('builder_selections', JSON.stringify(next)) } catch {}
+      return next
+    })
     const next = BUILDER_CATEGORIES.find(c => !{ ...selections, [catKey]: part }[c.key])
     if (next) setOpenCat(next.key)
     else setOpenCat(null)
@@ -276,6 +295,7 @@ export default function BuilderPage() {
       })
       const total = parts.reduce((s, p) => s + p.price, 0)
       addToast(`Custom build (${parts.length} parts, $${total.toLocaleString()}) added to cart!`, 'success')
+      localStorage.removeItem('builder_selections')
       setAdding(false)
       navigate('/checkout')
     }, 800)

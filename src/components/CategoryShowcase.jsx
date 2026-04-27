@@ -2,39 +2,11 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 
-const cats = [
-  {
-    icon: '🖥️',
-    label: 'Custom PCs',
-    sub: 'Pre-configured & bespoke',
-    count: '120+ systems',
-    filter: 'System',
-    bg: '#e6f0fa', border: '#99c3eb', text: '#004494',
-  },
-  {
-    icon: '⚡',
-    label: 'GPU & CPU',
-    sub: 'Latest-gen NVIDIA, AMD, Intel',
-    count: '300+ parts',
-    filter: 'GPU',
-    bg: '#f3f0ff', border: '#c4b5fd', text: '#5521b5',
-  },
-  {
-    icon: '🖱️',
-    label: 'Monitors',
-    sub: '4K, Ultrawide & 240Hz panels',
-    count: '80+ displays',
-    filter: 'Monitor',
-    bg: '#e9f7ed', border: '#a7dfb7', text: '#1e8035',
-  },
-  {
-    icon: '🪑',
-    label: 'Furniture',
-    sub: 'Ergonomic desks & chairs',
-    count: '60+ pieces',
-    filter: 'Desk',
-    bg: '#fffbeb', border: '#fcd34d', text: '#92400e',
-  },
+const CAT_CONFIG = [
+  { key: 'pcBuilds',  icon: '🖥️', filter: 'System',  bg: '#e6f0fa', border: '#99c3eb', text: '#004494' },
+  { key: 'gpuCpu',   icon: '⚡',  filter: 'GPU',     bg: '#f3f0ff', border: '#c4b5fd', text: '#5521b5' },
+  { key: 'monitors', icon: '🖱️', filter: 'Monitor', bg: '#e9f7ed', border: '#a7dfb7', text: '#1e8035' },
+  { key: 'furniture',icon: '🪑', filter: 'Desk',    bg: '#fffbeb', border: '#fcd34d', text: '#92400e' },
 ]
 
 export default function CategoryShowcase() {
@@ -79,9 +51,9 @@ export default function CategoryShowcase() {
 
         {/* Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {cats.map((c, i) => (
+          {CAT_CONFIG.map((c, i) => (
             <motion.div
-              key={c.label}
+              key={c.key}
               initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -93,11 +65,15 @@ export default function CategoryShowcase() {
                 className="w-full text-left block rounded-2xl border p-5 transition-shadow hover:shadow-card-hover cursor-pointer"
                 style={{ background: c.bg, borderColor: c.border }}
               >
-                <div className="text-3xl mb-3">{c.icon}</div>
-                <h3 className="text-sm font-black mb-0.5" style={{ color: c.text }}>{c.label}</h3>
-                <p className="text-xs text-muted leading-relaxed mb-3">{c.sub}</p>
+                <div className="text-3xl mb-3" aria-hidden="true">{c.icon}</div>
+                <h3 className="text-sm font-black mb-0.5" style={{ color: c.text }}>
+                  {t(`categories.${c.key}`)}
+                </h3>
+                <p className="text-xs text-muted leading-relaxed mb-3">
+                  {t(`categories.${c.key}Sub`)}
+                </p>
                 <span className="text-[11px] font-black tracking-wide" style={{ color: c.text }}>
-                  {c.count} →
+                  {t(`categories.${c.key}Count`)} →
                 </span>
               </button>
             </motion.div>

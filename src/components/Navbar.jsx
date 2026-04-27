@@ -201,11 +201,11 @@ export default function Navbar() {
               className="bg-surface text-xs font-semibold text-muted px-3 border-r outline-none cursor-pointer hover:bg-gray-100 transition-colors"
               style={{ borderColor: '#e0e0e0' }}
             >
-              <option>All Categories</option>
-              <option>Systems</option>
-              <option>Components</option>
-              <option>Peripherals</option>
-              <option>Accessories</option>
+              <option>{t('nav.allCategories')}</option>
+              <option>{t('nav.systems')}</option>
+              <option>{t('nav.components')}</option>
+              <option>{t('nav.peripherals')}</option>
+              <option>{t('nav.accessories')}</option>
             </select>
             <input
               type="search"
