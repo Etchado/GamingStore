@@ -571,53 +571,366 @@ function LocationsSection() {
   )
 }
 
-/* ── Generic placeholder (live-chat, builder-guide, privacy, terms, cookies) ── */
-const PAGE_META = {
-  '/live-chat':     { icon: '💬', titleKey: 'pages.liveChat',     descKey: 'pages.liveChatDesc' },
-  '/builder-guide': { icon: '🔧', titleKey: 'pages.builderGuide', descKey: 'pages.builderGuideDesc' },
-  '/privacy':       { icon: '🔒', titleKey: 'pages.privacy',      descKey: 'pages.privacyDesc' },
-  '/terms':         { icon: '📋', titleKey: 'pages.terms',        descKey: 'pages.termsDesc' },
-  '/cookies':       { icon: '🍪', titleKey: 'pages.cookies',      descKey: 'pages.cookiesDesc' },
-}
-
-function GenericPlaceholder({ pathname }) {
+/* ── Builder Guide ─────────────────────────────────────────────── */
+function BuilderGuideSection() {
   const { t } = useTranslation()
-  const meta = PAGE_META[pathname] ?? { icon: '📄', titleKey: 'pages.comingSoon', descKey: 'pages.comingSoonSub' }
-  useSEO({ title: t(meta.titleKey) })
+  useSEO({ title: t('pages.builderGuide'), description: t('pages.builderGuideDesc') })
+
+  const STEP_ICONS = ['💰', '🔲', '💾', '🖼️', '⚡', '🔧', '🔌', '🚀']
+  const steps = Array.from({ length: 8 }, (_, i) => ({
+    n: i + 1,
+    icon: STEP_ICONS[i],
+    title: t(`builderGuidePage.step${i + 1}Title`),
+    desc:  t(`builderGuidePage.step${i + 1}Desc`),
+  }))
 
   return (
-    <div className="max-w-2xl mx-auto px-6 pt-4 pb-16">
-      <Crumb label={t(meta.titleKey)} />
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}
-        className="text-center py-10"
-      >
-        <div className="w-24 h-24 rounded-3xl flex items-center justify-center text-5xl mx-auto mb-8 shadow-sm" style={{ backgroundColor: '#e6f0fa' }}>
-          {meta.icon}
-        </div>
-        <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>◈ {t('pages.comingSoon')}</p>
-        <h1 className="text-3xl font-black text-ink mb-4">{t(meta.titleKey)}</h1>
-        <p className="text-sm text-muted leading-relaxed mb-10 max-w-md mx-auto">{t(meta.descKey)}</p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link to="/" className="px-8 py-3 rounded-xl text-white text-sm font-black" style={{ backgroundColor: '#0056b3' }}>
-            {t('notFound.backToStore')}
-          </Link>
-          <Link to="/contact" className="px-8 py-3 rounded-xl border-2 text-sm font-black transition-colors" style={{ borderColor: '#0056b3', color: '#0056b3' }}>
-            {t('pages.contact')}
-          </Link>
-        </div>
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 text-start">
-          {[
-            { icon: '📧', label: t('pages.emailUs'),  val: 'support@gamingstore.com' },
-            { icon: '📞', label: t('pages.callUs'),   val: '+1 (800) 123-4567' },
-            { icon: '⏰', label: t('pages.hours'),    val: t('pages.hoursValue') },
-          ].map(({ icon, label, val }) => (
-            <div key={label} className="bg-white rounded-2xl p-4 border" style={{ borderColor: '#e0e0e0' }}>
-              <div className="text-xl mb-2">{icon}</div>
-              <p className="text-xs font-black text-ink mb-0.5">{label}</p>
-              <p className="text-xs text-muted">{val}</p>
+    <div className="max-w-3xl mx-auto px-6 pt-4 pb-16">
+      <Crumb label={t('pages.builderGuide')} />
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+        <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>◈ {t('builderGuidePage.sub')}</p>
+        <h1 className="text-3xl sm:text-4xl font-black text-ink mb-2">{t('builderGuidePage.title')}</h1>
+        <p className="text-sm text-muted mb-10 leading-relaxed">{t('builderGuidePage.intro')}</p>
+
+        <div className="space-y-4 mb-10">
+          {steps.map(({ n, icon, title, desc }) => (
+            <div key={n} className="bg-white rounded-2xl border p-5 flex gap-5 items-start" style={{ borderColor: '#e0e0e0' }}>
+              <div className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-xl" style={{ backgroundColor: '#e6f0fa' }}>
+                {icon}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full" style={{ backgroundColor: '#0056b3', color: '#fff' }}>
+                    {t('builderGuidePage.stepLabel')} {n}
+                  </span>
+                  <h3 className="text-sm font-black text-ink">{title}</h3>
+                </div>
+                <p className="text-xs text-muted leading-relaxed">{desc}</p>
+              </div>
             </div>
           ))}
         </div>
+
+        <div className="rounded-2xl p-8 text-center" style={{ background: 'linear-gradient(135deg, #0056b3 0%, #003d80 100%)' }}>
+          <h2 className="text-xl font-black text-white mb-2">{t('builderGuidePage.ctaTitle')}</h2>
+          <p className="text-sm text-white/75 mb-6 max-w-sm mx-auto">{t('builderGuidePage.ctaDesc')}</p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link to="/builder" className="px-8 py-3 rounded-xl bg-white text-sm font-black" style={{ color: '#0056b3' }}>
+              {t('builderGuidePage.ctaBuilder')}
+            </Link>
+            <Link to="/" className="px-8 py-3 rounded-xl border-2 border-white/40 text-white text-sm font-black hover:bg-white/10 transition-colors">
+              {t('builderGuidePage.ctaShop')}
+            </Link>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+/* ── Live Chat ─────────────────────────────────────────────────── */
+function LiveChatSection() {
+  const { t } = useTranslation()
+  const [form, setForm] = useState({ name: '', email: '', topic: '', message: '' })
+  const [errors, setErrors] = useState({})
+  const [sent, setSent] = useState(false)
+  const [sending, setSending] = useState(false)
+  useSEO({ title: t('pages.liveChat'), description: t('pages.liveChatDesc') })
+
+  const topics = [1, 2, 3, 4].map(n => ({ value: String(n), label: t(`liveChatPage.topic${n}`) }))
+
+  function validate() {
+    const e = {}
+    if (!form.name.trim()) e.name = t('liveChatPage.errName')
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = t('liveChatPage.errEmail')
+    if (!form.topic) e.topic = t('liveChatPage.errTopic')
+    if (form.message.trim().length < 10) e.message = t('liveChatPage.errMessage')
+    return e
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    const errs = validate()
+    if (Object.keys(errs).length) { setErrors(errs); return }
+    setSending(true)
+    setTimeout(() => { setSending(false); setSent(true) }, 1100)
+  }
+
+  const focusStyle = e => { e.target.style.borderColor = '#0056b3'; e.target.style.boxShadow = '0 0 0 3px rgba(0,86,179,0.10)' }
+  const blurStyle  = e => { e.target.style.borderColor = '#e0e0e0'; e.target.style.boxShadow = 'none' }
+  const fieldCls   = err => `w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all bg-white`
+
+  return (
+    <div className="max-w-4xl mx-auto px-6 pt-4 pb-16">
+      <Crumb label={t('pages.liveChat')} />
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 items-start">
+
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+          <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>◈ {t('pages.liveChat')}</p>
+          <h1 className="text-3xl font-black text-ink mb-2">{t('liveChatPage.offlineTitle')}</h1>
+          <p className="text-sm text-muted mb-8">{t('liveChatPage.offlineSub')}</p>
+
+          <div className="bg-white rounded-2xl border p-6 sm:p-8" style={{ borderColor: '#e0e0e0' }}>
+            <AnimatePresence mode="wait">
+              {sent ? (
+                <motion.div key="success" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-8">
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#e9f7ed' }}>
+                    <svg className="w-8 h-8" fill="none" stroke="#1e8035" strokeWidth={2.5} viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>
+                  </div>
+                  <h2 className="text-xl font-black text-ink mb-2">{t('liveChatPage.successTitle')}</h2>
+                  <p className="text-sm text-muted">{t('liveChatPage.successSub')}</p>
+                </motion.div>
+              ) : (
+                <motion.form key="form" onSubmit={handleSubmit} noValidate className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-ink mb-1.5">{t('liveChatPage.nameLabel')}</label>
+                      <input value={form.name} onChange={e => { setForm(p => ({ ...p, name: e.target.value })); setErrors(p => ({ ...p, name: '' })) }}
+                        className={fieldCls(errors.name)} placeholder="Your name"
+                        style={{ borderColor: errors.name ? '#e53e3e' : '#e0e0e0' }}
+                        onFocus={focusStyle} onBlur={blurStyle}
+                      />
+                      {errors.name && <p className="text-xs mt-1 text-red-500">{errors.name}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-ink mb-1.5">{t('liveChatPage.emailLabel')}</label>
+                      <input type="email" value={form.email} onChange={e => { setForm(p => ({ ...p, email: e.target.value })); setErrors(p => ({ ...p, email: '' })) }}
+                        className={fieldCls(errors.email)} placeholder="you@example.com"
+                        style={{ borderColor: errors.email ? '#e53e3e' : '#e0e0e0' }}
+                        onFocus={focusStyle} onBlur={blurStyle}
+                      />
+                      {errors.email && <p className="text-xs mt-1 text-red-500">{errors.email}</p>}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-ink mb-1.5">{t('liveChatPage.topicLabel')}</label>
+                    <select value={form.topic} onChange={e => { setForm(p => ({ ...p, topic: e.target.value })); setErrors(p => ({ ...p, topic: '' })) }}
+                      className={fieldCls(errors.topic) + ' cursor-pointer'}
+                      style={{ borderColor: errors.topic ? '#e53e3e' : '#e0e0e0' }}
+                    >
+                      <option value="">{t('liveChatPage.selectTopic')}</option>
+                      {topics.map(tp => <option key={tp.value} value={tp.value}>{tp.label}</option>)}
+                    </select>
+                    {errors.topic && <p className="text-xs mt-1 text-red-500">{errors.topic}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-ink mb-1.5">{t('liveChatPage.messageLabel')}</label>
+                    <textarea rows={4} value={form.message}
+                      onChange={e => { setForm(p => ({ ...p, message: e.target.value })); setErrors(p => ({ ...p, message: '' })) }}
+                      placeholder={t('liveChatPage.messagePlaceholder')}
+                      className={fieldCls(errors.message) + ' resize-none'}
+                      style={{ borderColor: errors.message ? '#e53e3e' : '#e0e0e0' }}
+                      onFocus={focusStyle} onBlur={blurStyle}
+                    />
+                    {errors.message && <p className="text-xs mt-1 text-red-500">{errors.message}</p>}
+                  </div>
+                  <motion.button type="submit" disabled={sending} whileTap={{ scale: 0.98 }}
+                    className="w-full py-3 rounded-xl text-white text-sm font-black disabled:opacity-70 flex items-center justify-center gap-2"
+                    style={{ backgroundColor: '#0056b3' }}
+                    onMouseEnter={e => { if (!sending) e.currentTarget.style.backgroundColor = '#004494' }}
+                    onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#0056b3' }}
+                  >
+                    {sending ? (
+                      <>
+                        <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        {t('liveChatPage.sending')}
+                      </>
+                    ) : t('liveChatPage.submitBtn')}
+                  </motion.button>
+                </motion.form>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08 }} className="space-y-4">
+          <div className="rounded-2xl border p-5 bg-white" style={{ borderColor: '#e0e0e0' }}>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+              <span className="text-xs font-bold text-muted">{t('liveChatPage.offline')}</span>
+            </div>
+            <p className="text-xs font-bold text-ink mb-1">{t('pages.liveChat')}</p>
+            <p className="text-xs text-muted leading-relaxed">{t('pages.liveChatDesc')}</p>
+            <div className="mt-4 pt-4 border-t space-y-2" style={{ borderColor: '#f0f0f0' }}>
+              {[
+                { icon: '📧', val: 'support@gamingstore.com' },
+                { icon: '📞', val: '+1 (800) 123-4567' },
+                { icon: '⏰', val: t('pages.hoursValue') },
+              ].map(({ icon, val }) => (
+                <div key={val} className="flex items-center gap-2">
+                  <span className="text-sm">{icon}</span>
+                  <span className="text-xs text-muted">{val}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-2xl border p-5 bg-white" style={{ borderColor: '#e0e0e0' }}>
+            <p className="text-xs font-black text-ink mb-3">{t('liveChatPage.orTry')}</p>
+            <Link to="/faq" className="block text-xs font-bold transition-colors" style={{ color: '#0056b3' }}>
+              {t('liveChatPage.faqBtn')}
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Privacy ────────────────────────────────────────────────────── */
+function PrivacySection() {
+  const { t } = useTranslation()
+  useSEO({ title: t('pages.privacy'), description: t('pages.privacyDesc') })
+
+  return (
+    <div className="max-w-3xl mx-auto px-6 pt-4 pb-16">
+      <Crumb label={t('pages.privacy')} />
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+        <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>◈ {t('pages.privacy')}</p>
+        <h1 className="text-3xl font-black text-ink mb-1">{t('privacyPage.title')}</h1>
+        <p className="text-xs text-muted mb-4">{t('privacyPage.sub')}</p>
+        <p className="text-sm text-muted mb-10 leading-relaxed">{t('privacyPage.intro')}</p>
+        <div className="space-y-4">
+          {[1,2,3,4,5,6,7].map(n => (
+            <div key={n} className="bg-white rounded-2xl border p-6" style={{ borderColor: '#e0e0e0' }}>
+              <h2 className="text-sm font-black text-ink mb-2">{n}. {t(`privacyPage.s${n}Title`)}</h2>
+              <p className="text-sm text-muted leading-relaxed">{t(`privacyPage.s${n}Desc`)}</p>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+/* ── Terms ──────────────────────────────────────────────────────── */
+function TermsSection() {
+  const { t } = useTranslation()
+  useSEO({ title: t('pages.terms'), description: t('pages.termsDesc') })
+
+  return (
+    <div className="max-w-3xl mx-auto px-6 pt-4 pb-16">
+      <Crumb label={t('pages.terms')} />
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+        <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>◈ {t('pages.terms')}</p>
+        <h1 className="text-3xl font-black text-ink mb-1">{t('termsPage.title')}</h1>
+        <p className="text-xs text-muted mb-4">{t('termsPage.sub')}</p>
+        <p className="text-sm text-muted mb-10 leading-relaxed">{t('termsPage.intro')}</p>
+        <div className="space-y-4">
+          {[1,2,3,4,5,6,7].map(n => (
+            <div key={n} className="bg-white rounded-2xl border p-6" style={{ borderColor: '#e0e0e0' }}>
+              <h2 className="text-sm font-black text-ink mb-2">{n}. {t(`termsPage.s${n}Title`)}</h2>
+              <p className="text-sm text-muted leading-relaxed">{t(`termsPage.s${n}Desc`)}</p>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+/* ── Cookies ────────────────────────────────────────────────────── */
+function CookiesSection() {
+  const { t } = useTranslation()
+  useSEO({ title: t('pages.cookies'), description: t('pages.cookiesDesc') })
+
+  const [prefs, setPrefs] = useState({ analytics: true, marketing: false, preference: true })
+  const [saved, setSaved] = useState(false)
+
+  const categories = [
+    { key: 'essential',  badgeKey: 'c1Badge', titleKey: 'c1Title', descKey: 'c1Desc', forced: true },
+    { key: 'analytics',  badgeKey: 'c2Badge', titleKey: 'c2Title', descKey: 'c2Desc', forced: false },
+    { key: 'marketing',  badgeKey: 'c3Badge', titleKey: 'c3Title', descKey: 'c3Desc', forced: false },
+    { key: 'preference', badgeKey: 'c4Badge', titleKey: 'c4Title', descKey: 'c4Desc', forced: false },
+  ]
+
+  function handleSave() { setSaved(true); setTimeout(() => setSaved(false), 2500) }
+
+  return (
+    <div className="max-w-3xl mx-auto px-6 pt-4 pb-16">
+      <Crumb label={t('pages.cookies')} />
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+        <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>◈ {t('pages.cookies')}</p>
+        <h1 className="text-3xl font-black text-ink mb-2">{t('cookiesPage.title')}</h1>
+        <p className="text-sm text-muted mb-10 leading-relaxed">{t('cookiesPage.intro')}</p>
+
+        <div className="space-y-4 mb-8">
+          {categories.map(({ key, badgeKey, titleKey, descKey, forced }) => {
+            const enabled = forced || !!prefs[key]
+            return (
+              <div key={key} className="bg-white rounded-2xl border p-5 flex items-start gap-4" style={{ borderColor: '#e0e0e0' }}>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                    <h3 className="text-sm font-black text-ink">{t(`cookiesPage.${titleKey}`)}</h3>
+                    <span
+                      className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full"
+                      style={{ backgroundColor: forced ? '#e6f0fa' : '#f3f4f6', color: forced ? '#0056b3' : '#6b7280' }}
+                    >
+                      {t(`cookiesPage.${badgeKey}`)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted leading-relaxed">{t(`cookiesPage.${descKey}`)}</p>
+                </div>
+                <button
+                  onClick={() => { if (!forced) setPrefs(p => ({ ...p, [key]: !p[key] })) }}
+                  disabled={forced}
+                  className="relative w-10 h-6 rounded-full transition-colors duration-200 shrink-0 mt-0.5"
+                  style={{ backgroundColor: enabled ? '#0056b3' : '#d1d5db', cursor: forced ? 'not-allowed' : 'pointer' }}
+                  role="switch" aria-checked={enabled}
+                >
+                  <span
+                    className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200"
+                    style={{ insetInlineStart: enabled ? 'calc(100% - 1.375rem)' : '2px' }}
+                  />
+                </button>
+              </div>
+            )
+          })}
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={handleSave}
+            className="flex-1 py-3 rounded-xl text-white text-sm font-black flex items-center justify-center gap-2"
+            style={{ backgroundColor: saved ? '#1e8035' : '#0056b3' }}
+          >
+            {saved ? (
+              <><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>{t('cookiesPage.saved')}</>
+            ) : t('cookiesPage.saveBtn')}
+          </motion.button>
+          <button onClick={() => { setPrefs({ analytics: true, marketing: true, preference: true }); setSaved(false) }}
+            className="flex-1 py-3 rounded-xl text-sm font-black border-2 transition-colors"
+            style={{ borderColor: '#0056b3', color: '#0056b3' }}
+          >
+            {t('cookiesPage.acceptAll')}
+          </button>
+          <button onClick={() => { setPrefs({ analytics: false, marketing: false, preference: false }); setSaved(false) }}
+            className="flex-1 py-3 rounded-xl text-sm font-black border-2 transition-colors"
+            style={{ borderColor: '#d1d5db', color: '#6b7280' }}
+          >
+            {t('cookiesPage.rejectOptional')}
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+/* ── Generic fallback ──────────────────────────────────────────── */
+function GenericPlaceholder() {
+  const { t } = useTranslation()
+  useSEO({ title: t('pages.comingSoon') })
+  return (
+    <div className="max-w-2xl mx-auto px-6 pt-4 pb-16 text-center">
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="py-16">
+        <div className="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-6 shadow-sm" style={{ backgroundColor: '#e6f0fa' }}>📄</div>
+        <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>◈ {t('pages.comingSoon')}</p>
+        <h1 className="text-3xl font-black text-ink mb-4">{t('pages.comingSoon')}</h1>
+        <p className="text-sm text-muted mb-8">{t('pages.comingSoonSub')}</p>
+        <Link to="/" className="px-8 py-3 rounded-xl text-white text-sm font-black inline-block" style={{ backgroundColor: '#0056b3' }}>
+          {t('notFound.backToStore')}
+        </Link>
       </motion.div>
     </div>
   )
@@ -629,14 +942,20 @@ export default function SupportPage() {
 
   return (
     <div className="min-h-[80vh] pt-25 lg:pt-35" style={{ backgroundColor: '#f8fafc' }}>
-      {pathname === '/faq'          && <FAQSection />}
-      {pathname === '/contact'      && <ContactSection />}
-      {pathname === '/track-order'  && <TrackOrderSection />}
-      {pathname === '/returns'      && <ReturnsSection />}
-      {pathname === '/warranty'     && <WarrantySection />}
-      {pathname === '/locations'    && <LocationsSection />}
-      {!['/faq','/contact','/track-order','/returns','/warranty','/locations'].includes(pathname) && (
-        <GenericPlaceholder pathname={pathname} />
+      {pathname === '/faq'           && <FAQSection />}
+      {pathname === '/contact'       && <ContactSection />}
+      {pathname === '/track-order'   && <TrackOrderSection />}
+      {pathname === '/returns'       && <ReturnsSection />}
+      {pathname === '/warranty'      && <WarrantySection />}
+      {pathname === '/locations'     && <LocationsSection />}
+      {pathname === '/builder-guide' && <BuilderGuideSection />}
+      {pathname === '/live-chat'     && <LiveChatSection />}
+      {pathname === '/privacy'       && <PrivacySection />}
+      {pathname === '/terms'         && <TermsSection />}
+      {pathname === '/cookies'       && <CookiesSection />}
+      {!['/faq','/contact','/track-order','/returns','/warranty','/locations',
+         '/builder-guide','/live-chat','/privacy','/terms','/cookies'].includes(pathname) && (
+        <GenericPlaceholder />
       )}
     </div>
   )

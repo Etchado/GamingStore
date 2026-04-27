@@ -233,7 +233,7 @@ export default function Navbar() {
           </form>
 
           {/* Icons */}
-          <div className="flex items-center gap-1 sm:gap-2 ml-auto md:ml-0 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 ms-auto md:ms-0 shrink-0">
             {/* User — hidden on mobile */}
             <Link to="/account" className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-muted hover:text-ink hover:bg-surface transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
@@ -345,7 +345,7 @@ export default function Navbar() {
               </button>
             </div>
           ))}
-          <div className="ml-auto flex items-center gap-4">
+          <div className="ms-auto flex items-center gap-4">
             <Link to="/?sort=deals" className="text-xs font-bold transition-colors" style={{ color: '#e53e3e' }} onMouseEnter={(e) => { e.currentTarget.style.color = '#c53030' }} onMouseLeave={(e) => { e.currentTarget.style.color = '#e53e3e' }}>{t('nav.deals')}</Link>
             <Link to="/?badge=NEW" className="text-xs font-bold text-muted hover:text-ink transition-colors">{t('nav.newArrivals')}</Link>
             <Link
