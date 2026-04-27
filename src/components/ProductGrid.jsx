@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { ProductCard } from '@/components/ui/product-card'
 import SkeletonCard from '@/components/ui/SkeletonCard'
 import QuickViewModal from '@/components/QuickViewModal'
@@ -9,12 +10,12 @@ import { usePageTitle } from '@/hooks/usePageTitle'
 
 const FILTERS = ['All', 'System', 'GPU', 'CPU', 'Monitor', 'Mouse', 'Keyboard', 'Storage', 'Desk', 'Chair']
 
-const SORT_OPTIONS = [
-  { value: 'featured',   label: 'Featured' },
-  { value: 'price-asc',  label: 'Price: Low → High' },
-  { value: 'price-desc', label: 'Price: High → Low' },
-  { value: 'rating',     label: 'Top Rated' },
-  { value: 'deals',      label: '🔥 Best Deals' },
+const SORT_KEYS = [
+  { value: 'featured',   key: 'products.sort.featured' },
+  { value: 'price-asc',  key: 'products.sort.priceAsc' },
+  { value: 'price-desc', key: 'products.sort.priceDesc' },
+  { value: 'rating',     key: 'products.sort.topRated' },
+  { value: 'deals',      key: 'products.sort.deals' },
 ]
 
 function parsePrice(str) {
@@ -34,6 +35,7 @@ export default function ProductGrid() {
   const [loading, setLoading]           = useState(true)
   const [quickView, setQuickView]       = useState(null)
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const categoryParam = searchParams.get('category')
   const queryParam    = searchParams.get('q') ?? ''
@@ -43,8 +45,8 @@ export default function ProductGrid() {
 
   usePageTitle(
     queryParam ? `"${queryParam}"` :
-    badgeParam === 'NEW' ? 'New Arrivals' :
-    sortParam === 'deals' ? 'Deals' :
+    badgeParam === 'NEW' ? t('products.newArrivalsTitle') :
+    sortParam === 'deals' ? t('products.dealsTitle') :
     active !== 'All' ? active : null
   )
 
@@ -82,8 +84,8 @@ export default function ProductGrid() {
   }, [])
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 1200)
-    return () => clearTimeout(t)
+    const timer = setTimeout(() => setLoading(false), 1200)
+    return () => clearTimeout(timer)
   }, [])
 
   const filtered = PRODUCTS
@@ -121,57 +123,57 @@ export default function ProductGrid() {
             {queryParam ? (
               <>
                 <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
-                  ◈ Search Results
+                  ◈ {t('products.searchResultsSub')}
                 </p>
                 <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
                   "{queryParam}"
                 </h2>
                 {!loading && (
                   <p className="text-sm text-muted mt-1">
-                    {filtered.length} result{filtered.length !== 1 ? 's' : ''} found
+                    {t('products.results', { count: filtered.length })}
                   </p>
                 )}
               </>
             ) : badgeParam === 'NEW' ? (
               <>
                 <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
-                  ◈ Just Arrived
+                  ◈ {t('products.newArrivalsSub')}
                 </p>
                 <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
-                  New Arrivals
+                  {t('products.newArrivalsTitle')}
                 </h2>
                 {!loading && (
                   <p className="text-sm text-muted mt-1">
-                    {filtered.length} new product{filtered.length !== 1 ? 's' : ''}
+                    {t('products.newProducts', { count: filtered.length })}
                   </p>
                 )}
               </>
             ) : sortParam === 'deals' ? (
               <>
                 <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#e53e3e' }}>
-                  ◈ Limited Time
+                  ◈ {t('products.dealsSub')}
                 </p>
                 <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
-                  🔥 Deals & Offers
+                  {t('products.dealsTitle')}
                 </h2>
                 {!loading && (
                   <p className="text-sm text-muted mt-1">
-                    {filtered.length} deal{filtered.length !== 1 ? 's' : ''} available
+                    {t('products.dealsCount', { count: filtered.length })}
                   </p>
                 )}
               </>
             ) : (
               <>
                 <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
-                  ◈ Curated Collection
+                  ◈ {t('products.featuredSub')}
                 </p>
                 <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
-                  Featured Products
+                  {t('products.featuredTitle')}
                 </h2>
                 {!loading && (
                   <p className="text-sm text-muted mt-1">
-                    {filtered.length} product{filtered.length !== 1 ? 's' : ''}
-                    {active !== 'All' ? ` in ${active}` : ''}
+                    {t('products.productCount', { count: filtered.length })}
+                    {active !== 'All' && <> {t('products.productCountIn', { cat: t(`products.filters.${active.toLowerCase()}`) })}</>}
                   </p>
                 )}
               </>
@@ -186,7 +188,7 @@ export default function ProductGrid() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                   <path d="M18 6 6 18M6 6l12 12" />
                 </svg>
-                Clear search
+                {t('products.clearSearch')}
               </button>
             )}
             {(badgeParam || (sortParam === 'deals')) && !queryParam && (
@@ -197,7 +199,7 @@ export default function ProductGrid() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                   <path d="M18 6 6 18M6 6l12 12" />
                 </svg>
-                Clear filter
+                {t('products.clearFilter')}
               </button>
             )}
             {!queryParam && (
@@ -206,7 +208,7 @@ export default function ProductGrid() {
                 className="hidden sm:inline text-sm font-bold transition-colors"
                 style={{ color: '#0056b3' }}
               >
-                View all products →
+                {t('products.viewAll')}
               </button>
             )}
             {/* Sort dropdown */}
@@ -219,8 +221,8 @@ export default function ProductGrid() {
                 onFocus={(e) => { e.target.style.borderColor = '#0056b3' }}
                 onBlur={(e) => { e.target.style.borderColor = '#e0e0e0' }}
               >
-                {SORT_OPTIONS.map(o => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
+                {SORT_KEYS.map(o => (
+                  <option key={o.value} value={o.value}>{t(o.key)}</option>
                 ))}
               </select>
             )}
@@ -245,7 +247,7 @@ export default function ProductGrid() {
                   : { backgroundColor: '#fff',     color: '#718096', borderColor: '#e0e0e0' }
               }
             >
-              {f}
+              {t(`products.filters.${f.toLowerCase()}`)}
             </button>
           ))}
         </motion.div>
@@ -271,12 +273,16 @@ export default function ProductGrid() {
               🔍
             </div>
             <div>
-              <p className="text-base font-bold text-ink">No products found</p>
+              <p className="text-base font-bold text-ink">{t('products.notFound')}</p>
               <p className="text-sm text-muted mt-1">
-                {queryParam
-                  ? <>No results for <strong>"{queryParam}"</strong>{active !== 'All' ? <> in <strong>{active}</strong></> : ''}.</>
-                  : <>No products in the <strong>{active}</strong> category yet.</>
-                }
+                {queryParam ? (
+                  <>
+                    {t('products.notFoundQuery', { q: queryParam })}
+                    {active !== 'All' && t('products.notFoundQueryIn', { cat: t(`products.filters.${active.toLowerCase()}`) })}
+                  </>
+                ) : (
+                  t('products.notFoundCat', { cat: t(`products.filters.${active.toLowerCase()}`) })
+                )}
               </p>
             </div>
             <div className="flex gap-3 flex-wrap justify-center">
@@ -286,7 +292,7 @@ export default function ProductGrid() {
                   className="px-6 py-2.5 rounded-xl text-sm font-bold border"
                   style={{ borderColor: '#e0e0e0', color: '#555' }}
                 >
-                  Clear Search
+                  {t('products.clearSearchBtn')}
                 </button>
               )}
               <button
@@ -294,7 +300,7 @@ export default function ProductGrid() {
                 className="px-6 py-2.5 rounded-xl text-sm font-bold text-white"
                 style={{ backgroundColor: '#0056b3' }}
               >
-                View All Products
+                {t('products.viewAllBtn')}
               </button>
             </div>
           </motion.div>
@@ -332,7 +338,7 @@ export default function ProductGrid() {
               onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
             >
-              View All Products →
+              {t('products.viewAllBtn')}
             </motion.button>
             <motion.button
               onClick={() => navigate('/builder')}
@@ -342,7 +348,7 @@ export default function ProductGrid() {
               onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e9f7ed' }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
             >
-              Custom PC Builder
+              {t('products.customBuilder')}
             </motion.button>
           </motion.div>
         )}
