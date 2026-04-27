@@ -6,7 +6,8 @@ import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { useWishlist } from '@/context/WishlistContext'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
-import { usePageTitle } from '@/hooks/usePageTitle'
+import { useSEO } from '@/hooks/useSEO'
+import { onImgError } from '@/lib/imgFallback'
 import { PRODUCTS } from '@/data/products'
 import { ProductCard } from '@/components/ui/product-card'
 
@@ -163,7 +164,7 @@ export default function ProductDetailPage() {
   const { toggle, has } = useWishlist()
 
   const product = PRODUCTS.find(p => p.id === id)
-  usePageTitle(product?.title)
+  useSEO({ title: product?.title, description: product?.description, image: product?.image })
   const inWishlist = has(id)
   const recentIds = useRecentlyViewed(id)
   const [qty, setQty] = useState(1)
@@ -241,7 +242,7 @@ export default function ProductDetailPage() {
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="relative">
             <div className="relative rounded-3xl overflow-hidden border"
               style={{ aspectRatio: '4/3', borderColor: '#e0e0e0', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}>
-              <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
+              <img src={product.image} alt={product.title} loading="lazy" onError={onImgError} className="w-full h-full object-cover" />
               {product.badge && (
                 <span className="absolute top-5 left-5 text-[11px] font-black tracking-widest uppercase px-3 py-1.5 rounded-full text-white shadow"
                   style={{ backgroundColor: '#0056b3' }}>

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { useWishlist } from '@/context/WishlistContext'
+import { onImgError } from '@/lib/imgFallback'
 
 export default function QuickViewModal({ product, onClose }) {
   const { t } = useTranslation()
@@ -67,6 +68,8 @@ export default function QuickViewModal({ product, onClose }) {
                   <img
                     src={product.image}
                     alt={product.title}
+                    loading="lazy"
+                    onError={onImgError}
                     className="w-full h-full object-cover"
                   />
                   {product.badge && (

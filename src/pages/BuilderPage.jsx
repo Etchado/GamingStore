@@ -6,6 +6,7 @@ import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { BUILDER_CATEGORIES, BUILDER_PARTS, TIER_LABELS } from '@/data/builderParts'
+import { onImgError } from '@/lib/imgFallback'
 
 /* ── Tier badge ── */
 function TierBadge({ tier }) {
@@ -36,7 +37,7 @@ function PartCard({ part, selected, onSelect }) {
       onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.borderColor = '#a8c8f0' }}
       onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.borderColor = '#e0e0e0' }}
     >
-      <img src={part.image} alt={part.name} className="w-16 h-16 rounded-xl object-cover shrink-0 bg-surface" />
+      <img src={part.image} alt={part.name} loading="lazy" onError={onImgError} className="w-16 h-16 rounded-xl object-cover shrink-0 bg-surface" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <TierBadge tier={part.tier} />

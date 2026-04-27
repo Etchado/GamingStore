@@ -6,6 +6,7 @@ import { useCompare } from '@/context/CompareContext'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { PRODUCTS } from '@/data/products'
+import { onImgError } from '@/lib/imgFallback'
 
 function StarRow({ rating = 0, count = 0 }) {
   return (
@@ -51,6 +52,8 @@ function Cell({ row, product }) {
             <img
               src={product.image}
               alt={product.title}
+              loading="lazy"
+              onError={onImgError}
               className="w-full aspect-[4/3] object-cover rounded-xl hover:opacity-90 transition-opacity"
             />
           </Link>

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
+import { onImgError } from '@/lib/imgFallback'
 
 export default function CartDrawer() {
   const navigate = useNavigate()
@@ -98,6 +99,8 @@ export default function CartDrawer() {
                     <img
                       src={product.image}
                       alt={product.title}
+                      loading="lazy"
+                      onError={onImgError}
                       className="w-20 h-20 rounded-xl object-cover shrink-0 bg-surface"
                     />
                     <div className="flex-1 min-w-0">

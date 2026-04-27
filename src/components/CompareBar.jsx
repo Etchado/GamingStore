@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useCompare } from '@/context/CompareContext'
 import { PRODUCTS } from '@/data/products'
+import { onImgError } from '@/lib/imgFallback'
 
 export default function CompareBar({ onOpen }) {
   const { t } = useTranslation()
@@ -39,6 +40,8 @@ export default function CompareBar({ onOpen }) {
                         <img
                           src={p.image}
                           alt={p.title}
+                          loading="lazy"
+                          onError={onImgError}
                           className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
                         />
                         <p className="text-[11px] font-bold text-ink line-clamp-1 flex-1 min-w-0">{p.title}</p>

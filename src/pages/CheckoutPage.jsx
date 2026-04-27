@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { onImgError } from '@/lib/imgFallback'
 
 const fmt = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
@@ -98,6 +99,7 @@ function OrderSummary({ items, subtotal, shipping, tax, total }) {
           <div key={product.id ?? product.title} className="flex items-center gap-3">
             <img
               src={product.image} alt={product.title}
+              loading="lazy" onError={onImgError}
               className="w-12 h-12 rounded-xl object-cover shrink-0 bg-surface border"
               style={{ borderColor: '#e0e0e0' }}
             />
@@ -367,7 +369,7 @@ function ConfirmedStep({ orderId, shipping, items }) {
       <div className="w-full space-y-2">
         {items.map(({ product, qty }) => (
           <div key={product.id ?? product.title} className="flex items-center gap-3">
-            <img src={product.image} alt={product.title} className="w-10 h-10 rounded-xl object-cover shrink-0 bg-surface" />
+            <img src={product.image} alt={product.title} loading="lazy" onError={onImgError} className="w-10 h-10 rounded-xl object-cover shrink-0 bg-surface" />
             <p className="text-xs font-semibold text-ink flex-1 text-left line-clamp-1">{product.title}</p>
             <span className="text-xs text-muted shrink-0">×{qty}</span>
           </div>

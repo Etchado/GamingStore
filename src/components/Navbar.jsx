@@ -6,75 +6,79 @@ import { useCart } from '@/context/CartContext'
 import { useWishlist } from '@/context/WishlistContext'
 import AnnouncementBar from '@/components/AnnouncementBar'
 
-/* ── Nav data ─── */
+/* ── Nav data (keys only — labels resolved via t()) ── */
 const NAV_ITEMS = [
   {
-    label: 'Systems',
+    id: 'systems',
+    labelKey: 'nav.systems',
     filter: 'System',
     cols: [
-      { heading: 'PC Builds',   links: [
-        { label: 'Prebuilt PCs',      filter: 'System' },
-        { label: 'Custom Builder',    filter: 'System', href: '/builder' },
-        { label: 'Mini ITX',          filter: 'System' },
-        { label: 'Workstations',      filter: 'System' },
+      { headingKey: 'nav.mega.pcBuilds', links: [
+        { labelKey: 'nav.mega.prebuiltPCs',   filter: 'System' },
+        { labelKey: 'nav.mega.customBuilder',  filter: 'System', href: '/builder' },
+        { labelKey: 'nav.mega.miniITX',        filter: 'System' },
+        { labelKey: 'nav.mega.workstations',   filter: 'System' },
       ]},
-      { heading: 'By Brand',    links: [
-        { label: 'ASUS ROG',          filter: 'System' },
-        { label: 'Corsair',           filter: 'System' },
-        { label: 'NZXT',              filter: 'System' },
-        { label: 'Fractal Design',    filter: 'System' },
+      { headingKey: 'nav.mega.byBrand', links: [
+        { labelKey: 'nav.mega.asusRog',        filter: 'System' },
+        { labelKey: 'nav.mega.corsair',        filter: 'System' },
+        { labelKey: 'nav.mega.nzxt',           filter: 'System' },
+        { labelKey: 'nav.mega.fractalDesign',  filter: 'System' },
       ]},
     ],
   },
   {
-    label: 'Components',
+    id: 'components',
+    labelKey: 'nav.components',
     filter: 'GPU',
     cols: [
-      { heading: 'Processing',       links: [
-        { label: 'Graphics Cards (GPU)', filter: 'GPU' },
-        { label: 'Processors (CPU)',     filter: 'CPU' },
-        { label: 'Motherboards',         filter: 'System' },
+      { headingKey: 'nav.mega.processing', links: [
+        { labelKey: 'nav.mega.graphicsCards', filter: 'GPU' },
+        { labelKey: 'nav.mega.processors',    filter: 'CPU' },
+        { labelKey: 'nav.mega.motherboards',  filter: 'System' },
       ]},
-      { heading: 'Storage & Memory', links: [
-        { label: 'NVMe SSDs',            filter: 'Storage' },
-        { label: 'DDR5 RAM',             filter: 'System' },
-        { label: 'SATA SSDs',            filter: 'Storage' },
-        { label: 'Cooling',              filter: 'System' },
+      { headingKey: 'nav.mega.storageMemory', links: [
+        { labelKey: 'nav.mega.nvmeSsds',  filter: 'Storage' },
+        { labelKey: 'nav.mega.ddr5Ram',   filter: 'System' },
+        { labelKey: 'nav.mega.sataSsds',  filter: 'Storage' },
+        { labelKey: 'nav.mega.cooling',   filter: 'System' },
       ]},
     ],
   },
   {
-    label: 'Peripherals',
+    id: 'peripherals',
+    labelKey: 'nav.peripherals',
     filter: 'Monitor',
     cols: [
-      { heading: 'Display', links: [
-        { label: '4K Monitors',           filter: 'Monitor' },
-        { label: 'Ultrawide',             filter: 'Monitor' },
-        { label: '240Hz Gaming',          filter: 'Monitor' },
-        { label: 'Portable',              filter: 'Monitor' },
+      { headingKey: 'nav.mega.display', links: [
+        { labelKey: 'nav.mega.4kMonitors', filter: 'Monitor' },
+        { labelKey: 'nav.mega.ultrawide',  filter: 'Monitor' },
+        { labelKey: 'nav.mega.hz240',      filter: 'Monitor' },
+        { labelKey: 'nav.mega.portable',   filter: 'Monitor' },
       ]},
-      { heading: 'Input',   links: [
-        { label: 'Mechanical Keyboards',  filter: 'Keyboard' },
-        { label: 'Gaming Mice',           filter: 'Mouse' },
-        { label: 'Headsets',              filter: 'Keyboard' },
-        { label: 'Webcams',               filter: 'Keyboard' },
+      { headingKey: 'nav.mega.input', links: [
+        { labelKey: 'nav.mega.mechanicalKeyboards', filter: 'Keyboard' },
+        { labelKey: 'nav.mega.gamingMice',          filter: 'Mouse' },
+        { labelKey: 'nav.mega.headsets',            filter: 'Keyboard' },
+        { labelKey: 'nav.mega.webcams',             filter: 'Keyboard' },
       ]},
     ],
   },
   {
-    label: 'Accessories',
+    id: 'accessories',
+    labelKey: 'nav.accessories',
     filter: 'Desk',
     cols: [
-      { heading: 'Furniture', links: [
-        { label: 'Standing Desks',        filter: 'Desk' },
-        { label: 'Ergonomic Chairs',      filter: 'Chair' },
-        { label: 'Monitor Arms',          filter: 'Desk' },
+      { headingKey: 'nav.mega.furniture', links: [
+        { labelKey: 'nav.mega.standingDesks',    filter: 'Desk' },
+        { labelKey: 'nav.mega.ergonomicChairs',  filter: 'Chair' },
+        { labelKey: 'nav.mega.monitorArms',      filter: 'Desk' },
       ]},
-      { heading: 'Extras',    links: [
-        { label: 'Cable Management',      filter: 'Desk' },
-        { label: 'LED Strips',            filter: 'Desk' },
-        { label: 'Desk Mats',             filter: 'Desk' },
-        { label: 'Controllers',           filter: 'Keyboard' },
+      { headingKey: 'nav.mega.extras', links: [
+        { labelKey: 'nav.mega.cableManagement', filter: 'Desk' },
+        { labelKey: 'nav.mega.ledStrips',       filter: 'Desk' },
+        { labelKey: 'nav.mega.deskMats',        filter: 'Desk' },
+        { labelKey: 'nav.mega.controllers',     filter: 'Keyboard' },
       ]},
     ],
   },
@@ -82,6 +86,7 @@ const NAV_ITEMS = [
 
 /* ── Desktop MegaMenu ── */
 function MegaMenu({ item, onLinkClick }) {
+  const { t } = useTranslation()
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -96,20 +101,20 @@ function MegaMenu({ item, onLinkClick }) {
       >
         <div className="max-w-7xl mx-auto px-8 py-8 grid grid-cols-2 gap-8">
           {item.cols.map((col) => (
-            <div key={col.heading}>
+            <div key={col.headingKey}>
               <p className="text-[10px] font-black tracking-[0.15em] uppercase text-muted mb-3">
-                {col.heading}
+                {t(col.headingKey)}
               </p>
               <ul className="space-y-1">
                 {col.links.map((link) => (
-                  <li key={link.label}>
+                  <li key={link.labelKey}>
                     <Link
                       to={link.href ?? `/?category=${link.filter}`}
                       onClick={onLinkClick}
                       className="text-sm text-ink font-medium transition-colors inline-flex items-center gap-2 group px-2 py-1 -mx-2 rounded-md hover:bg-primary-50 hover:text-primary-600"
                     >
                       <span className="w-1 h-1 rounded-full bg-border group-hover:bg-primary-600 transition-colors shrink-0" />
-                      {link.label}
+                      {t(link.labelKey)}
                     </Link>
                   </li>
                 ))}
@@ -135,8 +140,8 @@ export default function Navbar() {
   const navigate = useNavigate()
   const isAr = i18n.language?.startsWith('ar')
 
-  function toggleMobileItem(label) {
-    setMobileExpanded(prev => prev === label ? null : label)
+  function toggleMobileItem(id) {
+    setMobileExpanded(prev => prev === id ? null : id)
   }
 
   function handleNavClick(filter) {
@@ -324,16 +329,16 @@ export default function Navbar() {
       <div className="relative border-b border-border bg-white hidden lg:block">
         <div className="max-w-7xl mx-auto px-6 h-10 flex items-center gap-1">
           {NAV_ITEMS.map((item) => (
-            <div key={item.label} onMouseEnter={() => setActiveMenu(item.label)}>
+            <div key={item.id} onMouseEnter={() => setActiveMenu(item.id)}>
               <button
                 onClick={() => handleNavClick(item.filter)}
                 className="px-2 mx-1 h-10 text-sm font-semibold transition-colors flex items-center gap-1.5 rounded-none border-b-2 -mb-px"
                 style={{
-                  color:       activeMenu === item.label ? '#0056b3' : '#4a5568',
-                  borderColor: activeMenu === item.label ? '#0056b3' : 'transparent',
+                  color:       activeMenu === item.id ? '#0056b3' : '#4a5568',
+                  borderColor: activeMenu === item.id ? '#0056b3' : 'transparent',
                 }}
               >
-                {t(`nav.${item.label.toLowerCase()}`)}
+                {t(item.labelKey)}
                 <svg className="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                   <path d="m6 9 6 6 6-6" />
                 </svg>
@@ -344,7 +349,7 @@ export default function Navbar() {
             <Link to="/?sort=deals" className="text-xs font-bold transition-colors" style={{ color: '#e53e3e' }} onMouseEnter={(e) => { e.currentTarget.style.color = '#c53030' }} onMouseLeave={(e) => { e.currentTarget.style.color = '#e53e3e' }}>{t('nav.deals')}</Link>
             <Link to="/?badge=NEW" className="text-xs font-bold text-muted hover:text-ink transition-colors">{t('nav.newArrivals')}</Link>
             <Link
-              to="/"
+              to="/games"
               className="text-xs font-semibold px-3 py-1 rounded-full border transition-colors"
               style={{ color: '#28a745', borderColor: '#a7dfb7' }}
             >
@@ -357,7 +362,7 @@ export default function Navbar() {
         <AnimatePresence>
           {activeMenu && (
             <MegaMenu
-              item={NAV_ITEMS.find(i => i.label === activeMenu)}
+              item={NAV_ITEMS.find(i => i.id === activeMenu)}
               onLinkClick={handleMegaClose}
             />
           )}
@@ -402,26 +407,23 @@ export default function Navbar() {
 
             {/* Nav items accordion */}
             {NAV_ITEMS.map((item) => (
-              <div key={item.label} className="border-b border-border last:border-0">
+              <div key={item.id} className="border-b border-border last:border-0">
                 <button
-                  onClick={() => toggleMobileItem(item.label)}
+                  onClick={() => toggleMobileItem(item.id)}
                   className="flex items-center justify-between w-full px-5 py-3.5 text-sm font-bold text-ink hover:bg-surface transition-colors"
                 >
-                  {t(`nav.${item.label.toLowerCase()}`)}
+                  {t(item.labelKey)}
                   <svg
                     className="w-4 h-4 text-muted transition-transform duration-200"
-                    style={{ transform: mobileExpanded === item.label ? 'rotate(180deg)' : 'rotate(0deg)' }}
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
-                    viewBox="0 0 24 24"
+                    style={{ transform: mobileExpanded === item.id ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                    fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
                   >
                     <path d="m6 9 6 6 6-6" />
                   </svg>
                 </button>
 
                 <AnimatePresence>
-                  {mobileExpanded === item.label && (
+                  {mobileExpanded === item.id && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
@@ -432,19 +434,19 @@ export default function Navbar() {
                     >
                       <div className="px-5 py-4 grid grid-cols-2 gap-4">
                         {item.cols.map((col) => (
-                          <div key={col.heading}>
+                          <div key={col.headingKey}>
                             <p className="text-[10px] font-black tracking-widest uppercase text-muted mb-2">
-                              {col.heading}
+                              {t(col.headingKey)}
                             </p>
                             <ul className="space-y-2">
                               {col.links.map((link) => (
-                                <li key={link.label}>
+                                <li key={link.labelKey}>
                                   <Link
                                     to={link.href ?? `/?category=${link.filter}`}
                                     onClick={() => setMobileOpen(false)}
                                     className="text-sm text-ink hover:text-primary-600 transition-colors"
                                   >
-                                    {link.label}
+                                    {t(link.labelKey)}
                                   </Link>
                                 </li>
                               ))}
@@ -462,7 +464,7 @@ export default function Navbar() {
             <div className="px-5 py-3 flex gap-4 border-t border-border bg-white">
               <Link to="/?sort=deals" className="text-xs font-bold transition-colors" style={{ color: '#e53e3e' }} onClick={() => setMobileOpen(false)}>{t('nav.deals')}</Link>
               <Link to="/?badge=NEW" className="text-xs font-bold text-muted hover:text-ink transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.newArrivals')}</Link>
-              <Link to="/" className="text-xs font-semibold" style={{ color: '#28a745' }} onClick={() => setMobileOpen(false)}>{t('nav.games')}</Link>
+              <Link to="/games" className="text-xs font-semibold" style={{ color: '#28a745' }} onClick={() => setMobileOpen(false)}>{t('nav.games')}</Link>
               <Link
                 to="/wishlist"
                 className="text-xs font-semibold text-muted hover:text-ink transition-colors flex items-center gap-1"
