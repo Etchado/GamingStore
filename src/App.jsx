@@ -19,6 +19,7 @@ import ErrorBoundary from './components/ErrorBoundary'
 import NewsletterSection from './components/NewsletterSection'
 import StatsSection from './components/StatsSection'
 import BrandsMarquee from './components/BrandsMarquee'
+import ScrollProgressBar from './components/ScrollProgressBar'
 import AnnouncementBar from './components/AnnouncementBar'
 import CompareBar from './components/CompareBar'
 import CompareModal from './components/CompareModal'
@@ -78,6 +79,7 @@ function AppShell() {
 
   return (
     <div className="min-h-screen bg-white text-ink">
+      <ScrollProgressBar />
       <ScrollToTop />
       <Navbar />
       <ErrorBoundary>
