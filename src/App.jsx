@@ -18,6 +18,7 @@ import BackToTop from './components/BackToTop'
 import ErrorBoundary from './components/ErrorBoundary'
 import NewsletterSection from './components/NewsletterSection'
 import StatsSection from './components/StatsSection'
+import BrandsMarquee from './components/BrandsMarquee'
 import AnnouncementBar from './components/AnnouncementBar'
 import CompareBar from './components/CompareBar'
 import CompareModal from './components/CompareModal'
@@ -55,6 +56,7 @@ function HomePage() {
     <main>
       <HeroSection />
       <TrustBar />
+      <BrandsMarquee />
       <StatsSection />
       <CategoryShowcase />
       <ProductGrid />

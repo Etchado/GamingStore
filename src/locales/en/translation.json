@@ -706,6 +706,9 @@
     "acceptAll": "Accept All",
     "rejectOptional": "Essential Only"
   },
+  "brands": {
+    "trusted": "Trusted by gamers worldwide · Official reseller of"
+  },
   "stats": {
     "products": "Products In Stock",
     "customers": "Happy Customers",
