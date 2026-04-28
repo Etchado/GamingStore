@@ -702,6 +702,20 @@
     "acceptAll": "Accept All",
     "rejectOptional": "Essential Only"
   },
+  "newsletter": {
+    "eyebrow": "Stay in the Loop",
+    "title": "Get Exclusive Deals & Early Access",
+    "sub": "Join 40,000+ gamers and get notified first about flash sales, new arrivals, and build guides.",
+    "placeholder": "Your email address",
+    "cta": "Subscribe Free",
+    "privacy": "No spam, ever. Unsubscribe anytime.",
+    "success": "You're in! Check your inbox for a welcome offer.",
+    "errorEmpty": "Please enter your email address.",
+    "errorInvalid": "Please enter a valid email address.",
+    "perk1": "Early access to deals",
+    "perk2": "Free build guides",
+    "perk3": "New product alerts"
+  },
   "dealsPage": {
     "title": "Flash Deals",
     "sub": "Limited-time offers — grab them before they're gone",

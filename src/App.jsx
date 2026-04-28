@@ -16,6 +16,7 @@ import CartDrawer from './components/CartDrawer'
 import ToastContainer from './components/ToastContainer'
 import BackToTop from './components/BackToTop'
 import ErrorBoundary from './components/ErrorBoundary'
+import NewsletterSection from './components/NewsletterSection'
 import AnnouncementBar from './components/AnnouncementBar'
 import CompareBar from './components/CompareBar'
 import CompareModal from './components/CompareModal'
@@ -56,6 +57,7 @@ function HomePage() {
       <CategoryShowcase />
       <ProductGrid />
       <Testimonials />
+      <NewsletterSection />
     </main>
   )
 }
