@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { useEffect, lazy, Suspense, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSEO } from './hooks/useSEO'
 import { CartProvider } from './context/CartContext'
 import { ToastProvider } from './context/ToastContext'
 import { WishlistProvider } from './context/WishlistContext'
@@ -53,6 +54,8 @@ function ScrollToTop() {
 }
 
 function HomePage() {
+  const { t } = useTranslation()
+  useSEO({ title: t('pages.home'), description: t('newsletter.sub') })
   return (
     <main>
       <HeroSection />

@@ -130,6 +130,7 @@ function Dashboard({ userName, onSignOut }) {
                           <img
                             src={order.img}
                             alt={order.product}
+                            loading="lazy"
                             className="w-12 h-12 rounded-xl object-cover shrink-0 border"
                             style={{ borderColor: '#e0e0e0' }}
                             onError={e => { e.target.src = 'https://placehold.co/80x80?text=IMG' }}
