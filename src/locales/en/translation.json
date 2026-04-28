@@ -706,6 +706,16 @@
     "acceptAll": "Accept All",
     "rejectOptional": "Essential Only"
   },
+  "stats": {
+    "products": "Products In Stock",
+    "customers": "Happy Customers",
+    "brands": "Premium Brands",
+    "support": "Support Rating",
+    "productsVal": "500+",
+    "customersVal": "40K+",
+    "brandsVal": "30+",
+    "supportVal": "4.9★"
+  },
   "newsletter": {
     "eyebrow": "Stay in the Loop",
     "title": "Get Exclusive Deals & Early Access",

@@ -706,6 +706,16 @@
     "acceptAll": "قبول الكل",
     "rejectOptional": "الضروري فقط"
   },
+  "stats": {
+    "products": "منتج في المخزون",
+    "customers": "عميل سعيد",
+    "brands": "علامة تجارية مميزة",
+    "support": "تقييم الدعم",
+    "productsVal": "+500",
+    "customersVal": "40 ألف+",
+    "brandsVal": "+30",
+    "supportVal": "4.9★"
+  },
   "newsletter": {
     "eyebrow": "ابقَ على اطلاع",
     "title": "احصل على عروض حصرية ووصول مبكر",
