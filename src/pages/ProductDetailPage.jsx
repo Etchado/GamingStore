@@ -205,13 +205,13 @@ export default function ProductDetailPage() {
   function handleAddToCart() {
     for (let i = 0; i < qty; i++) addItem(product)
     const label = product.title.length > 32 ? product.title.slice(0, 32) + '…' : product.title
-    addToast(qty > 1 ? `${qty}× ${label} added to cart` : `${label} added to cart`, 'success')
+    addToast(`${label} — ${t('products.addedToCart')}`, 'success')
   }
 
   function handleWishlist() {
     toggle(product.id)
     const label = product.title.slice(0, 28) + (product.title.length > 28 ? '…' : '')
-    addToast(inWishlist ? `${label} removed from wishlist` : `${label} saved to wishlist`, 'wishlist')
+    addToast(`${label} — ${inWishlist ? t('products.removedFromWishlist') : t('products.savedToWishlist')}`, 'wishlist')
   }
 
   const relatedToShow = related.length > 0 ? related : fallbackRelated
@@ -455,7 +455,7 @@ export default function ProductDetailPage() {
                 </svg>
               </motion.button>
               <motion.button whileTap={{ scale: 0.97 }}
-                onClick={() => { navigator.clipboard.writeText(window.location.href); addToast('Link copied to clipboard!', 'success') }}
+                onClick={() => { navigator.clipboard.writeText(window.location.href); addToast(t('product.linkCopied'), 'success') }}
                 aria-label="Share product"
                 className="w-12 h-12 rounded-xl border flex items-center justify-center transition-colors text-muted hover:text-ink"
                 style={{ borderColor: '#e0e0e0' }}

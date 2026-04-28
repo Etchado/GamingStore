@@ -33,7 +33,7 @@ export default function QuickViewModal({ product, onClose }) {
   function handleWishlist() {
     toggle(product.id)
     const label = product.title.slice(0, 28) + (product.title.length > 28 ? '…' : '')
-    addToast(inWishlist ? `${label} removed from wishlist` : `${label} saved to wishlist`, 'wishlist')
+    addToast(`${label} — ${inWishlist ? t('products.removedFromWishlist') : t('products.savedToWishlist')}`, 'wishlist')
   }
 
   return (

@@ -109,7 +109,10 @@
     "emptySub": "Click the heart icon on any product to save it here for later.",
     "browse": "Browse Products",
     "clearAll": "Clear all",
-    "addAllToCart": "Add all to cart →"
+    "addAllToCart": "Add all to cart →",
+    "addedAllToast_one": "{{count}} item added to cart",
+    "addedAllToast_other": "{{count}} items added to cart",
+    "clearedToast": "Wishlist cleared"
   },
   "trust": {
     "shipping": "Free Shipping",
@@ -261,7 +264,8 @@
     "recentTitle": "Recently Viewed",
     "notFound": "Product not found",
     "notFoundSub": "This product may have been removed or the link is incorrect.",
-    "backToStore": "Back to Store"
+    "backToStore": "Back to Store",
+    "linkCopied": "Link copied to clipboard!"
   },
   "checkout": {
     "step1": "Shipping", "step2": "Payment", "step3": "Confirmed",

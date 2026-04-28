@@ -25,12 +25,12 @@ export default function WishlistPage() {
 
   function handleAddAll() {
     items.forEach(p => addItem(p))
-    addToast(`${items.length} item${items.length !== 1 ? 's' : ''} added to cart`, 'success')
+    addToast(t('wishlist.addedAllToast', { count: items.length }), 'success')
   }
 
   function handleClear() {
     clear()
-    addToast('Wishlist cleared', 'wishlist')
+    addToast(t('wishlist.clearedToast'), 'wishlist')
   }
 
   return (

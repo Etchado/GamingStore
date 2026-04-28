@@ -134,7 +134,7 @@ function DealCard({ product }) {
           onClick={() => {
             toggle(product.id)
             const label = product.title.slice(0, 28)
-            addToast(inWishlist ? `${label} removed from wishlist` : `${label} saved to wishlist`, 'wishlist')
+            addToast(`${label} — ${inWishlist ? t('products.removedFromWishlist') : t('products.savedToWishlist')}`, 'wishlist')
           }}
           className="absolute top-3 end-3 w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm border border-border opacity-0 group-hover:opacity-100 transition-opacity"
           style={{ opacity: inWishlist ? 1 : undefined }}
@@ -199,7 +199,7 @@ function DealCard({ product }) {
           onClick={() => {
             addItem(product)
             const label = product.title.length > 32 ? product.title.slice(0, 32) + '…' : product.title
-            addToast(`${label} — ${t('dealsPage.addToCart')}`, 'success')
+            addToast(`${label} — ${t('products.addedToCart')}`, 'success')
           }}
           className="w-full py-2.5 rounded-xl text-sm font-black text-white transition-colors mt-1"
           style={{ backgroundColor: '#e53e3e' }}

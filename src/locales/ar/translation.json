@@ -109,7 +109,10 @@
     "emptySub": "انقر على أيقونة القلب على أي منتج لحفظه هنا.",
     "browse": "تصفح المنتجات",
     "clearAll": "مسح الكل",
-    "addAllToCart": "إضافة الكل إلى السلة →"
+    "addAllToCart": "إضافة الكل إلى السلة →",
+    "addedAllToast_one": "تمت إضافة {{count}} منتج إلى السلة",
+    "addedAllToast_other": "تمت إضافة {{count}} منتجات إلى السلة",
+    "clearedToast": "تم مسح قائمة الأمنيات"
   },
   "trust": {
     "shipping": "شحن مجاني",
@@ -261,7 +264,8 @@
     "recentTitle": "شاهدت مؤخراً",
     "notFound": "المنتج غير موجود",
     "notFoundSub": "ربما تم إزالة هذا المنتج أو الرابط غير صحيح.",
-    "backToStore": "العودة إلى المتجر"
+    "backToStore": "العودة إلى المتجر",
+    "linkCopied": "تم نسخ الرابط!"
   },
   "checkout": {
     "step1": "الشحن", "step2": "الدفع", "step3": "مؤكد",
