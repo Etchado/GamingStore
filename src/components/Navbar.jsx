@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { useWishlist } from '@/context/WishlistContext'
 import AnnouncementBar from '@/components/AnnouncementBar'
+import { PRODUCTS } from '@/data/products'
+import { onImgError } from '@/lib/imgFallback'
 
 /* ── Nav data (keys only — labels resolved via t()) ── */
 const NAV_ITEMS = [
@@ -134,6 +136,26 @@ export default function Navbar() {
   const [mobileExpanded, setMobileExpanded] = useState(null)
   const [query, setQuery]                   = useState('')
   const [mobileQuery, setMobileQuery]       = useState('')
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const searchRef = useRef(null)
+
+  const suggestions = query.trim().length >= 2
+    ? PRODUCTS.filter(p =>
+        p.title.toLowerCase().includes(query.toLowerCase()) ||
+        p.brand?.toLowerCase().includes(query.toLowerCase()) ||
+        p.category?.toLowerCase().includes(query.toLowerCase())
+      ).slice(0, 5)
+    : []
+
+  useEffect(() => {
+    function onClickOutside(e) {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowSuggestions(false)
+      }
+    }
+    document.addEventListener('mousedown', onClickOutside)
+    return () => document.removeEventListener('mousedown', onClickOutside)
+  }, [])
   const { itemCount, setIsOpen: openCart }  = useCart()
   const { count: wishlistCount }            = useWishlist()
   const { t, i18n } = useTranslation()
@@ -162,6 +184,7 @@ export default function Navbar() {
     navigate(`/?q=${encodeURIComponent(trimmed)}`)
     setQuery('')
     setMobileQuery('')
+    setShowSuggestions(false)
     if (closeMobile) setMobileOpen(false)
     setTimeout(() => {
       document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -195,42 +218,87 @@ export default function Navbar() {
           </Link>
 
           {/* Search bar — hidden on mobile */}
-          <form
-            onSubmit={(e) => { e.preventDefault(); doSearch(query) }}
-            className="hidden md:flex flex-1 items-stretch rounded-xl border overflow-hidden transition-all"
-            style={{ borderColor: '#e0e0e0' }}
-            onFocus={(e) => e.currentTarget.style.borderColor = '#0056b3'}
-            onBlur={(e) => e.currentTarget.style.borderColor = '#e0e0e0'}
-          >
-            <select
-              className="bg-surface text-xs font-semibold text-muted px-3 border-r outline-none cursor-pointer hover:bg-gray-100 transition-colors"
-              style={{ borderColor: '#e0e0e0' }}
+          <div ref={searchRef} className="hidden md:block flex-1 relative">
+            <form
+              onSubmit={(e) => { e.preventDefault(); doSearch(query) }}
+              className="flex items-stretch rounded-xl border overflow-hidden transition-all"
+              style={{ borderColor: showSuggestions && suggestions.length > 0 ? '#0056b3' : '#e0e0e0' }}
             >
-              <option>{t('nav.allCategories')}</option>
-              <option>{t('nav.systems')}</option>
-              <option>{t('nav.components')}</option>
-              <option>{t('nav.peripherals')}</option>
-              <option>{t('nav.accessories')}</option>
-            </select>
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t('nav.searchPlaceholder')}
-              className="flex-1 px-4 py-2.5 text-sm outline-none text-ink placeholder-muted bg-white"
-            />
-            <button
-              type="submit"
-              className="px-5 text-white text-sm font-bold transition-colors"
-              style={{ backgroundColor: '#0056b3' }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-              </svg>
-            </button>
-          </form>
+              <select
+                className="bg-surface text-xs font-semibold text-muted px-3 border-r outline-none cursor-pointer hover:bg-gray-100 transition-colors"
+                style={{ borderColor: '#e0e0e0' }}
+              >
+                <option>{t('nav.allCategories')}</option>
+                <option>{t('nav.systems')}</option>
+                <option>{t('nav.components')}</option>
+                <option>{t('nav.peripherals')}</option>
+                <option>{t('nav.accessories')}</option>
+              </select>
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => { setQuery(e.target.value); setShowSuggestions(true) }}
+                onFocus={() => setShowSuggestions(true)}
+                placeholder={t('nav.searchPlaceholder')}
+                className="flex-1 px-4 py-2.5 text-sm outline-none text-ink placeholder-muted bg-white"
+              />
+              <button
+                type="submit"
+                className="px-5 text-white text-sm font-bold transition-colors"
+                style={{ backgroundColor: '#0056b3' }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                </svg>
+              </button>
+            </form>
+
+            {/* Autocomplete dropdown */}
+            <AnimatePresence>
+              {showSuggestions && suggestions.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.14 }}
+                  className="absolute top-full start-0 end-0 mt-1 bg-white rounded-xl border shadow-lg z-[60] overflow-hidden"
+                  style={{ borderColor: '#e0e0e0', boxShadow: '0 8px 24px rgba(0,0,0,0.10)' }}
+                >
+                  {suggestions.map(p => (
+                    <Link
+                      key={p.id}
+                      to={`/product/${p.id}`}
+                      onClick={() => { setQuery(''); setShowSuggestions(false) }}
+                      className="flex items-center gap-3 px-4 py-2.5 hover:bg-surface transition-colors"
+                    >
+                      <img
+                        src={p.image}
+                        alt={p.title}
+                        onError={onImgError}
+                        className="w-10 h-10 rounded-lg object-cover shrink-0 border"
+                        style={{ borderColor: '#e0e0e0' }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-ink truncate">{p.title}</p>
+                        <p className="text-xs text-muted">{p.category} · {p.price}</p>
+                      </div>
+                    </Link>
+                  ))}
+                  <button
+                    onClick={() => doSearch(query)}
+                    className="w-full px-4 py-2.5 text-xs font-bold text-start border-t transition-colors"
+                    style={{ borderColor: '#f0f0f0', color: '#0056b3' }}
+                    onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f8fafc'}
+                    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    {t('nav.searchAll', { q: query })} →
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* Icons */}
           <div className="flex items-center gap-1 sm:gap-2 ms-auto md:ms-0 shrink-0">

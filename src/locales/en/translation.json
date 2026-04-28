@@ -14,6 +14,7 @@
     "wishlist": "Wishlist",
     "searchPlaceholder": "Search products, brands, and categories…",
     "searchMobilePlaceholder": "Search products…",
+    "searchAll": "See all results for \"{{q}}\"",
     "allCategories": "All Categories",
     "mega": {
       "pcBuilds": "PC Builds",

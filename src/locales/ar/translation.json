@@ -14,6 +14,7 @@
     "wishlist": "المفضلة",
     "searchPlaceholder": "ابحث عن المنتجات والعلامات التجارية…",
     "searchMobilePlaceholder": "ابحث عن منتجات…",
+    "searchAll": "عرض جميع نتائج \"{{q}}\"",
     "allCategories": "جميع الفئات",
     "mega": {
       "pcBuilds": "أجهزة الكمبيوتر",
