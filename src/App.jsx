@@ -29,6 +29,7 @@ const NotFoundPage      = lazy(() => import('./pages/NotFoundPage'))
 const AccountPage       = lazy(() => import('./pages/AccountPage'))
 const GamesPage         = lazy(() => import('./pages/GamesPage'))
 const SupportPage       = lazy(() => import('./pages/SupportPage'))
+const DealsPage         = lazy(() => import('./pages/DealsPage'))
 
 function PageLoader() {
   return (
@@ -94,6 +95,7 @@ function AppShell() {
             <Route path="/privacy"      element={<SupportPage />} />
             <Route path="/terms"        element={<SupportPage />} />
             <Route path="/cookies"      element={<SupportPage />} />
+            <Route path="/deals"        element={<DealsPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>

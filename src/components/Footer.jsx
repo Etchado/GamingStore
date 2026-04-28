@@ -12,7 +12,7 @@ const SHOP_KEYS = [
   { key: 'shop.peripherals',href: '/?category=Keyboard' },
   { key: 'shop.furniture',  href: '/?category=Desk' },
   { key: 'shop.newArrivals',href: '/?badge=NEW' },
-  { key: 'shop.deals',      href: '/?sort=deals' },
+  { key: 'shop.deals',      href: '/deals' },
 ]
 
 const SUPPORT_KEYS = [

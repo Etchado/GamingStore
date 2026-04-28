@@ -379,6 +379,7 @@
     "profile": "Profile"
   },
   "pages": {
+    "home": "Home",
     "account": "My Account",
     "games": "Games",
     "gamesTitle": "Level Up Your Library",
@@ -700,5 +701,23 @@
     "saved": "Preferences saved!",
     "acceptAll": "Accept All",
     "rejectOptional": "Essential Only"
+  },
+  "dealsPage": {
+    "title": "Flash Deals",
+    "sub": "Limited-time offers — grab them before they're gone",
+    "breadcrumb": "Deals",
+    "endsIn": "Sale ends in",
+    "hours": "Hrs",
+    "minutes": "Min",
+    "seconds": "Sec",
+    "off": "OFF",
+    "claimed": "claimed",
+    "totalDeals_one": "{{count}} deal available",
+    "totalDeals_other": "{{count}} deals available",
+    "allDeals": "All Deals",
+    "addToCart": "Add to Cart",
+    "noDeals": "No deals in this category right now.",
+    "urgencyFew": "Only a few left!",
+    "saveBadge": "Save {{amount}}"
   }
 }

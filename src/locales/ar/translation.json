@@ -379,6 +379,7 @@
     "profile": "الملف الشخصي"
   },
   "pages": {
+    "home": "الرئيسية",
     "account": "حسابي",
     "games": "الألعاب",
     "gamesTitle": "ارتقِ بمكتبتك",
@@ -700,5 +701,23 @@
     "saved": "تم حفظ التفضيلات!",
     "acceptAll": "قبول الكل",
     "rejectOptional": "الضروري فقط"
+  },
+  "dealsPage": {
+    "title": "عروض فلاش",
+    "sub": "عروض محدودة الوقت — اغتنمها قبل أن تنتهي",
+    "breadcrumb": "العروض",
+    "endsIn": "ينتهي البيع خلال",
+    "hours": "س",
+    "minutes": "د",
+    "seconds": "ث",
+    "off": "خصم",
+    "claimed": "تم الحجز",
+    "totalDeals_one": "عرض واحد متاح",
+    "totalDeals_other": "{{count}} عروض متاحة",
+    "allDeals": "جميع العروض",
+    "addToCart": "أضف إلى السلة",
+    "noDeals": "لا توجد عروض في هذه الفئة الآن.",
+    "urgencyFew": "بقي القليل فقط!",
+    "saveBadge": "وفر {{amount}}"
   }
 }
