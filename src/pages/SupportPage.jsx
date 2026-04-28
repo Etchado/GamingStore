@@ -521,11 +521,17 @@ function LocationsSection() {
   const { t } = useTranslation()
   useSEO({ title: t('pages.locations'), description: t('pages.locationsDesc') })
 
-  const locs = [1, 2, 3].map(n => ({
+  const LOC_MAPS = [
+    '142 West 34th Street, New York, NY 10001',
+    '8600 Wilshire Blvd, Beverly Hills, CA 90211',
+    'King Fahd Road, Al Olaya District, Riyadh 12214',
+  ]
+  const locs = [1, 2, 3].map((n, i) => ({
     city: t(`locationsPage.loc${n}City`),
     address: t(`locationsPage.loc${n}Address`),
     hours: t(`locationsPage.loc${n}Hours`),
     phone: t(`locationsPage.loc${n}Phone`),
+    mapsQ: LOC_MAPS[i],
   }))
 
   return (
@@ -537,7 +543,7 @@ function LocationsSection() {
         <p className="text-sm text-muted mb-10">{t('locationsPage.sub')}</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          {locs.map(({ city, address, hours, phone }) => (
+          {locs.map(({ city, address, hours, phone, mapsQ }) => (
             <motion.div key={city}
               whileHover={{ y: -4 }}
               transition={{ type: 'spring', stiffness: 300 }}
@@ -557,11 +563,13 @@ function LocationsSection() {
                 </div>
               </div>
               <a
-                href="#"
+                href={`https://maps.google.com/?q=${encodeURIComponent(mapsQ)}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="mt-4 text-xs font-black transition-colors"
                 style={{ color: '#0056b3' }}
               >
-                {t('locationsPage.getDirections')}
+                {t('locationsPage.getDirections')} ↗
               </a>
             </motion.div>
           ))}

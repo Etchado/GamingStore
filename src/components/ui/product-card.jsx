@@ -2,6 +2,7 @@ import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
+import { onImgError } from '@/lib/imgFallback'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { useWishlist } from '@/context/WishlistContext'
@@ -124,6 +125,7 @@ export function ProductCard({ product, onQuickView }) {
           src={product.image}
           alt={product.title}
           loading="lazy"
+          onError={onImgError}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
         />
 

@@ -276,6 +276,7 @@ export default function Navbar() {
                       <img
                         src={p.image}
                         alt={p.title}
+                        loading="lazy"
                         onError={onImgError}
                         className="w-10 h-10 rounded-lg object-cover shrink-0 border"
                         style={{ borderColor: '#e0e0e0' }}

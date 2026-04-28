@@ -120,6 +120,7 @@ export const ProductCard = ({ product, translate }) => {
           src={product.thumbnail}
           height="600"
           width="600"
+          loading="lazy"
           className="object-cover object-center absolute h-full w-full inset-0"
           alt={product.title}
         />

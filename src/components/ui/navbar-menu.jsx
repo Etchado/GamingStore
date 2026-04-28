@@ -61,6 +61,7 @@ export const ProductItem = ({ title, description, href, src }) => (
       src={src}
       width={120}
       height={60}
+      loading="lazy"
       alt={title}
       className="shrink-0 rounded-lg object-cover border border-border"
     />
