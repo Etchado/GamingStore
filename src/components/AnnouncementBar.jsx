@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -10,9 +10,15 @@ export default function AnnouncementBar() {
 
   const ANNOUNCEMENTS = [
     { id: 1, text: t('announcement.freeShipping'), cta: null },
-    { id: 2, text: t('announcement.deals'), cta: { label: t('announcement.shopDeals'), href: '/?sort=deals' } },
+    { id: 2, text: t('announcement.deals'), cta: { label: t('announcement.shopDeals'), href: '/deals' } },
     { id: 3, text: t('announcement.newArrivals'), cta: { label: t('announcement.viewNew'), href: '/?badge=NEW' } },
   ]
+
+  useEffect(() => {
+    if (dismissed) return
+    const id = setInterval(() => setIdx(i => (i + 1) % ANNOUNCEMENTS.length), 4000)
+    return () => clearInterval(id)
+  }, [dismissed, ANNOUNCEMENTS.length])
 
   if (dismissed) return null
 
@@ -38,17 +44,26 @@ export default function AnnouncementBar() {
               >
                 ‹
               </button>
-              <p className="text-xs font-semibold text-white text-center">
-                {item.text}
-                {item.cta && (
-                  <Link
-                    to={item.cta.href}
-                    className="ms-2 underline underline-offset-2 font-bold hover:text-white/80 transition-colors"
-                  >
-                    {item.cta.label} →
-                  </Link>
-                )}
-              </p>
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={item.id}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-xs font-semibold text-white text-center"
+                >
+                  {item.text}
+                  {item.cta && (
+                    <Link
+                      to={item.cta.href}
+                      className="ms-2 underline underline-offset-2 font-bold hover:text-white/80 transition-colors"
+                    >
+                      {item.cta.label} →
+                    </Link>
+                  )}
+                </motion.p>
+              </AnimatePresence>
               <button
                 onClick={() => setIdx(i => (i + 1) % ANNOUNCEMENTS.length)}
                 className="text-white/60 hover:text-white transition-colors shrink-0 hidden sm:block"
