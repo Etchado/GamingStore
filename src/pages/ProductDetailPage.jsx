@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
@@ -164,6 +164,19 @@ export default function ProductDetailPage() {
   const [qty, setQty] = useState(1)
   const gallery = product?.images?.length > 1 ? product.images : product ? [product.image] : []
   const [activeImg, setActiveImg] = useState(0)
+  const [lightbox, setLightbox] = useState(false)
+
+  useEffect(() => {
+    if (!lightbox) return
+    function onKey(e) {
+      if (e.key === 'Escape') { setLightbox(false); return }
+      if (e.key === 'ArrowRight') setActiveImg(i => (i + 1) % gallery.length)
+      if (e.key === 'ArrowLeft') setActiveImg(i => (i - 1 + gallery.length) % gallery.length)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [lightbox, gallery.length])
+
   const recentProducts = recentIds.map(rid => PRODUCTS.find(p => p.id === rid)).filter(Boolean)
   const related = PRODUCTS.filter(p => p.id !== id && p.category === product?.category).slice(0, 4)
   const fallbackRelated = PRODUCTS.filter(p => p.id !== id).slice(0, 4)
@@ -238,8 +251,11 @@ export default function ProductDetailPage() {
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="relative">
 
             {/* Main image */}
-            <div className="group relative rounded-3xl overflow-hidden border"
-              style={{ aspectRatio: '4/3', borderColor: '#e0e0e0', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}>
+            <div
+              className="group relative rounded-3xl overflow-hidden border cursor-zoom-in"
+              onClick={() => setLightbox(true)}
+              style={{ aspectRatio: '4/3', borderColor: '#e0e0e0', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}
+            >
               <AnimatePresence mode="wait">
                 <motion.img
                   key={activeImg}
@@ -269,11 +285,23 @@ export default function ProductDetailPage() {
                 </span>
               )}
 
+              {/* Expand icon */}
+              <button
+                onClick={e => { e.stopPropagation(); setLightbox(true) }}
+                className="absolute top-3 start-3 w-8 h-8 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/30 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                style={{ backgroundColor: 'rgba(0,0,0,0.35)', color: '#fff' }}
+                aria-label="View fullscreen"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path d="M15 3h6m0 0v6m0-6-7 7M9 21H3m0 0v-6m0 6 7-7" />
+                </svg>
+              </button>
+
               {/* Prev/Next arrows — only when gallery has >1 image */}
               {gallery.length > 1 && (
                 <>
                   <button
-                    onClick={() => setActiveImg(i => (i - 1 + gallery.length) % gallery.length)}
+                    onClick={e => { e.stopPropagation(); setActiveImg(i => (i - 1 + gallery.length) % gallery.length) }}
                     className="absolute start-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30 transition-opacity opacity-0 hover:opacity-100 focus:opacity-100 group-hover:opacity-100"
                     style={{ backgroundColor: 'rgba(255,255,255,0.20)', color: '#fff' }}
                     aria-label="Previous image"
@@ -281,7 +309,7 @@ export default function ProductDetailPage() {
                     ‹
                   </button>
                   <button
-                    onClick={() => setActiveImg(i => (i + 1) % gallery.length)}
+                    onClick={e => { e.stopPropagation(); setActiveImg(i => (i + 1) % gallery.length) }}
                     className="absolute end-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30 transition-opacity opacity-0 hover:opacity-100 focus:opacity-100 group-hover:opacity-100"
                     style={{ backgroundColor: 'rgba(255,255,255,0.20)', color: '#fff' }}
                     aria-label="Next image"
@@ -499,6 +527,90 @@ export default function ProductDetailPage() {
           </motion.div>
         )}
       </div>
+
+      {/* Image Lightbox */}
+      <AnimatePresence>
+        {lightbox && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setLightbox(false)}
+              className="fixed inset-0 z-[95] bg-black/90 backdrop-blur-sm"
+            />
+            <div className="fixed inset-0 z-[96] flex items-center justify-center p-4 pointer-events-none">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.94 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.94 }}
+                transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                className="relative pointer-events-auto"
+                style={{ maxWidth: 'min(90vw, 900px)', width: '100%' }}
+                onClick={e => e.stopPropagation()}
+              >
+                {/* Close */}
+                <button
+                  onClick={() => setLightbox(false)}
+                  className="absolute -top-12 end-0 w-9 h-9 rounded-xl flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                  aria-label="Close"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                  </svg>
+                </button>
+
+                {/* Image */}
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={activeImg}
+                    src={gallery[activeImg]}
+                    alt={`${product.title} — view ${activeImg + 1}`}
+                    onError={onImgError}
+                    initial={{ opacity: 0, scale: 1.03 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.97 }}
+                    transition={{ duration: 0.22 }}
+                    className="w-full rounded-2xl object-contain"
+                    style={{ maxHeight: '75vh' }}
+                  />
+                </AnimatePresence>
+
+                {/* Arrows */}
+                {gallery.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => setActiveImg(i => (i - 1 + gallery.length) % gallery.length)}
+                      className="absolute start-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center bg-black/50 text-white hover:bg-black/70 transition-colors text-xl"
+                      aria-label="Previous image"
+                    >‹</button>
+                    <button
+                      onClick={() => setActiveImg(i => (i + 1) % gallery.length)}
+                      className="absolute end-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center bg-black/50 text-white hover:bg-black/70 transition-colors text-xl"
+                      aria-label="Next image"
+                    >›</button>
+                  </>
+                )}
+
+                {/* Dot indicators */}
+                {gallery.length > 1 && (
+                  <div className="flex justify-center gap-1.5 mt-4">
+                    {gallery.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setActiveImg(i)}
+                        className="w-2 h-2 rounded-full transition-all"
+                        style={{ backgroundColor: i === activeImg ? '#fff' : 'rgba(255,255,255,0.35)', transform: i === activeImg ? 'scale(1.3)' : 'scale(1)' }}
+                        aria-label={`View image ${i + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Mobile sticky CTA */}
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t px-4 py-3 flex items-center gap-3"
