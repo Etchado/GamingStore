@@ -16,6 +16,16 @@
     "searchMobilePlaceholder": "Search products…",
     "searchAll": "See all results for \"{{q}}\"",
     "allCategories": "All Categories",
+    "home": "Home",
+    "aboutUs": "About Us",
+    "pcBuilder": "Pc Builder",
+    "support": {
+      "label": "Support",
+      "contact": "Contact Us",
+      "faq": "FAQ",
+      "returns": "Returns",
+      "track": "Track Order"
+    },
     "mega": {
       "pcBuilds": "PC Builds",
       "byBrand": "By Brand",
@@ -45,7 +55,7 @@
       "hz240": "240Hz Gaming",
       "portable": "Portable",
       "mechanicalKeyboards": "Mechanical Keyboards",
-      "gamingMice": "Gaming Mice",
+      "gamingMice": "Gaming Mouse",
       "headsets": "Headsets",
       "webcams": "Webcams",
       "standingDesks": "Standing Desks",
@@ -53,7 +63,7 @@
       "monitorArms": "Monitor Arms",
       "cableManagement": "Cable Management",
       "ledStrips": "LED Strips",
-      "deskMats": "Desk Mats",
+      "deskMats": "Mouse Pads",
       "controllers": "Controllers"
     }
   },

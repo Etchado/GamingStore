@@ -16,6 +16,16 @@
     "searchMobilePlaceholder": "ابحث عن منتجات…",
     "searchAll": "عرض جميع نتائج \"{{q}}\"",
     "allCategories": "جميع الفئات",
+    "home": "الرئيسية",
+    "aboutUs": "من نحن",
+    "pcBuilder": "بناء الجهاز",
+    "support": {
+      "label": "الدعم",
+      "contact": "تواصل معنا",
+      "faq": "الأسئلة الشائعة",
+      "returns": "الإرجاع",
+      "track": "تتبع الطلب"
+    },
     "mega": {
       "pcBuilds": "أجهزة الكمبيوتر",
       "byBrand": "حسب العلامة التجارية",
@@ -45,7 +55,7 @@
       "hz240": "ألعاب 240Hz",
       "portable": "محمول",
       "mechanicalKeyboards": "لوحات مفاتيح ميكانيكية",
-      "gamingMice": "فئران الألعاب",
+      "gamingMice": "ماوس الألعاب",
       "headsets": "سماعات الرأس",
       "webcams": "كاميرات ويب",
       "standingDesks": "مكاتب قابلة للرفع",
@@ -53,7 +63,7 @@
       "monitorArms": "أذرع الشاشات",
       "cableManagement": "إدارة الكابلات",
       "ledStrips": "شرائط LED",
-      "deskMats": "أرائك المكتب",
+      "deskMats": "ماوس باد",
       "controllers": "وحدات التحكم"
     }
   },

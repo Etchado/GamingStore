@@ -29,8 +29,8 @@ export const PRODUCTS = [
     rating: 4.9,
     reviews: 87,
     badge: 'BESTSELLER',
-    inStock: true,
-    stockCount: 4,
+    inStock: false,
+    stockCount: 0,
   },
   {
     id: 'rtx-4090',
@@ -60,8 +60,8 @@ export const PRODUCTS = [
     rating: 4.8,
     reviews: 234,
     badge: 'NEW',
-    inStock: true,
-    stockCount: 12,
+    inStock: false,
+    stockCount: 0,
   },
   {
     id: 'ryzen-9-7950x',
@@ -90,8 +90,8 @@ export const PRODUCTS = [
     price: '$699',
     rating: 4.8,
     reviews: 312,
-    inStock: true,
-    stockCount: 20,
+    inStock: false,
+    stockCount: 0,
   },
 
   /* ── 10 New Products ── */
@@ -222,8 +222,8 @@ export const PRODUCTS = [
     rating: 4.9,
     reviews: 743,
     badge: 'FASTEST',
-    inStock: true,
-    stockCount: 35,
+    inStock: false,
+    stockCount: 0,
   },
   {
     id: 'wd-black-sn850x-1tb',
@@ -447,8 +447,8 @@ export const PRODUCTS = [
     rating: 4.9,
     reviews: 342,
     badge: 'OLED',
-    inStock: true,
-    stockCount: 9,
+    inStock: false,
+    stockCount: 0,
   },
   {
     id: 'benq-pd2706qn',
@@ -542,8 +542,8 @@ export const PRODUCTS = [
     rating: 4.7,
     reviews: 634,
     badge: 'HOT',
-    inStock: true,
-    stockCount: 38,
+    inStock: false,
+    stockCount: 0,
   },
   {
     id: 'keyboard-61key-arabic-english',
@@ -608,8 +608,8 @@ export const PRODUCTS = [
     rating: 4.9,
     reviews: 782,
     badge: 'PRO PICK',
-    inStock: true,
-    stockCount: 31,
+    inStock: false,
+    stockCount: 0,
   },
   {
     id: 'razer-deathadder-v3-pro-black',
@@ -672,8 +672,8 @@ export const PRODUCTS = [
     rating: 4.8,
     reviews: 567,
     badge: 'PRO PICK',
-    inStock: true,
-    stockCount: 11,
+    inStock: false,
+    stockCount: 0,
   },
   {
     id: 'razer-blackshark-v2x-wired',
@@ -802,8 +802,8 @@ export const PRODUCTS = [
     rating: 4.7,
     reviews: 512,
     badge: 'HOT',
-    inStock: true,
-    stockCount: 14,
+    inStock: false,
+    stockCount: 0,
   },
 
   /* ── Chair ── */
@@ -835,8 +835,8 @@ export const PRODUCTS = [
     rating: 4.9,
     reviews: 2847,
     badge: 'PREMIUM',
-    inStock: true,
-    stockCount: 7,
+    inStock: false,
+    stockCount: 0,
   },
   {
     id: 'secretlab-titan-softweave-cookies-cream',
@@ -961,8 +961,8 @@ export const PRODUCTS = [
     rating: 4.7,
     reviews: 1876,
     badge: 'XXL',
-    inStock: true,
-    stockCount: 65,
+    inStock: false,
+    stockCount: 0,
   },
   {
     id: 'excovip-mars-mousepad',

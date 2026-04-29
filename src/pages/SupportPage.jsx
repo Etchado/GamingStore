@@ -949,7 +949,7 @@ export default function SupportPage() {
   const { pathname } = useLocation()
 
   return (
-    <div className="min-h-[80vh] pt-25 lg:pt-35" style={{ backgroundColor: '#f8fafc' }}>
+    <div className="min-h-[80vh] pt-36 lg:pt-44" style={{ backgroundColor: '#f8fafc' }}>
       {pathname === '/faq'           && <FAQSection />}
       {pathname === '/contact'       && <ContactSection />}
       {pathname === '/track-order'   && <TrackOrderSection />}

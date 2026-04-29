@@ -6,7 +6,7 @@ const Card = memo(({ card, index, hovered, setHovered }) => (
     onMouseEnter={() => setHovered(index)}
     onMouseLeave={() => setHovered(null)}
     className={cn(
-      'rounded-xl relative overflow-hidden h-44 md:h-52 w-full transition-all duration-300 ease-out cursor-pointer',
+      'rounded-xl relative overflow-hidden h-56 md:h-72 w-full transition-all duration-300 ease-out cursor-pointer',
       'bg-surface border border-border',
       hovered !== null && hovered !== index && 'blur-[2px] scale-[0.97] brightness-95'
     )}
@@ -33,7 +33,7 @@ Card.displayName = 'Card'
 export function FocusCards({ cards }) {
   const [hovered, setHovered] = useState(null)
   return (
-    <div className="grid grid-cols-2 gap-3 w-full">
+    <div className="grid grid-cols-2 gap-4 w-full">
       {cards.map((card, index) => (
         <Card
           key={card.title}

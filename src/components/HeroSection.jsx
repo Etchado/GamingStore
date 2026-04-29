@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { FocusCards } from '@/components/ui/focus-cards'
 
@@ -21,9 +21,17 @@ const stagger = (i) => ({
 
 export default function HeroSection() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+
+  function handleBrowseSystems() {
+    navigate('/?category=System')
+    setTimeout(() => {
+      document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 80)
+  }
   return (
-    <section className="bg-white pt-35 pb-16 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center min-h-[80vh]">
+    <section className="bg-white pt-44 pb-24 overflow-hidden min-h-screen flex items-center">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center w-full">
 
         {/* ── Left: Copy ────────────────────────── */}
         <div>
@@ -38,7 +46,7 @@ export default function HeroSection() {
           <motion.h1
             {...stagger(1)}
             className="mt-6 font-black text-ink tracking-tight leading-[1.06]"
-            style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.75rem)' }}
+            style={{ fontSize: 'clamp(2.8rem, 5.5vw, 5rem)' }}
           >
             {t('hero.headline1')}
             <br />
@@ -51,17 +59,17 @@ export default function HeroSection() {
           </motion.h1>
 
           {/* Sub */}
-          <motion.p {...stagger(2)} className="mt-5 text-base text-muted leading-relaxed max-w-[440px]">
+          <motion.p {...stagger(2)} className="mt-6 text-lg text-muted leading-relaxed max-w-[480px]">
             {t('hero.sub')}
           </motion.p>
 
           {/* CTAs */}
-          <motion.div {...stagger(3)} className="mt-8 flex flex-wrap gap-3">
+          <motion.div {...stagger(3)} className="mt-10 flex flex-wrap gap-4">
             <motion.a
               href="#products"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white text-sm font-bold shadow-sm transition-colors"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-white text-base font-bold shadow-sm transition-colors"
               style={{ backgroundColor: '#0056b3' }}
               onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
@@ -72,29 +80,29 @@ export default function HeroSection() {
               </svg>
             </motion.a>
 
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-              <Link
-                to="/?category=System"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold border-2 transition-colors"
-                style={{ borderColor: '#28a745', color: '#1e8035' }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e9f7ed' }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
-              >
-                {t('hero.ctaSecondary')}
-              </Link>
-            </motion.div>
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={handleBrowseSystems}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-bold border-2 transition-colors"
+              style={{ borderColor: '#28a745', color: '#1e8035' }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e9f7ed' }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
+            >
+              {t('hero.ctaSecondary')}
+            </motion.button>
           </motion.div>
 
           {/* Stats */}
-          <motion.div {...stagger(4)} className="mt-10 grid grid-cols-3 gap-8 max-w-[360px]">
+          <motion.div {...stagger(4)} className="mt-12 grid grid-cols-3 gap-10 max-w-[420px]">
             {[
               { n: t('hero.stat1n'), l: t('hero.stat1l') },
               { n: t('hero.stat2n'), l: t('hero.stat2l') },
               { n: t('hero.stat3n'), l: t('hero.stat3l') },
             ].map((s) => (
               <div key={s.l} className="text-center">
-                <p className="text-2xl font-black text-ink">{s.n}</p>
-                <p className="text-xs text-muted mt-0.5">{s.l}</p>
+                <p className="text-3xl font-black text-ink">{s.n}</p>
+                <p className="text-sm text-muted mt-1">{s.l}</p>
               </div>
             ))}
           </motion.div>
@@ -157,7 +165,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, scale: 0.88, x: -12 }}
             animate={{ opacity: 1, scale: 1,    x: 0  }}
             transition={{ delay: 0.85, type: 'spring', stiffness: 160 }}
-            className="absolute bottom-4 start-4 rounded-2xl px-4 py-3 flex items-center gap-2.5 border border-white/30 backdrop-blur-sm"
+            className="absolute top-4 start-4 rounded-2xl px-4 py-3 flex items-center gap-2.5 border border-white/30 backdrop-blur-sm"
             style={{ backgroundColor: 'rgba(255,255,255,0.16)' }}
           >
             <div className="text-amber-300 flex" aria-hidden="true">★★★★★</div>

@@ -244,7 +244,7 @@ export default function AccountPage() {
 
   if (loggedInAs) {
     return (
-      <div className="min-h-[80vh] px-4 pt-25 lg:pt-35 pb-16" style={{ backgroundColor: '#f8fafc' }}>
+      <div className="min-h-[80vh] px-4 pt-36 lg:pt-44 pb-16" style={{ backgroundColor: '#f8fafc' }}>
         {/* Breadcrumb */}
         <div className="max-w-4xl mx-auto mb-6">
           <div className="flex items-center gap-1.5 text-xs text-muted">
@@ -260,7 +260,7 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 pt-25 lg:pt-35" style={{ backgroundColor: '#f8fafc' }}>
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 pt-36 lg:pt-44" style={{ backgroundColor: '#f8fafc' }}>
       <div className="w-full max-w-md">
 
         {/* Breadcrumb */}

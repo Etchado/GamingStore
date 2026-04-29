@@ -8,6 +8,26 @@ import AnnouncementBar from '@/components/AnnouncementBar'
 import { PRODUCTS } from '@/data/products'
 import { onImgError } from '@/lib/imgFallback'
 
+/* ── Currencies ── */
+const CURRENCIES = [
+  { code: 'BHD', label: 'Bahrain',      ar: 'البحرين' },
+  { code: 'JOD', label: 'Jordan',       ar: 'الاردن'  },
+  { code: 'SAR', label: 'KSA',          ar: 'السعودية' },
+  { code: 'KWD', label: 'Kuwait',       ar: 'الكويت'  },
+  { code: 'OMR', label: 'Oman',         ar: 'عمان'    },
+  { code: 'QAR', label: 'Qatar Riyal',  ar: 'قطر'     },
+  { code: 'AED', label: 'UAE',          ar: 'الامارات' },
+  { code: 'USD', label: 'Dollar',       ar: 'الدولار'  },
+]
+
+/* ── Support links ── */
+const SUPPORT_LINKS = [
+  { labelKey: 'nav.support.contact',  href: '/contact'     },
+  { labelKey: 'nav.support.faq',      href: '/faq'         },
+  { labelKey: 'nav.support.returns',  href: '/returns'     },
+  { labelKey: 'nav.support.track',    href: '/track-order' },
+]
+
 /* ── Nav data (keys only — labels resolved via t()) ── */
 const NAV_ITEMS = [
   {
@@ -16,16 +36,13 @@ const NAV_ITEMS = [
     filter: 'System',
     cols: [
       { headingKey: 'nav.mega.pcBuilds', links: [
-        { labelKey: 'nav.mega.prebuiltPCs',   filter: 'System' },
-        { labelKey: 'nav.mega.customBuilder',  filter: 'System', href: '/builder' },
-        { labelKey: 'nav.mega.miniITX',        filter: 'System' },
-        { labelKey: 'nav.mega.workstations',   filter: 'System' },
+        { labelKey: 'nav.mega.prebuiltPCs',  filter: 'System' },
+        { labelKey: 'nav.mega.customBuilder', filter: 'System', href: '/builder' },
       ]},
-      { headingKey: 'nav.mega.byBrand', links: [
-        { labelKey: 'nav.mega.asusRog',        filter: 'System' },
-        { labelKey: 'nav.mega.corsair',        filter: 'System' },
-        { labelKey: 'nav.mega.nzxt',           filter: 'System' },
-        { labelKey: 'nav.mega.fractalDesign',  filter: 'System' },
+      { headingKey: 'nav.mega.processing', links: [
+        { labelKey: 'nav.mega.graphicsCards', filter: 'GPU' },
+        { labelKey: 'nav.mega.processors',    filter: 'CPU' },
+        { labelKey: 'nav.mega.nvmeSsds',      filter: 'Storage' },
       ]},
     ],
   },
@@ -37,13 +54,10 @@ const NAV_ITEMS = [
       { headingKey: 'nav.mega.processing', links: [
         { labelKey: 'nav.mega.graphicsCards', filter: 'GPU' },
         { labelKey: 'nav.mega.processors',    filter: 'CPU' },
-        { labelKey: 'nav.mega.motherboards',  filter: 'System' },
       ]},
       { headingKey: 'nav.mega.storageMemory', links: [
         { labelKey: 'nav.mega.nvmeSsds',  filter: 'Storage' },
-        { labelKey: 'nav.mega.ddr5Ram',   filter: 'System' },
         { labelKey: 'nav.mega.sataSsds',  filter: 'Storage' },
-        { labelKey: 'nav.mega.cooling',   filter: 'System' },
       ]},
     ],
   },
@@ -56,13 +70,11 @@ const NAV_ITEMS = [
         { labelKey: 'nav.mega.4kMonitors', filter: 'Monitor' },
         { labelKey: 'nav.mega.ultrawide',  filter: 'Monitor' },
         { labelKey: 'nav.mega.hz240',      filter: 'Monitor' },
-        { labelKey: 'nav.mega.portable',   filter: 'Monitor' },
       ]},
       { headingKey: 'nav.mega.input', links: [
         { labelKey: 'nav.mega.mechanicalKeyboards', filter: 'Keyboard' },
         { labelKey: 'nav.mega.gamingMice',          filter: 'Mouse' },
         { labelKey: 'nav.mega.headsets',            filter: 'Headset' },
-        { labelKey: 'nav.mega.webcams',             filter: 'Keyboard' },
       ]},
     ],
   },
@@ -72,15 +84,11 @@ const NAV_ITEMS = [
     filter: 'Desk',
     cols: [
       { headingKey: 'nav.mega.furniture', links: [
-        { labelKey: 'nav.mega.standingDesks',    filter: 'Desk' },
-        { labelKey: 'nav.mega.ergonomicChairs',  filter: 'Chair' },
-        { labelKey: 'nav.mega.monitorArms',      filter: 'Desk' },
+        { labelKey: 'nav.mega.standingDesks',   filter: 'Desk' },
+        { labelKey: 'nav.mega.ergonomicChairs', filter: 'Chair' },
       ]},
       { headingKey: 'nav.mega.extras', links: [
-        { labelKey: 'nav.mega.cableManagement', filter: 'Desk' },
-        { labelKey: 'nav.mega.ledStrips',       filter: 'Desk' },
-        { labelKey: 'nav.mega.deskMats',        filter: 'Desk' },
-        { labelKey: 'nav.mega.controllers',     filter: 'Keyboard' },
+        { labelKey: 'nav.mega.deskMats', filter: 'Mouse Pad' },
       ]},
     ],
   },
@@ -112,7 +120,7 @@ function MegaMenu({ item, onLinkClick }) {
                   <li key={link.labelKey}>
                     <Link
                       to={link.href ?? `/?category=${link.filter}`}
-                      onClick={onLinkClick}
+                      onClick={() => onLinkClick(link)}
                       className="text-sm text-ink font-medium transition-colors inline-flex items-center gap-2 group px-2 py-1 -mx-2 rounded-md hover:bg-primary-50 hover:text-primary-600"
                     >
                       <span className="w-1 h-1 rounded-full bg-border group-hover:bg-primary-600 transition-colors shrink-0" />
@@ -137,7 +145,12 @@ export default function Navbar() {
   const [query, setQuery]                   = useState('')
   const [mobileQuery, setMobileQuery]       = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
-  const searchRef = useRef(null)
+  const [currency, setCurrency]             = useState(CURRENCIES[2]) // SAR default
+  const [currencyOpen, setCurrencyOpen]     = useState(false)
+  const [supportOpen, setSupportOpen]       = useState(false)
+  const searchRef   = useRef(null)
+  const currencyRef = useRef(null)
+  const supportRef  = useRef(null)
 
   const suggestions = query.trim().length >= 2
     ? PRODUCTS.filter(p =>
@@ -149,9 +162,9 @@ export default function Navbar() {
 
   useEffect(() => {
     function onClickOutside(e) {
-      if (searchRef.current && !searchRef.current.contains(e.target)) {
-        setShowSuggestions(false)
-      }
+      if (searchRef.current && !searchRef.current.contains(e.target)) setShowSuggestions(false)
+      if (currencyRef.current && !currencyRef.current.contains(e.target)) setCurrencyOpen(false)
+      if (supportRef.current && !supportRef.current.contains(e.target)) setSupportOpen(false)
     }
     document.addEventListener('mousedown', onClickOutside)
     return () => document.removeEventListener('mousedown', onClickOutside)
@@ -174,8 +187,13 @@ export default function Navbar() {
     }, 80)
   }
 
-  function handleMegaClose() {
+  function handleMegaClose(link) {
     setActiveMenu(null)
+    if (!link?.href) {
+      setTimeout(() => {
+        document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 80)
+    }
   }
 
   function doSearch(q, closeMobile = false) {
@@ -196,6 +214,93 @@ export default function Navbar() {
       className="fixed top-0 inset-x-0 z-50 bg-white"
       onMouseLeave={() => setActiveMenu(null)}
     >
+      {/* ── TopBar ── */}
+      <div className="hidden lg:block" style={{ backgroundColor: '#2471c8' }}>
+        <div className="max-w-7xl mx-auto px-6 h-8 flex items-center text-[11px] font-semibold">
+
+          {/* Left: Home, About Us, Support */}
+          <div className="flex items-center divide-x divide-white/20" style={{ color: 'rgba(255,255,255,0.85)' }}>
+            <Link
+              to="/"
+              className="flex items-center gap-1 px-3 h-8 transition-colors hover:text-white"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
+              {t('nav.home')}
+            </Link>
+            <Link
+              to="/about"
+              className="flex items-center gap-1 px-3 h-8 transition-colors hover:text-white"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M6 20v-2a6 6 0 0 1 12 0v2" />
+              </svg>
+              {t('nav.aboutUs')}
+            </Link>
+            <div ref={supportRef} className="relative">
+              <button
+                onClick={() => setSupportOpen(o => !o)}
+                className="flex items-center gap-1 px-3 h-8 transition-colors hover:text-white"
+                style={{ color: supportOpen ? '#fff' : undefined }}
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" />
+                </svg>
+                {t('nav.support.label')}
+                <svg className="w-2.5 h-2.5 opacity-60 transition-transform" style={{ transform: supportOpen ? 'rotate(180deg)' : undefined }} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+              <AnimatePresence>
+                {supportOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.14 }}
+                    className="absolute top-full start-0 mt-1 bg-white rounded-xl border shadow-lg z-[70] overflow-hidden min-w-[160px]"
+                    style={{ borderColor: '#e0e0e0', boxShadow: '0 8px 24px rgba(0,0,0,0.09)' }}
+                  >
+                    {SUPPORT_LINKS.map((sl) => (
+                      <Link
+                        key={sl.labelKey}
+                        to={sl.href}
+                        onClick={() => setSupportOpen(false)}
+                        className="flex items-center px-4 py-2.5 text-xs font-semibold text-ink hover:bg-surface transition-colors"
+                      >
+                        {t(sl.labelKey)}
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Right: quick links */}
+          <div className="ms-auto flex items-center divide-x divide-white/20" style={{ color: 'rgba(255,255,255,0.85)' }}>
+            <Link to="/builder" className="flex items-center gap-1 px-3 h-8 transition-colors hover:text-white">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <path d="M8 21h8M12 17v4" />
+              </svg>
+              {t('nav.pcBuilder')}
+            </Link>
+            <Link to="/deals" className="flex items-center gap-1 px-3 h-8 transition-colors hover:text-white">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z" />
+              </svg>
+              {t('nav.deals')}
+            </Link>
+          </div>
+
+        </div>
+      </div>
+
       <AnnouncementBar />
 
       {/* ── Row 1: Logo + Search + Icons ── */}
@@ -377,6 +482,46 @@ export default function Navbar() {
               {isAr ? 'EN' : 'AR'}
             </button>
 
+            {/* Currency dropdown */}
+            <div ref={currencyRef} className="relative hidden sm:block">
+              <button
+                onClick={() => setCurrencyOpen(o => !o)}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-black transition-colors hover:bg-surface"
+                style={{ borderColor: currencyOpen ? '#0056b3' : '#e0e0e0', color: '#555' }}
+              >
+                {currency.code} {currency.label}
+                <svg className="w-2.5 h-2.5 opacity-60 transition-transform" style={{ transform: currencyOpen ? 'rotate(180deg)' : undefined }} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+              <AnimatePresence>
+                {currencyOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.14 }}
+                    className="absolute top-full end-0 mt-1 bg-white rounded-xl border shadow-lg z-[70] overflow-hidden"
+                    style={{ borderColor: '#e0e0e0', boxShadow: '0 8px 24px rgba(0,0,0,0.10)', minWidth: '200px' }}
+                  >
+                    {CURRENCIES.map((c) => (
+                      <button
+                        key={c.code}
+                        onClick={() => { setCurrency(c); setCurrencyOpen(false) }}
+                        className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold text-start transition-colors"
+                        style={{ backgroundColor: currency.code === c.code ? '#f0f7ff' : 'transparent', color: currency.code === c.code ? '#0056b3' : '#374151' }}
+                        onMouseEnter={(e) => { if (currency.code !== c.code) e.currentTarget.style.backgroundColor = '#f8fafc' }}
+                        onMouseLeave={(e) => { if (currency.code !== c.code) e.currentTarget.style.backgroundColor = 'transparent' }}
+                      >
+                        <span className="font-bold">{c.code}  {c.label}</span>
+                        <span className="text-muted font-medium">- {c.ar}</span>
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             {/* Hamburger — mobile only */}
             <button
               onClick={() => setMobileOpen(o => !o)}
@@ -417,13 +562,6 @@ export default function Navbar() {
           <div className="ms-auto flex items-center gap-4">
             <Link to="/deals" className="text-xs font-bold transition-colors" style={{ color: '#e53e3e' }} onMouseEnter={(e) => { e.currentTarget.style.color = '#c53030' }} onMouseLeave={(e) => { e.currentTarget.style.color = '#e53e3e' }}>{t('nav.deals')}</Link>
             <Link to="/?badge=NEW" className="text-xs font-bold text-muted hover:text-ink transition-colors">{t('nav.newArrivals')}</Link>
-            <Link
-              to="/games"
-              className="text-xs font-semibold px-3 py-1 rounded-full border transition-colors"
-              style={{ color: '#28a745', borderColor: '#a7dfb7' }}
-            >
-              {t('nav.games')}
-            </Link>
           </div>
         </div>
 
@@ -533,7 +671,6 @@ export default function Navbar() {
             <div className="px-5 py-3 flex gap-4 border-t border-border bg-white">
               <Link to="/deals" className="text-xs font-bold transition-colors" style={{ color: '#e53e3e' }} onClick={() => setMobileOpen(false)}>{t('nav.deals')}</Link>
               <Link to="/?badge=NEW" className="text-xs font-bold text-muted hover:text-ink transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.newArrivals')}</Link>
-              <Link to="/games" className="text-xs font-semibold" style={{ color: '#28a745' }} onClick={() => setMobileOpen(false)}>{t('nav.games')}</Link>
               <Link
                 to="/wishlist"
                 className="text-xs font-semibold text-muted hover:text-ink transition-colors flex items-center gap-1"

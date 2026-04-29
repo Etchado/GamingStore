@@ -32,9 +32,9 @@ const WishlistPage      = lazy(() => import('./pages/WishlistPage'))
 const BuilderPage       = lazy(() => import('./pages/BuilderPage'))
 const NotFoundPage      = lazy(() => import('./pages/NotFoundPage'))
 const AccountPage       = lazy(() => import('./pages/AccountPage'))
-const GamesPage         = lazy(() => import('./pages/GamesPage'))
 const SupportPage       = lazy(() => import('./pages/SupportPage'))
 const DealsPage         = lazy(() => import('./pages/DealsPage'))
+const AboutPage         = lazy(() => import('./pages/AboutPage'))
 
 function PageLoader() {
   return (
@@ -72,6 +72,7 @@ function HomePage() {
 
 function AppShell() {
   const { i18n } = useTranslation()
+  const { pathname } = useLocation()
   const isAr = i18n.language?.startsWith('ar')
   const [compareOpen, setCompareOpen] = useState(false)
 
@@ -85,7 +86,7 @@ function AppShell() {
       <ScrollProgressBar />
       <ScrollToTop />
       <Navbar />
-      <ErrorBoundary>
+      <ErrorBoundary key={pathname}>
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -94,7 +95,8 @@ function AppShell() {
             <Route path="/wishlist" element={<WishlistPage />} />
             <Route path="/builder" element={<BuilderPage />} />
             <Route path="/account" element={<AccountPage />} />
-            <Route path="/games" element={<GamesPage />} />
+            <Route path="/about"   element={<AboutPage />} />
+            <Route path="/support" element={<SupportPage />} />
             <Route path="/faq"          element={<SupportPage />} />
             <Route path="/contact"      element={<SupportPage />} />
             <Route path="/returns"      element={<SupportPage />} />

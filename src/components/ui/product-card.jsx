@@ -156,8 +156,17 @@ export function ProductCard({ product, onQuickView }) {
           </svg>
         </button>
 
+        {/* Out of Stock overlay */}
+        {product.inStock === false && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/50">
+            <span className="px-3 py-1.5 rounded-full text-[11px] font-black tracking-widest uppercase text-white border border-white/40 bg-black/30 backdrop-blur-sm">
+              {t('product.outOfStock')}
+            </span>
+          </div>
+        )}
+
         {/* Quick View overlay */}
-        {onQuickView && (
+        {onQuickView && product.inStock !== false && (
           <div className="absolute inset-x-0 bottom-0 z-10 translate-y-full group-hover:translate-y-0 transition-transform duration-200">
             <button
               onClick={handleQuickView}
@@ -212,16 +221,22 @@ export function ProductCard({ product, onQuickView }) {
         </div>
 
         {/* Add to Cart */}
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={handleAddToCart}
-          className="relative z-10 mt-2 w-full py-2.5 rounded-xl text-sm font-bold text-white transition-colors"
-          style={{ backgroundColor: '#0056b3' }}
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
-        >
-          {t('compare.addToCart')}
-        </motion.button>
+        {product.inStock === false ? (
+          <div className="relative z-10 mt-2 w-full py-2.5 rounded-xl text-sm font-bold text-center cursor-not-allowed" style={{ backgroundColor: '#f3f4f6', color: '#9ca3af' }}>
+            {t('product.outOfStock')}
+          </div>
+        ) : (
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={handleAddToCart}
+            className="relative z-10 mt-2 w-full py-2.5 rounded-xl text-sm font-bold text-white transition-colors"
+            style={{ backgroundColor: '#0056b3' }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
+          >
+            {t('compare.addToCart')}
+          </motion.button>
+        )}
 
         {/* Compare toggle */}
         <button

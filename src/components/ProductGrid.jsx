@@ -65,7 +65,8 @@ function FilterSidebar({
   onMinPrice, onMaxPrice, onToggleBrand, onMinRating, onInStock,
   onClear, activeCount, onClose,
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const isRTL = i18n.language?.startsWith('ar')
 
   return (
     <div className="space-y-6">
@@ -188,12 +189,12 @@ function FilterSidebar({
           role="switch"
           aria-checked={inStock}
           onClick={() => onInStock(!inStock)}
-          className="relative w-9 h-5 rounded-full transition-colors focus:outline-none focus-visible:ring-2"
+          className="relative w-9 h-5 rounded-full transition-colors focus:outline-none focus-visible:ring-2 overflow-hidden"
           style={{ backgroundColor: inStock ? '#0056b3' : '#d1d5db' }}
         >
           <span
-            className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform"
-            style={{ transform: inStock ? 'translateX(1.125rem)' : 'translateX(0.125rem)' }}
+            className="absolute top-0.5 start-0.5 w-4 h-4 bg-white rounded-full transition-transform"
+            style={{ transform: inStock ? `translateX(${isRTL ? '-' : ''}1rem)` : 'translateX(0)' }}
           />
         </button>
       </div>

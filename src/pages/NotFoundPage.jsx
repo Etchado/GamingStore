@@ -13,7 +13,7 @@ export default function NotFoundPage() {
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className="min-h-[80vh] flex flex-col items-center justify-center gap-6 text-center px-6 pt-25 lg:pt-35"
+      className="min-h-[80vh] flex flex-col items-center justify-center gap-6 text-center px-6 pt-36 lg:pt-44"
     >
       <div
         className="w-24 h-24 rounded-3xl flex items-center justify-center text-5xl"

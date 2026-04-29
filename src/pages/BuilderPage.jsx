@@ -313,7 +313,7 @@ export default function BuilderPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="pt-25 lg:pt-35 min-h-screen"
+      className="pt-36 lg:pt-44 min-h-screen"
       style={{ backgroundColor: '#f8fafc' }}
     >
       <div className="border-b bg-white" style={{ borderColor: '#e0e0e0' }}>

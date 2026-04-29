@@ -239,7 +239,7 @@ export default function DealsPage() {
     <div className="min-h-screen bg-white">
       {/* Hero banner */}
       <div
-        className="pt-25 lg:pt-35 pb-10"
+        className="pt-36 lg:pt-44 pb-10"
         style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #c53030 60%, #e53e3e 100%)' }}
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6">

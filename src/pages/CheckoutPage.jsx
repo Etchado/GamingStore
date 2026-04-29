@@ -468,7 +468,7 @@ export default function CheckoutPage() {
 
   if (items.length === 0 && step !== 3) {
     return (
-      <div className="pt-25 lg:pt-35 min-h-[70vh] flex flex-col items-center justify-center gap-5 text-center px-6">
+      <div className="pt-36 lg:pt-44 min-h-[70vh] flex flex-col items-center justify-center gap-5 text-center px-6">
         <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl" style={{ backgroundColor: '#e6f0fa' }}>
           🛒
         </div>
@@ -484,7 +484,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="pt-25 lg:pt-35 min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
+    <div className="pt-36 lg:pt-44 min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
       {/* Breadcrumb */}
       <div className="border-b bg-white" style={{ borderColor: '#e0e0e0' }}>
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center gap-2 text-xs text-muted font-medium">
