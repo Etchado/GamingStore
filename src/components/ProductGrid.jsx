@@ -8,7 +8,7 @@ import QuickViewModal from '@/components/QuickViewModal'
 import { PRODUCTS } from '@/data/products'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
-const FILTERS = ['All', 'System', 'GPU', 'CPU', 'Monitor', 'Mouse', 'Keyboard', 'Headset', 'Storage', 'Desk', 'Chair']
+const FILTERS = ['All', 'System', 'GPU', 'CPU', 'Monitor', 'Mouse', 'Keyboard', 'Headset', 'Storage', 'Desk', 'Chair', 'Mouse Pad']
 
 const SORT_KEYS = [
   { value: 'featured',   key: 'products.sort.featured' },
@@ -351,7 +351,7 @@ export default function ProductGrid() {
   }, [categoryParam, queryParam, sortParam, badgeParam, minPriceParam, maxPriceParam, brandsParam, minRatingParam, inStockParam])
 
   // ── Filtered + sorted products ──
-  const filtered = PRODUCTS
+  const filtered = useMemo(() => PRODUCTS
     .filter(p => {
       if (active === 'multi' && !activeCategories.includes(p.category)) return false
       if (active !== 'All' && active !== 'multi' && p.category !== active) return false
@@ -373,7 +373,9 @@ export default function ProductGrid() {
       if (sortParam === 'rating')     return (b.rating ?? 0) - (a.rating ?? 0)
       if (sortParam === 'deals')      return parsePrice(b.saving ?? b.oldPrice ?? '0') - parsePrice(a.saving ?? a.oldPrice ?? '0')
       return 0
-    })
+    }),
+  [active, activeCategories, badgeParam, sortParam, minPriceParam, maxPriceParam, selectedBrands, minRatingParam, inStockParam, queryParam]
+  )
 
   // ── Shared filter sidebar props ──
   const filterProps = {
@@ -683,7 +685,7 @@ export default function ProductGrid() {
               </motion.div>
             ) : (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div key={[categoryParam, queryParam, sortParam, badgeParam].join('|')} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filtered.slice(0, visibleCount).map((product, i) => (
                     <motion.div
                       key={product.id}
