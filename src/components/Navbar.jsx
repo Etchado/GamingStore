@@ -4,21 +4,10 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { useWishlist } from '@/context/WishlistContext'
+import { useCurrency } from '@/context/CurrencyContext'
 import AnnouncementBar from '@/components/AnnouncementBar'
 import { PRODUCTS } from '@/data/products'
 import { onImgError } from '@/lib/imgFallback'
-
-/* ── Currencies ── */
-const CURRENCIES = [
-  { code: 'BHD', label: 'Bahrain',      ar: 'البحرين' },
-  { code: 'JOD', label: 'Jordan',       ar: 'الاردن'  },
-  { code: 'SAR', label: 'KSA',          ar: 'السعودية' },
-  { code: 'KWD', label: 'Kuwait',       ar: 'الكويت'  },
-  { code: 'OMR', label: 'Oman',         ar: 'عمان'    },
-  { code: 'QAR', label: 'Qatar Riyal',  ar: 'قطر'     },
-  { code: 'AED', label: 'UAE',          ar: 'الامارات' },
-  { code: 'USD', label: 'Dollar',       ar: 'الدولار'  },
-]
 
 /* ── Support links ── */
 const SUPPORT_LINKS = [
@@ -145,7 +134,6 @@ export default function Navbar() {
   const [query, setQuery]                   = useState('')
   const [mobileQuery, setMobileQuery]       = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
-  const [currency, setCurrency]             = useState(CURRENCIES[2]) // SAR default
   const [currencyOpen, setCurrencyOpen]     = useState(false)
   const [supportOpen, setSupportOpen]       = useState(false)
   const searchRef   = useRef(null)
@@ -171,6 +159,7 @@ export default function Navbar() {
   }, [])
   const { itemCount, setIsOpen: openCart }  = useCart()
   const { count: wishlistCount }            = useWishlist()
+  const { currency, setCurrency, CURRENCIES } = useCurrency()
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const isAr = i18n.language?.startsWith('ar')

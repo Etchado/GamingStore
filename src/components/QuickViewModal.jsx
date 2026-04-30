@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { useWishlist } from '@/context/WishlistContext'
+import { useCurrency } from '@/context/CurrencyContext'
 import { onImgError } from '@/lib/imgFallback'
 
 export default function QuickViewModal({ product, onClose }) {
@@ -12,6 +13,7 @@ export default function QuickViewModal({ product, onClose }) {
   const { addItem } = useCart()
   const { addToast } = useToast()
   const { toggle, has } = useWishlist()
+  const { formatPrice, parseUSD } = useCurrency()
   const inWishlist = product ? has(product.id) : false
   const [qty, setQty] = useState(1)
 
@@ -118,12 +120,12 @@ export default function QuickViewModal({ product, onClose }) {
 
                   {/* Price */}
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-black" style={{ color: '#0056b3' }}>{product.price}</span>
+                    <span className="text-2xl font-black" style={{ color: '#0056b3' }}>{formatPrice(parseUSD(product.price))}</span>
                     {product.oldPrice && (
-                      <span className="text-sm text-muted line-through">{product.oldPrice}</span>
+                      <span className="text-sm text-muted line-through">{formatPrice(parseUSD(product.oldPrice))}</span>
                     )}
                     {product.saving && (
-                      <span className="text-xs font-bold" style={{ color: '#28a745' }}>Save {product.saving}</span>
+                      <span className="text-xs font-bold" style={{ color: '#28a745' }}>Save {formatPrice(parseUSD(product.saving))}</span>
                     )}
                   </div>
 

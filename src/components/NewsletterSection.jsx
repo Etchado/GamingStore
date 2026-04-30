@@ -13,7 +13,7 @@ export default function NewsletterSection() {
   function handleSubmit(e) {
     e.preventDefault()
     if (!email.trim()) { setError(t('newsletter.errorEmpty')); return }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError(t('newsletter.errorInvalid')); return }
+    if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.(com|net|org|edu|gov|mil|co|io|me|info|biz|app|dev|store|shop|online|tech|site|web|email|name|pro|[a-z]{2})$/i.test(email)) { setError(t('newsletter.errorInvalid')); return }
     setError('')
     setSubmitted(true)
   }

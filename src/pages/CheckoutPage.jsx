@@ -3,10 +3,9 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
+import { useCurrency } from '@/context/CurrencyContext'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { onImgError } from '@/lib/imgFallback'
-
-const fmt = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 function genOrderId() {
   return 'GS-' + Math.random().toString(36).slice(2, 8).toUpperCase()
@@ -89,6 +88,7 @@ function Input({ error, ...props }) {
 /* ── Order Summary sidebar ── */
 function OrderSummary({ items, subtotal, shipping, tax, total }) {
   const { t } = useTranslation()
+  const { formatPrice, parseUSD } = useCurrency()
   return (
     <div className="rounded-2xl border overflow-hidden" style={{ borderColor: '#e0e0e0' }}>
       <div className="px-5 py-4 border-b" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
@@ -108,28 +108,28 @@ function OrderSummary({ items, subtotal, shipping, tax, total }) {
               <p className="text-[11px] text-muted">{t('checkout.qty')} {qty}</p>
             </div>
             <span className="text-xs font-black shrink-0" style={{ color: '#0056b3' }}>
-              ${fmt(parseFloat(product.price.replace(/[^0-9.]/g, '')) * qty)}
+              {formatPrice(parseUSD(product.price) * qty)}
             </span>
           </div>
         ))}
       </div>
       <div className="px-5 py-4 border-t space-y-2" style={{ borderColor: '#e0e0e0' }}>
         <div className="flex justify-between text-sm text-muted">
-          <span>{t('checkout.subtotal')}</span><span className="text-ink font-semibold">${fmt(subtotal)}</span>
+          <span>{t('checkout.subtotal')}</span><span className="text-ink font-semibold">{formatPrice(subtotal)}</span>
         </div>
         <div className="flex justify-between text-sm text-muted">
           <span>{t('checkout.shipping')}</span>
           <span className={shipping === 0 ? 'text-green-600 font-bold' : 'text-ink font-semibold'}>
-            {shipping === 0 ? t('checkout.free') : `$${fmt(shipping)}`}
+            {shipping === 0 ? t('checkout.free') : formatPrice(shipping)}
           </span>
         </div>
         <div className="flex justify-between text-sm text-muted">
-          <span>{t('checkout.tax')}</span><span className="text-ink font-semibold">${fmt(tax)}</span>
+          <span>{t('checkout.tax')}</span><span className="text-ink font-semibold">{formatPrice(tax)}</span>
         </div>
         <div className="h-px" style={{ backgroundColor: '#e0e0e0' }} />
         <div className="flex justify-between">
           <span className="text-sm font-black text-ink">{t('checkout.total')}</span>
-          <span className="text-base font-black" style={{ color: '#0056b3' }}>${fmt(total)}</span>
+          <span className="text-base font-black" style={{ color: '#0056b3' }}>{formatPrice(total)}</span>
         </div>
       </div>
     </div>

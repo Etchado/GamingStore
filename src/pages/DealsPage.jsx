@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { useWishlist } from '@/context/WishlistContext'
+import { useCurrency } from '@/context/CurrencyContext'
 import { PRODUCTS } from '@/data/products'
 import { onImgError } from '@/lib/imgFallback'
 import { useSEO } from '@/hooks/useSEO'
@@ -80,6 +81,7 @@ function DealCard({ product }) {
   const { addItem } = useCart()
   const { addToast } = useToast()
   const { toggle, has } = useWishlist()
+  const { formatPrice, parseUSD } = useCurrency()
   const inWishlist = has(product.id)
   const pct = discountPct(product.price, product.oldPrice)
   const claimed = claimedPct(product.id)
@@ -164,11 +166,13 @@ function DealCard({ product }) {
 
         {/* Price row */}
         <div className="flex items-baseline gap-2 flex-wrap">
-          <span className="text-xl font-black" style={{ color: '#e53e3e' }}>{product.price}</span>
-          <span className="text-sm text-muted line-through">{product.oldPrice}</span>
-          <span className="text-xs font-black px-2 py-0.5 rounded-full" style={{ backgroundColor: '#fff0f0', color: '#c53030' }}>
-            {t('dealsPage.saveBadge', { amount: product.saving })}
-          </span>
+          <span className="text-xl font-black" style={{ color: '#e53e3e' }}>{formatPrice(parseUSD(product.price))}</span>
+          {product.oldPrice && <span className="text-sm text-muted line-through">{formatPrice(parseUSD(product.oldPrice))}</span>}
+          {product.saving && (
+            <span className="text-xs font-black px-2 py-0.5 rounded-full" style={{ backgroundColor: '#fff0f0', color: '#c53030' }}>
+              {t('dealsPage.saveBadge', { amount: formatPrice(parseUSD(product.saving)) })}
+            </span>
+          )}
         </div>
 
         {/* Urgency */}

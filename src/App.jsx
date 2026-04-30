@@ -6,6 +6,7 @@ import { CartProvider } from './context/CartContext'
 import { ToastProvider } from './context/ToastContext'
 import { WishlistProvider } from './context/WishlistContext'
 import { CompareProvider } from './context/CompareContext'
+import { CurrencyProvider } from './context/CurrencyContext'
 import Navbar from './components/Navbar'
 import HeroSection from './components/HeroSection'
 import TrustBar from './components/TrustBar'
@@ -126,15 +127,17 @@ function AppShell() {
 function App() {
   return (
     <BrowserRouter>
-      <ToastProvider>
-        <WishlistProvider>
-          <CartProvider>
-            <CompareProvider>
-              <AppShell />
-            </CompareProvider>
-          </CartProvider>
-        </WishlistProvider>
-      </ToastProvider>
+      <CurrencyProvider>
+        <ToastProvider>
+          <WishlistProvider>
+            <CartProvider>
+              <CompareProvider>
+                <AppShell />
+              </CompareProvider>
+            </CartProvider>
+          </WishlistProvider>
+        </ToastProvider>
+      </CurrencyProvider>
     </BrowserRouter>
   )
 }

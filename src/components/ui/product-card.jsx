@@ -7,6 +7,7 @@ import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { useWishlist } from '@/context/WishlistContext'
 import { useCompare } from '@/context/CompareContext'
+import { useCurrency } from '@/context/CurrencyContext'
 
 /* ── Star Rating ──────────────────────────────── */
 function StarRating({ rating = 4.8, count = 0 }) {
@@ -61,6 +62,7 @@ export function ProductCard({ product, onQuickView }) {
   const { addToast } = useToast()
   const { toggle, has } = useWishlist()
   const { toggle: compareToggle, has: inCompare, maxed } = useCompare()
+  const { formatPrice, parseUSD } = useCurrency()
   const badge = badges[product.category] ?? badges.System
   const inWishlist = has(product.id)
   const isCompared = inCompare(product.id)
@@ -210,13 +212,13 @@ export function ProductCard({ product, onQuickView }) {
         {/* Price row */}
         <div className="flex items-baseline gap-2 mt-1">
           <span className="text-lg font-black" style={{ color: '#0056b3' }}>
-            {product.price}
+            {formatPrice(parseUSD(product.price))}
           </span>
           {product.oldPrice && (
-            <span className="text-xs text-muted line-through">{product.oldPrice}</span>
+            <span className="text-xs text-muted line-through">{formatPrice(parseUSD(product.oldPrice))}</span>
           )}
           {product.saving && (
-            <span className="text-[11px] font-bold" style={{ color: '#28a745' }}>{t('products.save')} {product.saving}</span>
+            <span className="text-[11px] font-bold" style={{ color: '#28a745' }}>{t('products.save')} {formatPrice(parseUSD(product.saving))}</span>
           )}
         </div>
 

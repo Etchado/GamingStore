@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useSEO } from '@/hooks/useSEO'
+import { useCurrency } from '@/context/CurrencyContext'
 
 const MOCK_ORDERS = [
   { id: 'GS-8F2A19', product: 'White Phantom Custom PC Build', price: '$2,499', date: 'Apr 10, 2026', status: 'delivered',  img: 'https://images.unsplash.com/photo-1624705002806-5d72df19c3ad?auto=format&fit=crop&w=80&q=80' },
@@ -15,6 +16,18 @@ const STATUS_STYLE = {
   shipped:    { bg: '#e6f0fa', color: '#004494' },
   processing: { bg: '#fffbeb', color: '#92400e' },
   confirmed:  { bg: '#f3f0ff', color: '#5521b5' },
+}
+
+const ARABIC_RE = /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/g
+
+// Allows only real TLDs: 2-letter country codes + an explicit list of known multi-letter TLDs
+const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.(com|net|org|edu|gov|mil|co|io|me|info|biz|app|dev|store|shop|online|tech|site|web|email|name|pro|[a-z]{2})$/i
+
+const PASSWORD_MIN = 8
+const SYMBOL_RE = /[!@#$%^&*()\-_=+[\]{};:'",.<>/?\\|`~]/
+
+function stripArabic(value) {
+  return value.replace(ARABIC_RE, '')
 }
 
 function fieldBase(err) {
@@ -37,9 +50,52 @@ function FieldInput({ label, error, ...props }) {
   )
 }
 
+function PasswordInput({ label, error, value, onChange, ...props }) {
+  const [show, setShow] = useState(false)
+  return (
+    <div>
+      <label className="block text-xs font-bold text-ink mb-1.5">{label}</label>
+      <div className="relative">
+        <input
+          type={show ? 'text' : 'password'}
+          value={value}
+          onChange={onChange}
+          className={`${fieldBase(error)} pe-10`}
+          style={{ borderColor: error ? '#e53e3e' : '#e0e0e0' }}
+          onFocus={e => { e.target.style.borderColor = '#0056b3' }}
+          onBlur={e => { e.target.style.borderColor = error ? '#e53e3e' : '#e0e0e0' }}
+          {...props}
+        />
+        <button
+          type="button"
+          tabIndex={-1}
+          onClick={() => setShow(s => !s)}
+          className="absolute inset-y-0 end-0 flex items-center px-3 text-muted hover:text-ink transition-colors"
+          aria-label={show ? 'Hide password' : 'Show password'}
+        >
+          {show ? (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+              <path d="M1 1l22 22" />
+            </svg>
+          ) : (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          )}
+        </button>
+      </div>
+      {error && <p className="text-xs mt-1" style={{ color: '#e53e3e' }}>{error}</p>}
+    </div>
+  )
+}
+
 /* ── Dashboard (after sign-in) ─────────────────────────────────── */
 function Dashboard({ userName, onSignOut }) {
   const { t } = useTranslation()
+  const { formatPrice, parseUSD } = useCurrency()
   const [activeTab, setActiveTab] = useState('orders')
 
   const tabs = [
@@ -140,7 +196,7 @@ function Dashboard({ userName, onSignOut }) {
                             <p className="text-xs text-muted mt-0.5">{order.id} · {order.date}</p>
                           </div>
                           <div className="flex flex-col items-end sm:flex-row sm:items-center gap-1 sm:gap-3 shrink-0">
-                            <span className="text-sm font-black" style={{ color: '#0056b3' }}>{order.price}</span>
+                            <span className="text-sm font-black" style={{ color: '#0056b3' }}>{formatPrice(parseUSD(order.price))}</span>
                             <span className="text-[11px] font-black px-2.5 py-1 rounded-full" style={{ backgroundColor: style.bg, color: style.color }}>
                               {t(`account.${statusKey}`)}
                             </span>
@@ -200,6 +256,8 @@ export default function AccountPage() {
   const [tab, setTab]                 = useState('signin')
   const [signinForm, setSigninForm]   = useState({ email: '', password: '' })
   const [registerForm, setRegisterForm] = useState({ firstName: '', lastName: '', email: '', password: '', confirm: '' })
+  const [forgotEmail, setForgotEmail] = useState('')
+  const [forgotSent, setForgotSent]   = useState(false)
   const [errors, setErrors]           = useState({})
   const [loggedInAs, setLoggedInAs]   = useState(null)
 
@@ -207,7 +265,8 @@ export default function AccountPage() {
 
   function validateSignin() {
     const e = {}
-    if (!signinForm.email)    e.email    = t('checkout.errRequired')
+    if (!signinForm.email) e.email = t('checkout.errRequired')
+    else if (!EMAIL_RE.test(signinForm.email)) e.email = t('account.emailInvalid')
     if (!signinForm.password) e.password = t('checkout.errRequired')
     return e
   }
@@ -216,8 +275,15 @@ export default function AccountPage() {
     const e = {}
     if (!registerForm.firstName) e.firstName = t('checkout.errRequired')
     if (!registerForm.lastName)  e.lastName  = t('checkout.errRequired')
-    if (!registerForm.email)     e.email     = t('checkout.errRequired')
-    if (!registerForm.password)  e.password  = t('checkout.errRequired')
+    if (!registerForm.email) e.email = t('checkout.errRequired')
+    else if (!EMAIL_RE.test(registerForm.email)) e.email = t('account.emailInvalid')
+    if (!registerForm.password) {
+      e.password = t('checkout.errRequired')
+    } else if (registerForm.password.length < PASSWORD_MIN) {
+      e.password = t('account.passwordTooShort')
+    } else if (!SYMBOL_RE.test(registerForm.password)) {
+      e.password = t('account.passwordNeedsSymbol')
+    }
     if (registerForm.password !== registerForm.confirm) e.confirm = t('account.passwordMismatch')
     return e
   }
@@ -237,9 +303,20 @@ export default function AccountPage() {
     setLoggedInAs(`${registerForm.firstName} ${registerForm.lastName}`)
   }
 
+  function handleForgot(e) {
+    e.preventDefault()
+    const errs = {}
+    if (!forgotEmail) errs.forgotEmail = t('checkout.errRequired')
+    else if (!EMAIL_RE.test(forgotEmail)) errs.forgotEmail = t('account.emailInvalid')
+    if (Object.keys(errs).length) { setErrors(errs); return }
+    setForgotSent(true)
+  }
+
   function switchTab(next) {
     setTab(next)
     setErrors({})
+    setForgotSent(false)
+    setForgotEmail('')
   }
 
   if (loggedInAs) {
@@ -277,22 +354,24 @@ export default function AccountPage() {
           className="bg-white rounded-2xl shadow-sm border overflow-hidden"
           style={{ borderColor: '#e0e0e0' }}
         >
-          {/* Tabs */}
-          <div className="flex border-b" style={{ borderColor: '#e0e0e0' }}>
-            {['signin', 'register'].map(t_ => (
-              <button
-                key={t_}
-                onClick={() => switchTab(t_)}
-                className="flex-1 py-4 text-sm font-bold transition-colors relative"
-                style={{ color: tab === t_ ? '#0056b3' : '#718096' }}
-              >
-                {t_ === 'signin' ? t('account.signIn') : t('account.createAccount')}
-                {tab === t_ && (
-                  <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: '#0056b3' }} />
-                )}
-              </button>
-            ))}
-          </div>
+          {/* Tabs — hidden on forgot view */}
+          {tab !== 'forgot' && (
+            <div className="flex border-b" style={{ borderColor: '#e0e0e0' }}>
+              {['signin', 'register'].map(t_ => (
+                <button
+                  key={t_}
+                  onClick={() => switchTab(t_)}
+                  className="flex-1 py-4 text-sm font-bold transition-colors relative"
+                  style={{ color: tab === t_ ? '#0056b3' : '#718096' }}
+                >
+                  {t_ === 'signin' ? t('account.signIn') : t('account.createAccount')}
+                  {tab === t_ && (
+                    <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: '#0056b3' }} />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="p-6">
             <AnimatePresence mode="wait">
@@ -307,11 +386,11 @@ export default function AccountPage() {
                   noValidate
                 >
                   <FieldInput label={t('checkout.email')} type="email" value={signinForm.email} error={errors.email}
-                    onChange={e => { setSigninForm(p => ({ ...p, email: e.target.value })); setErrors(p => ({ ...p, email: '' })) }}
+                    onChange={e => { setSigninForm(p => ({ ...p, email: stripArabic(e.target.value) })); setErrors(p => ({ ...p, email: '' })) }}
                     placeholder="you@example.com"
                   />
-                  <FieldInput label={t('account.password')} type="password" value={signinForm.password} error={errors.password}
-                    onChange={e => { setSigninForm(p => ({ ...p, password: e.target.value })); setErrors(p => ({ ...p, password: '' })) }}
+                  <PasswordInput label={t('account.password')} value={signinForm.password} error={errors.password}
+                    onChange={e => { setSigninForm(p => ({ ...p, password: stripArabic(e.target.value) })); setErrors(p => ({ ...p, password: '' })) }}
                     placeholder="••••••••"
                   />
                   <div className="flex items-center justify-between text-xs">
@@ -319,7 +398,8 @@ export default function AccountPage() {
                       <input type="checkbox" style={{ accentColor: '#0056b3' }} />
                       {t('account.rememberMe')}
                     </label>
-                    <button type="button" className="font-bold transition-colors" style={{ color: '#0056b3' }}>
+                    <button type="button" className="font-bold transition-colors" style={{ color: '#0056b3' }}
+                      onClick={() => switchTab('forgot')}>
                       {t('account.forgotPassword')}
                     </button>
                   </div>
@@ -345,7 +425,7 @@ export default function AccountPage() {
                     ))}
                   </div>
                 </motion.form>
-              ) : (
+              ) : tab === 'register' ? (
                 <motion.form
                   key="register"
                   initial={{ opacity: 0, x: 10 }}
@@ -357,22 +437,22 @@ export default function AccountPage() {
                 >
                   <div className="grid grid-cols-2 gap-3">
                     <FieldInput label={t('checkout.firstName')} value={registerForm.firstName} error={errors.firstName}
-                      onChange={e => { setRegisterForm(p => ({ ...p, firstName: e.target.value })); setErrors(p => ({ ...p, firstName: '' })) }}
+                      onChange={e => { setRegisterForm(p => ({ ...p, firstName: stripArabic(e.target.value) })); setErrors(p => ({ ...p, firstName: '' })) }}
                     />
                     <FieldInput label={t('checkout.lastName')} value={registerForm.lastName} error={errors.lastName}
-                      onChange={e => { setRegisterForm(p => ({ ...p, lastName: e.target.value })); setErrors(p => ({ ...p, lastName: '' })) }}
+                      onChange={e => { setRegisterForm(p => ({ ...p, lastName: stripArabic(e.target.value) })); setErrors(p => ({ ...p, lastName: '' })) }}
                     />
                   </div>
                   <FieldInput label={t('checkout.email')} type="email" value={registerForm.email} error={errors.email}
-                    onChange={e => { setRegisterForm(p => ({ ...p, email: e.target.value })); setErrors(p => ({ ...p, email: '' })) }}
+                    onChange={e => { setRegisterForm(p => ({ ...p, email: stripArabic(e.target.value) })); setErrors(p => ({ ...p, email: '' })) }}
                     placeholder="you@example.com"
                   />
-                  <FieldInput label={t('account.password')} type="password" value={registerForm.password} error={errors.password}
-                    onChange={e => { setRegisterForm(p => ({ ...p, password: e.target.value })); setErrors(p => ({ ...p, password: '' })) }}
-                    placeholder="Min 8 characters"
+                  <PasswordInput label={t('account.password')} value={registerForm.password} error={errors.password}
+                    onChange={e => { setRegisterForm(p => ({ ...p, password: stripArabic(e.target.value) })); setErrors(p => ({ ...p, password: '' })) }}
+                    placeholder="Min 8 chars, include a symbol"
                   />
-                  <FieldInput label={t('account.confirmPassword')} type="password" value={registerForm.confirm} error={errors.confirm}
-                    onChange={e => { setRegisterForm(p => ({ ...p, confirm: e.target.value })); setErrors(p => ({ ...p, confirm: '' })) }}
+                  <PasswordInput label={t('account.confirmPassword')} value={registerForm.confirm} error={errors.confirm}
+                    onChange={e => { setRegisterForm(p => ({ ...p, confirm: stripArabic(e.target.value) })); setErrors(p => ({ ...p, confirm: '' })) }}
                     placeholder="Re-enter password"
                   />
                   <motion.button type="submit" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
@@ -381,7 +461,65 @@ export default function AccountPage() {
                     {t('account.createAccount')}
                   </motion.button>
                 </motion.form>
-              )}
+              ) : tab === 'forgot' ? (
+                <motion.div
+                  key="forgot"
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={{ duration: 0.22 }}
+                >
+                  {forgotSent ? (
+                    <div className="flex flex-col items-center gap-4 py-4 text-center">
+                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0" style={{ backgroundColor: '#e9f7ed' }}>
+                        ✉️
+                      </div>
+                      <div>
+                        <h3 className="text-base font-black text-ink">{t('account.resetSentTitle')}</h3>
+                        <p className="text-sm text-muted mt-1 leading-relaxed">
+                          {t('account.resetSentSub', { email: forgotEmail })}
+                        </p>
+                      </div>
+                      <p className="text-xs text-muted">{t('account.resetDemoNote')}</p>
+                      <button
+                        onClick={() => switchTab('signin')}
+                        className="text-sm font-bold transition-colors"
+                        style={{ color: '#0056b3' }}
+                      >
+                        ← {t('account.backToSignIn')}
+                      </button>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleForgot} className="space-y-4" noValidate>
+                      <div>
+                        <h3 className="text-base font-black text-ink">{t('account.forgotTitle')}</h3>
+                        <p className="text-xs text-muted mt-1">{t('account.forgotSub')}</p>
+                      </div>
+                      <FieldInput
+                        label={t('checkout.email')}
+                        type="email"
+                        value={forgotEmail}
+                        error={errors.forgotEmail}
+                        onChange={e => { setForgotEmail(stripArabic(e.target.value)); setErrors(p => ({ ...p, forgotEmail: '' })) }}
+                        placeholder="you@example.com"
+                      />
+                      <motion.button type="submit" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                        className="w-full py-3 rounded-xl text-white text-sm font-black" style={{ backgroundColor: '#0056b3' }}
+                      >
+                        {t('account.sendResetLink')}
+                      </motion.button>
+                      <button
+                        type="button"
+                        onClick={() => switchTab('signin')}
+                        className="w-full text-center text-sm font-bold transition-colors"
+                        style={{ color: '#718096' }}
+                      >
+                        ← {t('account.backToSignIn')}
+                      </button>
+                    </form>
+                  )}
+                </motion.div>
+              ) : null}
             </AnimatePresence>
           </div>
         </motion.div>

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
+import { useCurrency } from '@/context/CurrencyContext'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { BUILDER_CATEGORIES, BUILDER_PARTS, TIER_LABELS } from '@/data/builderParts'
 import { onImgError } from '@/lib/imgFallback'
@@ -24,6 +25,7 @@ function TierBadge({ tier }) {
 
 /* ── Single part option card ── */
 function PartCard({ part, selected, onSelect }) {
+  const { formatPrice } = useCurrency()
   const isSelected = selected?.id === part.id
   return (
     <motion.button
@@ -47,7 +49,7 @@ function PartCard({ part, selected, onSelect }) {
       </div>
       <div className="shrink-0 text-end">
         <p className="text-base font-black" style={{ color: '#0056b3' }}>
-          ${part.price.toLocaleString()}
+          {formatPrice(part.price)}
         </p>
         {isSelected && (
           <div className="mt-1 w-5 h-5 rounded-full flex items-center justify-center ms-auto" style={{ backgroundColor: '#0056b3' }}>
@@ -64,6 +66,7 @@ function PartCard({ part, selected, onSelect }) {
 /* ── Category row ── */
 function CategoryRow({ cat, selected, open, onToggle, onSelect }) {
   const { t } = useTranslation()
+  const { formatPrice } = useCurrency()
   const hasSelection = !!selected
 
   return (
@@ -88,7 +91,7 @@ function CategoryRow({ cat, selected, open, onToggle, onSelect }) {
         <div className="shrink-0 flex items-center gap-3">
           {hasSelection && (
             <span className="text-sm font-black" style={{ color: '#0056b3' }}>
-              ${selected.price.toLocaleString()}
+              {formatPrice(selected.price)}
             </span>
           )}
           {!hasSelection && (
@@ -138,6 +141,7 @@ function CategoryRow({ cat, selected, open, onToggle, onSelect }) {
 /* ── Build summary sidebar ── */
 function BuildSummary({ selections, onAddToCart, adding }) {
   const { t } = useTranslation()
+  const { formatPrice } = useCurrency()
   const total = Object.values(selections).reduce((s, p) => s + (p?.price ?? 0), 0)
   const selected = Object.values(selections).filter(Boolean)
   const complete = selected.length === BUILDER_CATEGORIES.length
@@ -183,7 +187,7 @@ function BuildSummary({ selections, onAddToCart, adding }) {
               </div>
               {part && (
                 <span className="text-xs font-bold shrink-0" style={{ color: '#0056b3' }}>
-                  ${part.price.toLocaleString()}
+                  {formatPrice(part.price)}
                 </span>
               )}
             </div>
@@ -194,7 +198,7 @@ function BuildSummary({ selections, onAddToCart, adding }) {
       <div className="px-5 py-4 border-t space-y-3" style={{ borderColor: '#e0e0e0' }}>
         <div className="flex justify-between items-baseline">
           <span className="text-sm font-black text-ink">{t('builder.total')}</span>
-          <span className="text-xl font-black" style={{ color: '#0056b3' }}>${total.toLocaleString()}</span>
+          <span className="text-xl font-black" style={{ color: '#0056b3' }}>{formatPrice(total)}</span>
         </div>
 
         <motion.button
@@ -236,6 +240,7 @@ export default function BuilderPage() {
   const navigate = useNavigate()
   const { addItem } = useCart()
   const { addToast } = useToast()
+  const { formatPrice } = useCurrency()
 
   const [selections, setSelections] = useState(() => {
     try {
@@ -288,14 +293,14 @@ export default function BuilderPage() {
           title: part.name,
           description: part.spec,
           spec: part.spec,
-          price: `$${part.price.toLocaleString()}`,
+          price: `$${part.price}`,
           image: part.image,
           category: 'System',
           inStock: true,
         })
       })
       const total = parts.reduce((s, p) => s + p.price, 0)
-      addToast(`Custom build (${parts.length} parts, $${total.toLocaleString()}) added to cart!`, 'success')
+      addToast(`Custom build (${parts.length} parts, ${formatPrice(total)}) added to cart!`, 'success')
       localStorage.removeItem('builder_selections')
       setAdding(false)
       navigate('/checkout')

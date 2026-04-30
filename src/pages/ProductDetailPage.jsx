@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { useWishlist } from '@/context/WishlistContext'
+import { useCurrency } from '@/context/CurrencyContext'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { useSEO } from '@/hooks/useSEO'
 import { onImgError } from '@/lib/imgFallback'
@@ -156,6 +157,7 @@ export default function ProductDetailPage() {
   const { addItem } = useCart()
   const { addToast } = useToast()
   const { toggle, has } = useWishlist()
+  const { formatPrice, parseUSD } = useCurrency()
 
   const product = PRODUCTS.find(p => p.id === id)
   useSEO({ title: product?.title, description: product?.description, image: product?.image })
@@ -383,12 +385,12 @@ export default function ProductDetailPage() {
 
             {/* Price */}
             <div className="flex items-baseline gap-3">
-              <span className="text-4xl font-black" style={{ color: '#0056b3' }}>{product.price}</span>
-              {product.oldPrice && <span className="text-lg text-muted line-through">{product.oldPrice}</span>}
+              <span className="text-4xl font-black" style={{ color: '#0056b3' }}>{formatPrice(parseUSD(product.price))}</span>
+              {product.oldPrice && <span className="text-lg text-muted line-through">{formatPrice(parseUSD(product.oldPrice))}</span>}
               {product.saving && (
                 <span className="text-sm font-black px-2.5 py-1 rounded-full"
                   style={{ backgroundColor: '#e9f7ed', color: '#1e8035' }}>
-                  {t('product.save', { amount: product.saving })}
+                  {t('product.save', { amount: formatPrice(parseUSD(product.saving)) })}
                 </span>
               )}
             </div>
@@ -617,7 +619,7 @@ export default function ProductDetailPage() {
         style={{ borderColor: '#e0e0e0', boxShadow: '0 -4px 16px rgba(0,0,0,0.06)' }}>
         <div className="flex-1 min-w-0">
           <p className="text-xs font-bold text-ink truncate">{product.title}</p>
-          <p className="text-base font-black" style={{ color: '#0056b3' }}>{product.price}</p>
+          <p className="text-base font-black" style={{ color: '#0056b3' }}>{formatPrice(parseUSD(product.price))}</p>
         </div>
         <motion.button whileTap={{ scale: 0.97 }} onClick={handleAddToCart} disabled={!product.inStock}
           className="px-6 py-3 rounded-xl text-sm font-bold text-white disabled:opacity-40 shrink-0"

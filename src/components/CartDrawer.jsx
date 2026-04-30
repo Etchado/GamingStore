@@ -3,12 +3,14 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
+import { useCurrency } from '@/context/CurrencyContext'
 import { onImgError } from '@/lib/imgFallback'
 
 export default function CartDrawer() {
   const navigate = useNavigate()
   const { t, i18n } = useTranslation()
   const { items, isOpen, setIsOpen, removeItem, updateQty, itemCount, total } = useCart()
+  const { formatPrice, parseUSD } = useCurrency()
   const isRTL = i18n.language?.startsWith('ar')
 
   useEffect(() => {
@@ -109,7 +111,7 @@ export default function CartDrawer() {
                         <p className="text-[11px] text-muted mt-0.5 truncate">{product.spec}</p>
                       )}
                       <div className="flex items-center justify-between mt-2.5">
-                        <span className="text-sm font-black" style={{ color: '#0056b3' }}>{product.price}</span>
+                        <span className="text-sm font-black" style={{ color: '#0056b3' }}>{formatPrice(parseUSD(product.price))}</span>
                         <div className="flex items-center gap-2">
                           <div className="flex items-center border border-border rounded-lg overflow-hidden">
                             <button
@@ -168,7 +170,7 @@ export default function CartDrawer() {
                 })()}
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted font-medium">{t('cart.subtotal')} ({itemCount} item{itemCount !== 1 ? 's' : ''})</span>
-                  <span className="text-base font-black text-ink">${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  <span className="text-base font-black text-ink">{formatPrice(total)}</span>
                 </div>
                 <p className="text-xs text-muted">{t('cart.taxes')}</p>
                 <button
@@ -178,7 +180,7 @@ export default function CartDrawer() {
                   onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
                 >
-                  {t('cart.checkout')} — ${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {t('cart.checkout')} — {formatPrice(total)}
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}

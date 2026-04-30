@@ -88,7 +88,7 @@ function FooterCol({ heading, links }) {
   )
 }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.(com|net|org|edu|gov|mil|co|io|me|info|biz|app|dev|store|shop|online|tech|site|web|email|name|pro|[a-z]{2})$/i
 
 export default function Footer() {
   const [email, setEmail]         = useState('')

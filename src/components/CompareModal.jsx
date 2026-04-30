@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useCompare } from '@/context/CompareContext'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
+import { useCurrency } from '@/context/CurrencyContext'
 import { PRODUCTS } from '@/data/products'
 import { onImgError } from '@/lib/imgFallback'
 
@@ -43,6 +44,7 @@ function Cell({ row, product }) {
   const { t } = useTranslation()
   const { addItem } = useCart()
   const { addToast } = useToast()
+  const { formatPrice, parseUSD } = useCurrency()
 
   switch (row.key) {
     case 'image':
@@ -68,12 +70,12 @@ function Cell({ row, product }) {
     case 'price':
       return (
         <div>
-          <span className="text-lg font-black" style={{ color: '#0056b3' }}>{product.price}</span>
+          <span className="text-lg font-black" style={{ color: '#0056b3' }}>{formatPrice(parseUSD(product.price))}</span>
           {product.oldPrice && (
-            <span className="block text-xs text-muted line-through">{product.oldPrice}</span>
+            <span className="block text-xs text-muted line-through">{formatPrice(parseUSD(product.oldPrice))}</span>
           )}
           {product.saving && (
-            <span className="text-xs font-bold" style={{ color: '#28a745' }}>Save {product.saving}</span>
+            <span className="text-xs font-bold" style={{ color: '#28a745' }}>Save {formatPrice(parseUSD(product.saving))}</span>
           )}
         </div>
       )
@@ -92,7 +94,14 @@ function Cell({ row, product }) {
         </span>
       ) : <span className="text-xs text-muted">—</span>
     case 'action':
-      return (
+      return product.inStock === false ? (
+        <div
+          className="w-full py-2.5 rounded-xl text-sm font-bold text-center cursor-not-allowed"
+          style={{ backgroundColor: '#f3f4f6', color: '#9ca3af' }}
+        >
+          {t('product.outOfStock')}
+        </div>
+      ) : (
         <button
           onClick={() => {
             addItem(product)

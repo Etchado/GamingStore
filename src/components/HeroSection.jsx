@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useCurrency } from '@/context/CurrencyContext'
 import { FocusCards } from '@/components/ui/focus-cards'
 
 /* Real Unsplash PC hardware images */
@@ -22,6 +23,7 @@ const stagger = (i) => ({
 export default function HeroSection() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const { formatPrice } = useCurrency()
 
   function handleBrowseSystems() {
     navigate('/?category=System')
@@ -154,7 +156,7 @@ export default function HeroSection() {
             </div>
             <div>
               <p className="text-xs font-black" style={{ color: '#fff', textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>
-                {t('hero.floatStarting')} <span style={{ color: '#a8d4ff' }}>$1,299</span>
+                {t('hero.floatStarting')} <span style={{ color: '#a8d4ff' }}>{formatPrice(1299)}</span>
               </p>
               <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.75)' }}>{t('hero.floatBuilds')}</p>
             </div>
