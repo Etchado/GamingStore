@@ -60,6 +60,7 @@ function FilterChip({ label, onRemove }) {
 
 // ── Filter sidebar ───────────────────────────────────────────────────────────
 function FilterSidebar({
+  brands,
   minPrice, maxPrice, selectedBrands, minRating, inStock,
   onMinPrice, onMaxPrice, onToggleBrand, onMinRating, onInStock,
   onClear, activeCount, onClose,
@@ -134,7 +135,7 @@ function FilterSidebar({
           {t('products.advancedFilters.brand')}
         </h4>
         <div className="space-y-2 max-h-52 overflow-y-auto pe-1">
-          {BRANDS.map(brand => (
+          {(brands ?? []).map(brand => (
             <label key={brand} className="flex items-center gap-2 cursor-pointer group">
               <input
                 type="checkbox"
@@ -381,6 +382,7 @@ export default function ProductGrid() {
 
   // ── Shared filter sidebar props ──
   const filterProps = {
+    brands: BRANDS,
     minPrice: minPriceParam,
     maxPrice: maxPriceParam,
     selectedBrands,
