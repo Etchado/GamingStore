@@ -2,16 +2,12 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
-import { loadStripe } from '@stripe/stripe-js'
-import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { useCart } from '@/context/CartContext'
 import { useCurrency } from '@/context/CurrencyContext'
 import { useAuth } from '@/context/AuthContext'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { onImgError } from '@/lib/imgFallback'
 import { supabase } from '@/lib/supabase'
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 
 function genOrderId() {
   return 'GS-' + Math.random().toString(36).slice(2, 8).toUpperCase()
@@ -231,7 +227,7 @@ function ShippingStep({ data, onChange, errors }) {
             <Input placeholder="john@example.com" type="email" {...field('email')} />
           </Field>
           <Field label={t('checkout.phone')} error={errors.phone}>
-            <Input placeholder="+1 555 000 0000" type="tel" {...field('phone')} />
+            <Input placeholder="+966 5X XXX XXXX" type="tel" {...field('phone')} />
           </Field>
         </div>
       </div>
@@ -246,15 +242,15 @@ function ShippingStep({ data, onChange, errors }) {
           </Field>
           <div className="grid grid-cols-2 gap-4">
             <Field label={t('checkout.city')} error={errors.city}>
-              <Input placeholder="New York" {...field('city')} />
+              <Input placeholder="Riyadh" {...field('city')} />
             </Field>
             <Field label={t('checkout.stateProvince')} error={errors.state}>
-              <Input placeholder="NY" {...field('state')} />
+              <Input placeholder="Riyadh Region" {...field('state')} />
             </Field>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Field label={t('checkout.zipCode')} error={errors.zip}>
-              <Input placeholder="10001" {...field('zip')} />
+              <Input placeholder="12345" {...field('zip')} />
             </Field>
             <Field label={t('checkout.country')} error={errors.country}>
               <select
@@ -275,49 +271,94 @@ function ShippingStep({ data, onChange, errors }) {
   )
 }
 
-/* ── Stripe Payment Form (inside Elements provider) ── */
-function StripePaymentForm({ onSuccess, grandTotal, placing, setPlacing }) {
+/* ── Step 2: Payment ── */
+function PaymentStep({ data, onChange, errors }) {
   const { t } = useTranslation()
-  const { formatPrice } = useCurrency()
-  const stripe = useStripe()
-  const elements = useElements()
-  const [stripeError, setStripeError] = useState('')
 
-  async function handleSubmit(e) {
-    e.preventDefault()
-    if (!stripe || !elements) return
-    setPlacing(true)
-    setStripeError('')
+  function handleCardNumber(e) {
+    const raw = e.target.value.replace(/\D/g, '').slice(0, 16)
+    const formatted = raw.replace(/(.{4})/g, '$1 ').trim()
+    onChange('cardNumber', formatted)
+  }
 
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: { return_url: window.location.origin + '/checkout?step=3' },
-      redirect: 'if_required',
-    })
-
-    if (error) {
-      setStripeError(error.message)
-      setPlacing(false)
-      return
-    }
-
-    if (paymentIntent && paymentIntent.status === 'succeeded') {
-      onSuccess(paymentIntent.id)
-    }
+  function handleExpiry(e) {
+    let val = e.target.value.replace(/\D/g, '').slice(0, 4)
+    if (val.length >= 3) val = val.slice(0, 2) + '/' + val.slice(2)
+    onChange('expiry', val)
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <div className="space-y-5">
       <div
-        className="rounded-2xl p-5"
-        style={{ border: '1px solid #e0e0e0', backgroundColor: '#fafafa' }}
+        className="rounded-2xl p-5 flex flex-col justify-between"
+        style={{ background: 'linear-gradient(135deg, #0056b3 0%, #003375 100%)', minHeight: 160 }}
       >
-        <PaymentElement options={{ layout: 'tabs' }} />
+        <div className="flex justify-between items-start">
+          <svg className="w-10 h-10 opacity-70" viewBox="0 0 40 40" fill="none">
+            <rect width="40" height="40" rx="8" fill="white" fillOpacity="0.15" />
+            <circle cx="15" cy="20" r="8" fill="white" fillOpacity="0.5" />
+            <circle cx="25" cy="20" r="8" fill="white" fillOpacity="0.3" />
+          </svg>
+          <span className="text-white text-xs font-bold opacity-60 uppercase tracking-widest">{t('checkout.creditCard')}</span>
+        </div>
+        <div>
+          <p className="text-white font-mono text-lg tracking-[0.2em] font-bold">
+            {data.cardNumber
+              ? data.cardNumber.padEnd(19, ' ').replace(/ /g, (_, i) => i > 0 && (i + 1) % 5 === 0 ? ' ' : (data.cardNumber[i] || '·'))
+              : '·····  ·····  ·····  ·····'}
+          </p>
+          <div className="flex justify-between mt-3">
+            <div>
+              <p className="text-white/50 text-[10px] uppercase tracking-widest">{t('checkout.cardholder')}</p>
+              <p className="text-white text-sm font-bold">{data.cardName || 'FULL NAME'}</p>
+            </div>
+            <div className="text-end">
+              <p className="text-white/50 text-[10px] uppercase tracking-widest">{t('checkout.expires')}</p>
+              <p className="text-white text-sm font-bold">{data.expiry || 'MM/YY'}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {stripeError && (
-        <p className="text-xs font-medium text-red-500 text-center">{stripeError}</p>
-      )}
+      <div className="space-y-4">
+        <Field label={t('checkout.cardholderName')} error={errors.cardName}>
+          <Input
+            placeholder="John Doe"
+            value={data.cardName}
+            error={errors.cardName}
+            onChange={(e) => onChange('cardName', e.target.value.toUpperCase())}
+          />
+        </Field>
+        <Field label={t('checkout.cardNumber')} error={errors.cardNumber}>
+          <Input
+            placeholder="0000 0000 0000 0000"
+            value={data.cardNumber}
+            error={errors.cardNumber}
+            onChange={handleCardNumber}
+            maxLength={19}
+          />
+        </Field>
+        <div className="grid grid-cols-2 gap-4">
+          <Field label={t('checkout.expiry')} error={errors.expiry}>
+            <Input
+              placeholder="MM/YY"
+              value={data.expiry}
+              error={errors.expiry}
+              onChange={handleExpiry}
+              maxLength={5}
+            />
+          </Field>
+          <Field label={t('checkout.cvv')} error={errors.cvv}>
+            <Input
+              placeholder="•••"
+              value={data.cvv}
+              error={errors.cvv}
+              onChange={(e) => onChange('cvv', e.target.value.replace(/\D/g, '').slice(0, 4))}
+              maxLength={4}
+            />
+          </Field>
+        </div>
+      </div>
 
       <div
         className="flex items-center gap-2.5 rounded-xl px-4 py-3 text-xs font-medium text-muted"
@@ -329,29 +370,7 @@ function StripePaymentForm({ onSuccess, grandTotal, placing, setPlacing }) {
         </svg>
         {t('checkout.securityNote')}
       </div>
-
-      <motion.button
-        type="submit"
-        whileTap={{ scale: 0.97 }}
-        disabled={placing || !stripe}
-        className="mt-2 w-full py-3.5 rounded-xl text-sm font-black text-white transition-colors disabled:opacity-70 flex items-center justify-center gap-2"
-        style={{ backgroundColor: '#0056b3' }}
-        onMouseEnter={(e) => { if (!placing) e.currentTarget.style.backgroundColor = '#004494' }}
-        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
-      >
-        {placing ? (
-          <>
-            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
-            {t('checkout.processing')}
-          </>
-        ) : (
-          t('checkout.placeOrder', { amount: formatPrice(grandTotal) })
-        )}
-      </motion.button>
-    </form>
+    </div>
   )
 }
 
@@ -451,19 +470,20 @@ function calcDiscount(coupon, subtotal, shipping) {
 
 /* ── Main CheckoutPage ── */
 const SHIPPING_INIT = { firstName: '', lastName: '', email: '', phone: '', address: '', city: '', state: '', zip: '', country: '' }
+const PAYMENT_INIT  = { cardName: '', cardNumber: '', expiry: '', cvv: '' }
 
 export default function CheckoutPage() {
   const { t } = useTranslation()
   const { items, total, setIsOpen } = useCart()
   const { formatPrice } = useCurrency()
-  const { isAuthenticated, loading: authLoading, signInWithGoogle, signInWithApple } = useAuth()
-  const { user } = useAuth()
+  const { isAuthenticated, loading: authLoading, signInWithGoogle, signInWithApple, user } = useAuth()
   const navigate = useNavigate()
 
   const [searchParams]          = useSearchParams()
   const step                    = Math.min(Math.max(parseInt(searchParams.get('step') || '1', 10), 1), 3)
   usePageTitle(t(`checkout.step${step}`))
   const [shipping, setShipping] = useState(SHIPPING_INIT)
+  const [payment, setPayment]   = useState(PAYMENT_INIT)
   const [errors, setErrors]     = useState({})
   const [orderId]               = useState(genOrderId)
   const [placing, setPlacing]   = useState(false)
@@ -471,9 +491,6 @@ export default function CheckoutPage() {
   const [appliedCoupon, setAppliedCoupon] = useState(null)
   const [couponInput, setCouponInput]     = useState('')
   const [couponError, setCouponError]     = useState('')
-
-  const [clientSecret, setClientSecret]   = useState('')
-  const [paymentIntentId, setPaymentIntentId] = useState('')
 
   useEffect(() => {
     if (step > 1 && !shipping.firstName.trim()) {
@@ -519,30 +536,35 @@ export default function CheckoutPage() {
     return e
   }
 
-  async function handleShippingNext() {
+  function validatePayment() {
+    const e = {}
+    if (!payment.cardName.trim())  e.cardName   = t('checkout.errRequired')
+    const digits = payment.cardNumber.replace(/\s/g, '')
+    if (!digits)                   e.cardNumber = t('checkout.errRequired')
+    else if (digits.length < 16)   e.cardNumber = t('checkout.errCard16')
+    if (!payment.expiry)           e.expiry     = t('checkout.errRequired')
+    else if (!/^\d{2}\/\d{2}$/.test(payment.expiry)) e.expiry = t('checkout.errExpiryFormat')
+    if (!payment.cvv)              e.cvv        = t('checkout.errRequired')
+    else if (payment.cvv.length < 3) e.cvv      = t('checkout.errCvvMin')
+    return e
+  }
+
+  function handleShippingNext() {
     const e = validateShipping()
     if (Object.keys(e).length) { setErrors(e); return }
     setErrors({})
-    setPlacing(true)
-    try {
-      const res = await fetch('/api/create-payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: grandTotal, currency: 'sar' }),
-      })
-      const data = await res.json()
-      if (data.clientSecret) {
-        setClientSecret(data.clientSecret)
-        navigate('/checkout?step=2')
-      }
-    } catch {
-      setErrors({ general: 'Failed to initialize payment. Please try again.' })
-    }
-    setPlacing(false)
+    navigate('/checkout?step=2')
   }
 
-  async function handlePaymentSuccess(intentId) {
-    setPaymentIntentId(intentId)
+  async function handlePlaceOrder() {
+    const e = validatePayment()
+    if (Object.keys(e).length) { setErrors(e); return }
+    setErrors({})
+    setPlacing(true)
+
+    // Simulate payment processing delay
+    await new Promise(r => setTimeout(r, 1500))
+
     // Save order to Supabase
     try {
       const { data: order, error: orderError } = await supabase
@@ -558,7 +580,6 @@ export default function CheckoutPage() {
           discount,
           coupon_code: appliedCoupon?.code ?? null,
           shipping_address: shipping,
-          stripe_payment_intent: intentId,
         })
         .select()
         .single()
@@ -575,8 +596,10 @@ export default function CheckoutPage() {
         await supabase.from('order_items').insert(orderItems)
       }
     } catch {
-      // Order save failed silently — payment already succeeded
+      // Supabase save failed silently — still show confirmation
     }
+
+    setPlacing(false)
     navigate('/checkout?step=3', { replace: true })
   }
 
@@ -646,7 +669,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="pt-36 lg:pt-44 min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
-      {/* Breadcrumb */}
       <div className="border-b bg-white" style={{ borderColor: '#e0e0e0' }}>
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center gap-2 text-xs text-muted font-medium">
           <Link to="/" className="hover:text-ink transition-colors">{t('checkout.home')}</Link>
@@ -679,12 +701,39 @@ export default function CheckoutPage() {
                     onChange={(k, v) => { setShipping(s => ({ ...s, [k]: v })); setErrors(e => ({ ...e, [k]: '' })) }}
                     errors={errors}
                   />
-                  {errors.general && (
-                    <p className="mt-3 text-xs text-red-500 font-medium text-center">{errors.general}</p>
-                  )}
                   <motion.button
                     whileTap={{ scale: 0.97 }}
                     onClick={handleShippingNext}
+                    className="mt-8 w-full py-3.5 rounded-xl text-sm font-black text-white transition-colors"
+                    style={{ backgroundColor: '#0056b3' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
+                  >
+                    {t('checkout.continueToPayment')}
+                  </motion.button>
+                </motion.div>
+              )}
+
+              {step === 2 && (
+                <motion.div key="payment" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-lg font-black text-ink">{t('checkout.step2')}</h2>
+                    <button
+                      onClick={() => { setErrors({}); navigate('/checkout') }}
+                      className="text-xs font-bold transition-colors"
+                      style={{ color: '#0056b3' }}
+                    >
+                      {t('checkout.editShipping')}
+                    </button>
+                  </div>
+                  <PaymentStep
+                    data={payment}
+                    onChange={(k, v) => { setPayment(p => ({ ...p, [k]: v })); setErrors(e => ({ ...e, [k]: '' })) }}
+                    errors={errors}
+                  />
+                  <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    onClick={handlePlaceOrder}
                     disabled={placing}
                     className="mt-8 w-full py-3.5 rounded-xl text-sm font-black text-white transition-colors disabled:opacity-70 flex items-center justify-center gap-2"
                     style={{ backgroundColor: '#0056b3' }}
@@ -699,31 +748,10 @@ export default function CheckoutPage() {
                         </svg>
                         {t('checkout.processing')}
                       </>
-                    ) : t('checkout.continueToPayment')}
+                    ) : (
+                      t('checkout.placeOrder', { amount: formatPrice(grandTotal) })
+                    )}
                   </motion.button>
-                </motion.div>
-              )}
-
-              {step === 2 && clientSecret && (
-                <motion.div key="payment" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-lg font-black text-ink">{t('checkout.step2')}</h2>
-                    <button
-                      onClick={() => { setErrors({}); navigate('/checkout') }}
-                      className="text-xs font-bold transition-colors"
-                      style={{ color: '#0056b3' }}
-                    >
-                      {t('checkout.editShipping')}
-                    </button>
-                  </div>
-                  <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'stripe' } }}>
-                    <StripePaymentForm
-                      onSuccess={handlePaymentSuccess}
-                      grandTotal={grandTotal}
-                      placing={placing}
-                      setPlacing={setPlacing}
-                    />
-                  </Elements>
                 </motion.div>
               )}
 
