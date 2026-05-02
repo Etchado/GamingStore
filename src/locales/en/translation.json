@@ -439,7 +439,12 @@
     "savedAddresses": "Saved Addresses",
     "paymentMethods": "Payment Methods",
     "featureComingSoon": "Coming soon in a future update.",
-    "profile": "Profile"
+    "profile": "Profile",
+    "displayName": "Display Name",
+    "emailCannotChange": "Email cannot be changed after registration.",
+    "saving": "Saving...",
+    "saveChanges": "Save Changes",
+    "saved": "Saved!"
   },
   "pages": {
     "home": "Home",

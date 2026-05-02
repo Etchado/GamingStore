@@ -196,6 +196,106 @@ function Spinner() {
   )
 }
 
+/* ── Profile Editor ── */
+function ProfileEditor({ user }) {
+  const { t } = useTranslation()
+  const [name, setName]         = useState(user.name ?? '')
+  const [saving, setSaving]     = useState(false)
+  const [success, setSuccess]   = useState(false)
+  const [error, setError]       = useState('')
+
+  async function handleSave(e) {
+    e.preventDefault()
+    if (!name.trim()) { setError(t('checkout.errRequired')); return }
+    setSaving(true)
+    setError('')
+    setSuccess(false)
+    const { error: err } = await supabase.auth.updateUser({ data: { full_name: name.trim() } })
+    setSaving(false)
+    if (err) { setError(err.message); return }
+    setSuccess(true)
+    setTimeout(() => setSuccess(false), 3000)
+  }
+
+  return (
+    <form onSubmit={handleSave} className="space-y-5 max-w-md">
+      <div>
+        <p className="text-[11px] font-black tracking-[0.15em] uppercase mb-4" style={{ color: '#0056b3' }}>
+          {t('account.editProfile')}
+        </p>
+        <div className="space-y-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-ink uppercase tracking-wide">{t('account.displayName')}</label>
+            <input
+              type="text"
+              value={name}
+              onChange={e => { setName(e.target.value); setError('') }}
+              placeholder="Your name"
+              className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all bg-white"
+              style={{ borderColor: error ? '#f87171' : '#e0e0e0' }}
+              onFocus={e => { e.target.style.borderColor = '#0056b3'; e.target.style.boxShadow = '0 0 0 3px rgba(0,86,179,0.10)' }}
+              onBlur={e => { e.target.style.borderColor = error ? '#f87171' : '#e0e0e0'; e.target.style.boxShadow = 'none' }}
+            />
+            {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-ink uppercase tracking-wide">{t('checkout.email')}</label>
+            <input
+              type="email"
+              value={user.email ?? ''}
+              disabled
+              className="w-full px-4 py-2.5 rounded-xl border text-sm bg-gray-50 text-muted cursor-not-allowed"
+              style={{ borderColor: '#e0e0e0' }}
+            />
+            <p className="text-[11px] text-muted">{t('account.emailCannotChange')}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <motion.button
+          type="submit"
+          whileTap={{ scale: 0.97 }}
+          disabled={saving}
+          className="px-6 py-2.5 rounded-xl text-sm font-black text-white transition-colors disabled:opacity-60 flex items-center gap-2"
+          style={{ backgroundColor: '#0056b3' }}
+        >
+          {saving && (
+            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+          )}
+          {saving ? t('account.saving') : t('account.saveChanges')}
+        </motion.button>
+        {success && (
+          <motion.span initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} className="text-sm font-bold" style={{ color: '#1e8035' }}>
+            ✓ {t('account.saved')}
+          </motion.span>
+        )}
+      </div>
+
+      <div className="pt-4 border-t space-y-3" style={{ borderColor: '#f0f0f0' }}>
+        {[
+          { icon: '📍', label: t('account.savedAddresses') },
+          { icon: '💳', label: t('account.paymentMethods') },
+        ].map(({ icon, label }) => (
+          <div key={label} className="flex items-center gap-3 p-4 rounded-xl border" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
+            <span className="text-xl">{icon}</span>
+            <div>
+              <p className="text-sm font-bold text-ink">{label}</p>
+              <p className="text-xs text-muted mt-0.5">{t('account.featureComingSoon')}</p>
+            </div>
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full ms-auto" style={{ backgroundColor: '#e6f0fa', color: '#0056b3' }}>
+              Soon
+            </span>
+          </div>
+        ))}
+      </div>
+    </form>
+  )
+}
+
 /* ── Dashboard ── */
 function Dashboard({ user, onSignOut }) {
   const { t } = useTranslation()
@@ -343,26 +443,7 @@ function Dashboard({ user, onSignOut }) {
             )}
             {activeTab === 'profile' && (
               <motion.div key="profile" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
-                  {[
-                    { icon: '✏️', label: t('account.editProfile') },
-                    { icon: '📍', label: t('account.savedAddresses') },
-                    { icon: '💳', label: t('account.paymentMethods') },
-                  ].map(({ icon, label }) => (
-                    <button key={label} className="flex items-center gap-3 p-4 rounded-xl border text-start hover:shadow-sm transition-shadow"
-                      style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}
-                    >
-                      <span className="text-xl">{icon}</span>
-                      <div>
-                        <p className="text-sm font-bold text-ink">{label}</p>
-                        <p className="text-xs text-muted mt-0.5">{t('account.featureComingSoon')}</p>
-                      </div>
-                      <svg className="w-4 h-4 text-muted ms-auto" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                        <path d="M9 18l6-6-6-6" />
-                      </svg>
-                    </button>
-                  ))}
-                </div>
+                <ProfileEditor user={user} />
               </motion.div>
             )}
           </AnimatePresence>

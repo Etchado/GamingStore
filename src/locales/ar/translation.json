@@ -439,7 +439,12 @@
     "savedAddresses": "العناوين المحفوظة",
     "paymentMethods": "طرق الدفع",
     "featureComingSoon": "قريباً في تحديث مستقبلي.",
-    "profile": "الملف الشخصي"
+    "profile": "الملف الشخصي",
+    "displayName": "الاسم المعروض",
+    "emailCannotChange": "لا يمكن تغيير البريد الإلكتروني بعد التسجيل.",
+    "saving": "جاري الحفظ...",
+    "saveChanges": "حفظ التغييرات",
+    "saved": "تم الحفظ!"
   },
   "pages": {
     "home": "الرئيسية",
