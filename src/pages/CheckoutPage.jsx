@@ -2,11 +2,16 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { useCart } from '@/context/CartContext'
 import { useCurrency } from '@/context/CurrencyContext'
 import { useAuth } from '@/context/AuthContext'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { onImgError } from '@/lib/imgFallback'
+import { supabase } from '@/lib/supabase'
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 
 function genOrderId() {
   return 'GS-' + Math.random().toString(36).slice(2, 8).toUpperCase()
@@ -270,94 +275,49 @@ function ShippingStep({ data, onChange, errors }) {
   )
 }
 
-/* ── Step 2: Payment ── */
-function PaymentStep({ data, onChange, errors }) {
+/* ── Stripe Payment Form (inside Elements provider) ── */
+function StripePaymentForm({ onSuccess, grandTotal, placing, setPlacing }) {
   const { t } = useTranslation()
+  const { formatPrice } = useCurrency()
+  const stripe = useStripe()
+  const elements = useElements()
+  const [stripeError, setStripeError] = useState('')
 
-  function handleCardNumber(e) {
-    const raw = e.target.value.replace(/\D/g, '').slice(0, 16)
-    const formatted = raw.replace(/(.{4})/g, '$1 ').trim()
-    onChange('cardNumber', formatted)
-  }
+  async function handleSubmit(e) {
+    e.preventDefault()
+    if (!stripe || !elements) return
+    setPlacing(true)
+    setStripeError('')
 
-  function handleExpiry(e) {
-    let val = e.target.value.replace(/\D/g, '').slice(0, 4)
-    if (val.length >= 3) val = val.slice(0, 2) + '/' + val.slice(2)
-    onChange('expiry', val)
+    const { error, paymentIntent } = await stripe.confirmPayment({
+      elements,
+      confirmParams: { return_url: window.location.origin + '/checkout?step=3' },
+      redirect: 'if_required',
+    })
+
+    if (error) {
+      setStripeError(error.message)
+      setPlacing(false)
+      return
+    }
+
+    if (paymentIntent && paymentIntent.status === 'succeeded') {
+      onSuccess(paymentIntent.id)
+    }
   }
 
   return (
-    <div className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div
-        className="rounded-2xl p-5 flex flex-col justify-between"
-        style={{ background: 'linear-gradient(135deg, #0056b3 0%, #003375 100%)', minHeight: 160 }}
+        className="rounded-2xl p-5"
+        style={{ border: '1px solid #e0e0e0', backgroundColor: '#fafafa' }}
       >
-        <div className="flex justify-between items-start">
-          <svg className="w-10 h-10 opacity-70" viewBox="0 0 40 40" fill="none">
-            <rect width="40" height="40" rx="8" fill="white" fillOpacity="0.15" />
-            <circle cx="15" cy="20" r="8" fill="white" fillOpacity="0.5" />
-            <circle cx="25" cy="20" r="8" fill="white" fillOpacity="0.3" />
-          </svg>
-          <span className="text-white text-xs font-bold opacity-60 uppercase tracking-widest">{t('checkout.creditCard')}</span>
-        </div>
-        <div>
-          <p className="text-white font-mono text-lg tracking-[0.2em] font-bold">
-            {data.cardNumber
-              ? data.cardNumber.padEnd(19, ' ').replace(/ /g, (_, i) => i > 0 && (i + 1) % 5 === 0 ? ' ' : (data.cardNumber[i] || '·'))
-              : '·····  ·····  ·····  ·····'}
-          </p>
-          <div className="flex justify-between mt-3">
-            <div>
-              <p className="text-white/50 text-[10px] uppercase tracking-widest">{t('checkout.cardholder')}</p>
-              <p className="text-white text-sm font-bold">{data.cardName || 'FULL NAME'}</p>
-            </div>
-            <div className="text-end">
-              <p className="text-white/50 text-[10px] uppercase tracking-widest">{t('checkout.expires')}</p>
-              <p className="text-white text-sm font-bold">{data.expiry || 'MM/YY'}</p>
-            </div>
-          </div>
-        </div>
+        <PaymentElement options={{ layout: 'tabs' }} />
       </div>
 
-      <div className="space-y-4">
-        <Field label={t('checkout.cardholderName')} error={errors.cardName}>
-          <Input
-            placeholder="John Doe"
-            value={data.cardName}
-            error={errors.cardName}
-            onChange={(e) => onChange('cardName', e.target.value.toUpperCase())}
-          />
-        </Field>
-        <Field label={t('checkout.cardNumber')} error={errors.cardNumber}>
-          <Input
-            placeholder="0000 0000 0000 0000"
-            value={data.cardNumber}
-            error={errors.cardNumber}
-            onChange={handleCardNumber}
-            maxLength={19}
-          />
-        </Field>
-        <div className="grid grid-cols-2 gap-4">
-          <Field label={t('checkout.expiry')} error={errors.expiry}>
-            <Input
-              placeholder="MM/YY"
-              value={data.expiry}
-              error={errors.expiry}
-              onChange={handleExpiry}
-              maxLength={5}
-            />
-          </Field>
-          <Field label={t('checkout.cvv')} error={errors.cvv}>
-            <Input
-              placeholder="•••"
-              value={data.cvv}
-              error={errors.cvv}
-              onChange={(e) => onChange('cvv', e.target.value.replace(/\D/g, '').slice(0, 4))}
-              maxLength={4}
-            />
-          </Field>
-        </div>
-      </div>
+      {stripeError && (
+        <p className="text-xs font-medium text-red-500 text-center">{stripeError}</p>
+      )}
 
       <div
         className="flex items-center gap-2.5 rounded-xl px-4 py-3 text-xs font-medium text-muted"
@@ -369,7 +329,29 @@ function PaymentStep({ data, onChange, errors }) {
         </svg>
         {t('checkout.securityNote')}
       </div>
-    </div>
+
+      <motion.button
+        type="submit"
+        whileTap={{ scale: 0.97 }}
+        disabled={placing || !stripe}
+        className="mt-2 w-full py-3.5 rounded-xl text-sm font-black text-white transition-colors disabled:opacity-70 flex items-center justify-center gap-2"
+        style={{ backgroundColor: '#0056b3' }}
+        onMouseEnter={(e) => { if (!placing) e.currentTarget.style.backgroundColor = '#004494' }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
+      >
+        {placing ? (
+          <>
+            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+            {t('checkout.processing')}
+          </>
+        ) : (
+          t('checkout.placeOrder', { amount: formatPrice(grandTotal) })
+        )}
+      </motion.button>
+    </form>
   )
 }
 
@@ -469,24 +451,19 @@ function calcDiscount(coupon, subtotal, shipping) {
 
 /* ── Main CheckoutPage ── */
 const SHIPPING_INIT = { firstName: '', lastName: '', email: '', phone: '', address: '', city: '', state: '', zip: '', country: '' }
-const PAYMENT_INIT  = { cardName: '', cardNumber: '', expiry: '', cvv: '' }
 
 export default function CheckoutPage() {
   const { t } = useTranslation()
   const { items, total, setIsOpen } = useCart()
   const { formatPrice } = useCurrency()
-  const { isAuthenticated, loading: authLoading, signInWithGoogle, signInWithApple, requestOTP, verifyOTP, pendingPhone } = useAuth()
+  const { isAuthenticated, loading: authLoading, signInWithGoogle, signInWithApple } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
-  const [phoneNum, setPhoneNum] = useState('')
-  const [otpCode, setOtpCode]   = useState('')
-  const [authView, setAuthView] = useState('main') // 'main' | 'phone' | 'otp'
-  const [authErrors, setAuthErrors] = useState({})
 
   const [searchParams]          = useSearchParams()
   const step                    = Math.min(Math.max(parseInt(searchParams.get('step') || '1', 10), 1), 3)
   usePageTitle(t(`checkout.step${step}`))
   const [shipping, setShipping] = useState(SHIPPING_INIT)
-  const [payment, setPayment]   = useState(PAYMENT_INIT)
   const [errors, setErrors]     = useState({})
   const [orderId]               = useState(genOrderId)
   const [placing, setPlacing]   = useState(false)
@@ -495,7 +472,9 @@ export default function CheckoutPage() {
   const [couponInput, setCouponInput]     = useState('')
   const [couponError, setCouponError]     = useState('')
 
-  // Guard against direct URL access to later steps (e.g. refresh on /checkout?step=2)
+  const [clientSecret, setClientSecret]   = useState('')
+  const [paymentIntentId, setPaymentIntentId] = useState('')
+
   useEffect(() => {
     if (step > 1 && !shipping.firstName.trim()) {
       navigate('/checkout', { replace: true })
@@ -540,35 +519,65 @@ export default function CheckoutPage() {
     return e
   }
 
-  function validatePayment() {
-    const e = {}
-    if (!payment.cardName.trim())  e.cardName   = t('checkout.errRequired')
-    const digits = payment.cardNumber.replace(/\s/g, '')
-    if (!digits)                   e.cardNumber = t('checkout.errRequired')
-    else if (digits.length < 16)   e.cardNumber = t('checkout.errCard16')
-    if (!payment.expiry)           e.expiry     = t('checkout.errRequired')
-    else if (!/^\d{2}\/\d{2}$/.test(payment.expiry)) e.expiry = t('checkout.errExpiryFormat')
-    if (!payment.cvv)              e.cvv        = t('checkout.errRequired')
-    else if (payment.cvv.length < 3) e.cvv      = t('checkout.errCvvMin')
-    return e
-  }
-
-  function handleShippingNext() {
+  async function handleShippingNext() {
     const e = validateShipping()
     if (Object.keys(e).length) { setErrors(e); return }
     setErrors({})
-    navigate('/checkout?step=2')
+    setPlacing(true)
+    try {
+      const res = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: grandTotal, currency: 'sar' }),
+      })
+      const data = await res.json()
+      if (data.clientSecret) {
+        setClientSecret(data.clientSecret)
+        navigate('/checkout?step=2')
+      }
+    } catch {
+      setErrors({ general: 'Failed to initialize payment. Please try again.' })
+    }
+    setPlacing(false)
   }
 
-  function handlePlaceOrder() {
-    const e = validatePayment()
-    if (Object.keys(e).length) { setErrors(e); return }
-    setErrors({})
-    setPlacing(true)
-    setTimeout(() => {
-      setPlacing(false)
-      navigate('/checkout?step=3', { replace: true })
-    }, 1400)
+  async function handlePaymentSuccess(intentId) {
+    setPaymentIntentId(intentId)
+    // Save order to Supabase
+    try {
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          user_id: user?.id,
+          order_number: orderId,
+          status: 'paid',
+          total: grandTotal,
+          subtotal,
+          shipping: effectiveShipping,
+          vat,
+          discount,
+          coupon_code: appliedCoupon?.code ?? null,
+          shipping_address: shipping,
+          stripe_payment_intent: intentId,
+        })
+        .select()
+        .single()
+
+      if (!orderError && order) {
+        const orderItems = items.map(({ product, qty }) => ({
+          order_id: order.id,
+          product_id: String(product.id ?? ''),
+          title: product.title,
+          price: product.price,
+          qty,
+          image: product.image ?? null,
+        }))
+        await supabase.from('order_items').insert(orderItems)
+      }
+    } catch {
+      // Order save failed silently — payment already succeeded
+    }
+    navigate('/checkout?step=3', { replace: true })
   }
 
   /* ── Auth gate ── */
@@ -581,22 +590,6 @@ export default function CheckoutPage() {
   }
 
   if (!isAuthenticated) {
-    const PHONE_RE = /^[0-9]{9}$/
-    async function handlePhoneSend(e) {
-      e.preventDefault()
-      if (!PHONE_RE.test(phoneNum)) { setAuthErrors({ phone: t('account.phoneInvalid') }); return }
-      const { error } = await requestOTP(phoneNum)
-      if (error) { setAuthErrors({ phone: error.message }); return }
-      setAuthView('otp')
-      setAuthErrors({})
-    }
-    async function handleOTPVerify(e) {
-      e.preventDefault()
-      if (otpCode.length < 6) { setAuthErrors({ otp: t('account.otpIncomplete') }); return }
-      const { error } = await verifyOTP(otpCode)
-      if (error) setAuthErrors({ otp: t('account.otpInvalid') })
-    }
-
     return (
       <div className="pt-36 lg:pt-44 min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: '#f8fafc' }}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
@@ -608,101 +601,26 @@ export default function CheckoutPage() {
             <h2 className="text-sm font-black text-ink">{t('checkout.signInRequired')}</h2>
             <p className="text-xs text-muted mt-0.5">{t('checkout.signInRequiredSub')}</p>
           </div>
-
-          <div className="p-5">
-            <AnimatePresence mode="wait">
-              {authView === 'main' && (
-                <motion.div key="gate-main" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
-                  {[
-                    { icon: '📱', label: t('account.continueWithPhone'), action: () => setAuthView('phone') },
-                    { icon: '🔵', label: t('account.continueWithGoogle'), action: signInWithGoogle },
-                    { icon: '⚫', label: t('account.continueWithApple'), action: signInWithApple },
-                  ].map(({ icon, label, action }) => (
-                    <button key={label} onClick={action}
-                      className="flex items-center justify-center gap-2.5 w-full py-3 rounded-xl border text-sm font-bold text-ink hover:bg-gray-50 transition-colors"
-                      style={{ borderColor: '#e0e0e0' }}
-                    >
-                      {icon} {label}
-                    </button>
-                  ))}
-                  <div className="text-center">
-                    <Link to="/account" className="text-xs font-bold" style={{ color: '#0056b3' }}>
-                      {t('checkout.useEmailInstead')}
-                    </Link>
-                  </div>
-                </motion.div>
-              )}
-
-              {authView === 'phone' && (
-                <motion.div key="gate-phone" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}>
-                  <button onClick={() => setAuthView('main')} className="flex items-center gap-1 text-xs font-bold text-muted mb-4 hover:text-ink transition-colors">
-                    ← {t('account.back')}
-                  </button>
-                  <form onSubmit={handlePhoneSend} className="space-y-4" noValidate>
-                    <div>
-                      <label className="block text-xs font-bold text-ink mb-1.5">{t('account.phoneNumber')}</label>
-                      <div className="flex">
-                        <div className="flex items-center px-3 border border-e-0 rounded-s-xl text-sm font-bold bg-gray-50 shrink-0" style={{ borderColor: '#e0e0e0' }}>
-                          🇸🇦 +966
-                        </div>
-                        <input type="tel" inputMode="numeric" maxLength={9} value={phoneNum}
-                          onChange={e => { setPhoneNum(e.target.value.replace(/\D/g, '').slice(0, 9)); setAuthErrors({}) }}
-                          placeholder="5X XXX XXXX"
-                          className="flex-1 border rounded-e-xl px-4 py-2.5 text-sm outline-none transition-colors"
-                          style={{ borderColor: authErrors.phone ? '#e53e3e' : '#e0e0e0' }}
-                          onFocus={e => { e.target.style.borderColor = '#0056b3' }}
-                          onBlur={e => { e.target.style.borderColor = authErrors.phone ? '#e53e3e' : '#e0e0e0' }}
-                        />
-                      </div>
-                      {authErrors.phone && <p className="text-xs mt-1" style={{ color: '#e53e3e' }}>{authErrors.phone}</p>}
-                    </div>
-                    <button type="submit" className="w-full py-3 rounded-xl text-white text-sm font-black" style={{ backgroundColor: '#0056b3' }}>
-                      {t('account.sendOTP')}
-                    </button>
-                  </form>
-                </motion.div>
-              )}
-
-              {authView === 'otp' && (
-                <motion.div key="gate-otp" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}>
-                  <button onClick={() => setAuthView('phone')} className="flex items-center gap-1 text-xs font-bold text-muted mb-4 hover:text-ink transition-colors">
-                    ← {t('account.back')}
-                  </button>
-                  <p className="text-xs text-center text-muted mb-4">
-                    {t('account.otpSentTo')} <span className="font-bold text-ink">+966 {phoneNum}</span>
-                    <br /><span style={{ color: '#0056b3' }}>{t('account.otpDemoHint')}</span>
-                  </p>
-                  <form onSubmit={handleOTPVerify} className="space-y-4" noValidate>
-                    <div className="flex gap-2 justify-center">
-                      {Array.from({ length: 6 }, (_, i) => (
-                        <input key={i} type="text" inputMode="numeric" maxLength={1}
-                          value={otpCode[i] || ''}
-                          onChange={e => {
-                            const d = e.target.value.replace(/\D/g, '').slice(-1)
-                            const arr = otpCode.split(''); arr[i] = d
-                            const next = arr.join('').padEnd(6, ' ').slice(0, 6)
-                            setOtpCode(next.trimEnd()); setAuthErrors({})
-                            if (d && i < 5) e.target.nextSibling?.focus()
-                          }}
-                          onKeyDown={e => { if (e.key === 'Backspace' && !e.target.value && i > 0) e.target.previousSibling?.focus() }}
-                          className="w-10 h-11 text-center text-base font-black border-2 rounded-xl outline-none transition-colors"
-                          style={{ borderColor: authErrors.otp ? '#e53e3e' : '#e0e0e0' }}
-                          onFocus={e => { e.target.style.borderColor = '#0056b3' }}
-                          onBlur={e => { e.target.style.borderColor = authErrors.otp ? '#e53e3e' : '#e0e0e0' }}
-                        />
-                      ))}
-                    </div>
-                    {authErrors.otp && <p className="text-xs text-center" style={{ color: '#e53e3e' }}>{authErrors.otp}</p>}
-                    <button type="submit" disabled={otpCode.length < 6}
-                      className="w-full py-3 rounded-xl text-white text-sm font-black disabled:opacity-50"
-                      style={{ backgroundColor: '#0056b3' }}
-                    >
-                      {t('account.verifyOTP')}
-                    </button>
-                  </form>
-                </motion.div>
-              )}
-            </AnimatePresence>
+          <div className="p-5 space-y-3">
+            <button onClick={signInWithGoogle}
+              className="flex items-center justify-center gap-2.5 w-full py-3 rounded-xl border text-sm font-bold text-ink hover:bg-gray-50 transition-colors"
+              style={{ borderColor: '#e0e0e0' }}
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              {t('account.continueWithGoogle')}
+            </button>
+            <button onClick={signInWithApple}
+              className="flex items-center justify-center gap-2.5 w-full py-3 rounded-xl border text-sm font-bold text-ink hover:bg-gray-50 transition-colors"
+              style={{ borderColor: '#e0e0e0' }}
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              {t('account.continueWithApple')}
+            </button>
+            <div className="text-center">
+              <Link to="/account" className="text-xs font-bold" style={{ color: '#0056b3' }}>
+                {t('checkout.useEmailInstead')}
+              </Link>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -761,39 +679,12 @@ export default function CheckoutPage() {
                     onChange={(k, v) => { setShipping(s => ({ ...s, [k]: v })); setErrors(e => ({ ...e, [k]: '' })) }}
                     errors={errors}
                   />
+                  {errors.general && (
+                    <p className="mt-3 text-xs text-red-500 font-medium text-center">{errors.general}</p>
+                  )}
                   <motion.button
                     whileTap={{ scale: 0.97 }}
                     onClick={handleShippingNext}
-                    className="mt-8 w-full py-3.5 rounded-xl text-sm font-black text-white transition-colors"
-                    style={{ backgroundColor: '#0056b3' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
-                  >
-                    {t('checkout.continueToPayment')}
-                  </motion.button>
-                </motion.div>
-              )}
-
-              {step === 2 && (
-                <motion.div key="payment" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-lg font-black text-ink">{t('checkout.step2')}</h2>
-                    <button
-                      onClick={() => { setErrors({}); navigate('/checkout') }}
-                      className="text-xs font-bold transition-colors"
-                      style={{ color: '#0056b3' }}
-                    >
-                      {t('checkout.editShipping')}
-                    </button>
-                  </div>
-                  <PaymentStep
-                    data={payment}
-                    onChange={(k, v) => { setPayment(p => ({ ...p, [k]: v })); setErrors(e => ({ ...e, [k]: '' })) }}
-                    errors={errors}
-                  />
-                  <motion.button
-                    whileTap={{ scale: 0.97 }}
-                    onClick={handlePlaceOrder}
                     disabled={placing}
                     className="mt-8 w-full py-3.5 rounded-xl text-sm font-black text-white transition-colors disabled:opacity-70 flex items-center justify-center gap-2"
                     style={{ backgroundColor: '#0056b3' }}
@@ -808,10 +699,31 @@ export default function CheckoutPage() {
                         </svg>
                         {t('checkout.processing')}
                       </>
-                    ) : (
-                      t('checkout.placeOrder', { amount: formatPrice(grandTotal) })
-                    )}
+                    ) : t('checkout.continueToPayment')}
                   </motion.button>
+                </motion.div>
+              )}
+
+              {step === 2 && clientSecret && (
+                <motion.div key="payment" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-lg font-black text-ink">{t('checkout.step2')}</h2>
+                    <button
+                      onClick={() => { setErrors({}); navigate('/checkout') }}
+                      className="text-xs font-bold transition-colors"
+                      style={{ color: '#0056b3' }}
+                    >
+                      {t('checkout.editShipping')}
+                    </button>
+                  </div>
+                  <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'stripe' } }}>
+                    <StripePaymentForm
+                      onSuccess={handlePaymentSuccess}
+                      grandTotal={grandTotal}
+                      placing={placing}
+                      setPlacing={setPlacing}
+                    />
+                  </Elements>
                 </motion.div>
               )}
 
