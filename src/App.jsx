@@ -41,6 +41,7 @@ const AccountPage       = lazy(() => import('./pages/AccountPage'))
 const SupportPage       = lazy(() => import('./pages/SupportPage'))
 const DealsPage         = lazy(() => import('./pages/DealsPage'))
 const AboutPage         = lazy(() => import('./pages/AboutPage'))
+const AdminPage         = lazy(() => import('./pages/AdminPage'))
 
 function PageLoader() {
   return (
@@ -131,6 +132,7 @@ function AppShell() {
             <Route path="/terms"        element={<SupportPage />} />
             <Route path="/cookies"      element={<SupportPage />} />
             <Route path="/deals"        element={<DealsPage />} />
+            <Route path="/admin"        element={<AdminPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>

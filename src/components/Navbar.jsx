@@ -8,6 +8,9 @@ import { useCurrency } from '@/context/CurrencyContext'
 import AnnouncementBar from '@/components/AnnouncementBar'
 import { useProducts } from '@/context/ProductsContext'
 import { onImgError } from '@/lib/imgFallback'
+import { useAuth } from '@/context/AuthContext'
+
+const ADMIN_EMAIL = 'ikhaledi95@gmail.com'
 
 /* ── Support links ── */
 const SUPPORT_LINKS = [
@@ -164,6 +167,8 @@ export default function Navbar() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const isAr = i18n.language?.startsWith('ar')
+  const { user } = useAuth()
+  const isAdmin = user?.email === ADMIN_EMAIL
 
   function toggleMobileItem(id) {
     setMobileExpanded(prev => prev === id ? null : id)
@@ -286,6 +291,14 @@ export default function Navbar() {
               </svg>
               {t('nav.deals')}
             </Link>
+            {isAdmin && (
+              <Link to="/admin" className="flex items-center gap-1 px-3 h-8 transition-colors hover:text-white font-black">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                </svg>
+                Admin
+              </Link>
+            )}
           </div>
 
         </div>
@@ -679,6 +692,16 @@ export default function Navbar() {
                 </svg>
                 {t('nav.account')}
               </Link>
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-xs font-bold transition-colors"
+                  style={{ color: '#0056b3' }}
+                >
+                  Admin
+                </Link>
+              )}
             </div>
           </motion.div>
         )}
