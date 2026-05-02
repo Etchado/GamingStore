@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { z } from 'zod'
 import { motion, AnimatePresence } from 'motion/react'
 import { Link } from 'react-router-dom'
@@ -7,6 +7,7 @@ import { useSEO } from '@/hooks/useSEO'
 import { useCurrency } from '@/context/CurrencyContext'
 import { useAuth } from '@/context/AuthContext'
 import { stripArabic, stripName } from '@/lib/utils'
+import { supabase } from '@/lib/supabase'
 
 /* ── Zod schemas ─────────────────────────────────── */
 const NAME_RULE = z.string()
@@ -55,13 +56,6 @@ function zodErrors(result, t) {
   }
   return out
 }
-
-/* ── Mock orders (replaced by real data in backend phase) ── */
-const MOCK_ORDERS = [
-  { id: 'GS-8F2A19', product: 'White Phantom Custom PC Build',      price: '$2,499', date: 'Apr 10, 2026', status: 'delivered',  img: 'https://images.unsplash.com/photo-1624705002806-5d72df19c3ad?auto=format&fit=crop&w=80&q=80' },
-  { id: 'GS-3C7B44', product: 'LG UltraWide 34" Monitor',           price: '$899',  date: 'Mar 28, 2026', status: 'shipped',    img: 'https://images.unsplash.com/photo-1614179924047-e1ab49a0a0cf?auto=format&fit=crop&w=80&q=80' },
-  { id: 'GS-1E5D02', product: 'Corsair K70 Mechanical Keyboard',    price: '$149',  date: 'Mar 15, 2026', status: 'delivered',  img: 'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?auto=format&fit=crop&w=80&q=80' },
-]
 
 const STATUS_STYLE = {
   delivered:  { bg: '#e9f7ed', color: '#1e8035' },
@@ -207,6 +201,19 @@ function Dashboard({ user, onSignOut }) {
   const { t } = useTranslation()
   const { formatPrice, parseUSD } = useCurrency()
   const [activeTab, setActiveTab] = useState('orders')
+  const [orders, setOrders] = useState([])
+  const [ordersLoading, setOrdersLoading] = useState(true)
+
+  useEffect(() => {
+    supabase
+      .from('orders')
+      .select('*, order_items(*)')
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        setOrders(data ?? [])
+        setOrdersLoading(false)
+      })
+  }, [])
 
   const tabs = [
     { key: 'orders',  label: t('account.myOrders') },
@@ -266,39 +273,72 @@ function Dashboard({ user, onSignOut }) {
           <AnimatePresence mode="wait">
             {activeTab === 'orders' && (
               <motion.div key="orders" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
-                <div className="space-y-3">
-                  {MOCK_ORDERS.map((order, i) => {
-                    const statusKey = `orderStatus${order.status.charAt(0).toUpperCase() + order.status.slice(1)}`
-                    const style = STATUS_STYLE[order.status] ?? STATUS_STYLE.confirmed
-                    return (
-                      <motion.div
-                        key={order.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
-                        className="flex items-center gap-4 p-4 rounded-xl border"
-                        style={{ borderColor: '#f0f0f0', backgroundColor: '#fafafa' }}
-                      >
-                        <img src={order.img} alt={order.product} loading="lazy"
-                          className="w-12 h-12 rounded-xl object-cover shrink-0 border" style={{ borderColor: '#e0e0e0' }}
-                          onError={e => { e.target.src = 'https://placehold.co/80x80?text=IMG' }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-ink line-clamp-1">{order.product}</p>
-                          <p className="text-xs text-muted mt-0.5">{order.id} · {order.date}</p>
+                {ordersLoading ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="flex items-center gap-4 p-4 rounded-xl border animate-pulse" style={{ borderColor: '#f0f0f0', backgroundColor: '#fafafa' }}>
+                        <div className="w-12 h-12 rounded-xl bg-gray-200 shrink-0" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-3 bg-gray-200 rounded w-2/3" />
+                          <div className="h-2 bg-gray-200 rounded w-1/3" />
                         </div>
-                        <div className="flex flex-col items-end sm:flex-row sm:items-center gap-1 sm:gap-3 shrink-0">
-                          <span className="text-sm font-black" style={{ color: '#0056b3' }}>{formatPrice(parseUSD(order.price))}</span>
-                          <span className="text-[11px] font-black px-2.5 py-1 rounded-full" style={{ backgroundColor: style.bg, color: style.color }}>
-                            {t(`account.${statusKey}`)}
-                          </span>
-                        </div>
-                      </motion.div>
-                    )
-                  })}
-                </div>
-                <div className="mt-4 pt-4 border-t text-center" style={{ borderColor: '#f0f0f0' }}>
-                  <Link to="/" className="text-sm font-bold" style={{ color: '#0056b3' }}>
-                    {t('checkout.continueShopping')} →
-                  </Link>
-                </div>
+                        <div className="h-4 bg-gray-200 rounded w-16" />
+                      </div>
+                    ))}
+                  </div>
+                ) : orders.length === 0 ? (
+                  <div className="text-center py-10">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3" style={{ backgroundColor: '#e6f0fa' }}>📦</div>
+                    <p className="text-sm font-bold text-ink">{t('account.noOrders')}</p>
+                    <p className="text-xs text-muted mt-1 mb-4">{t('account.noOrdersSub')}</p>
+                    <Link to="/" className="text-sm font-bold px-5 py-2.5 rounded-xl text-white" style={{ backgroundColor: '#0056b3' }}>
+                      {t('checkout.continueShopping')}
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {orders.map((order, i) => {
+                      const firstItem = order.order_items?.[0]
+                      const itemCount = order.order_items?.length ?? 0
+                      const style = STATUS_STYLE[order.status] ?? STATUS_STYLE.confirmed
+                      const date = new Date(order.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                      return (
+                        <motion.div
+                          key={order.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
+                          className="flex items-center gap-4 p-4 rounded-xl border"
+                          style={{ borderColor: '#f0f0f0', backgroundColor: '#fafafa' }}
+                        >
+                          <img
+                            src={firstItem?.image || 'https://placehold.co/80x80?text=📦'}
+                            alt={firstItem?.title ?? 'Order'}
+                            loading="lazy"
+                            className="w-12 h-12 rounded-xl object-cover shrink-0 border"
+                            style={{ borderColor: '#e0e0e0' }}
+                            onError={e => { e.target.src = 'https://placehold.co/80x80?text=📦' }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-ink line-clamp-1">
+                              {firstItem?.title ?? 'Order'}
+                              {itemCount > 1 && <span className="text-muted font-normal"> +{itemCount - 1} more</span>}
+                            </p>
+                            <p className="text-xs text-muted mt-0.5">{order.order_number} · {date}</p>
+                          </div>
+                          <div className="flex flex-col items-end sm:flex-row sm:items-center gap-1 sm:gap-3 shrink-0">
+                            <span className="text-sm font-black" style={{ color: '#0056b3' }}>{formatPrice(order.total)}</span>
+                            <span className="text-[11px] font-black px-2.5 py-1 rounded-full" style={{ backgroundColor: style.bg, color: style.color }}>
+                              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                            </span>
+                          </div>
+                        </motion.div>
+                      )
+                    })}
+                    <div className="mt-4 pt-4 border-t text-center" style={{ borderColor: '#f0f0f0' }}>
+                      <Link to="/" className="text-sm font-bold" style={{ color: '#0056b3' }}>
+                        {t('checkout.continueShopping')} →
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
             {activeTab === 'profile' && (
