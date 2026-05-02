@@ -12,6 +12,7 @@ import { useSEO } from '@/hooks/useSEO'
 import { onImgError } from '@/lib/imgFallback'
 import { useProducts } from '@/context/ProductsContext'
 import { ProductCard } from '@/components/ui/product-card'
+import { supabase } from '@/lib/supabase'
 
 const badges = {
   System:   { bg: '#e6f0fa', text: '#004494' },
@@ -103,50 +104,232 @@ function ReviewCard({ review, colorIndex }) {
   )
 }
 
-function ReviewsSection({ rating, reviewCount }) {
+const STAR_PATH = "M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+
+function StarPicker({ value, onChange }) {
+  const [hovered, setHovered] = useState(0)
+  return (
+    <div className="flex gap-1">
+      {Array.from({ length: 5 }, (_, i) => (
+        <button key={i} type="button"
+          onClick={() => onChange(i + 1)}
+          onMouseEnter={() => setHovered(i + 1)}
+          onMouseLeave={() => setHovered(0)}
+        >
+          <svg className={`w-7 h-7 transition-colors ${i < (hovered || value) ? 'text-amber-400' : 'text-gray-200'}`} viewBox="0 0 20 20" fill="currentColor">
+            <path d={STAR_PATH} />
+          </svg>
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function ReviewsSection({ productId, rating, reviewCount }) {
   const { t } = useTranslation()
-  const ratingInt = Math.round(rating ?? 4.8)
-  const bars = [
-    { stars: 5, pct: 72 }, { stars: 4, pct: 18 }, { stars: 3, pct: 6 },
-    { stars: 2, pct: 2 },  { stars: 1, pct: 2 },
-  ]
+  const { isAuthenticated, user } = useAuth()
+  const [reviews, setReviews]     = useState([])
+  const [loading, setLoading]     = useState(true)
+  const [showForm, setShowForm]   = useState(false)
+  const [starValue, setStarValue] = useState(0)
+  const [body, setBody]           = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+
+  async function loadReviews() {
+    const { data } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('product_id', productId)
+      .order('created_at', { ascending: false })
+    setReviews(data ?? [])
+    setLoading(false)
+  }
+
+  useEffect(() => { loadReviews() }, [productId])
+
+  const avgRating = reviews.length
+    ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
+    : (rating ?? 4.8)
+  const ratingInt = Math.round(avgRating)
+  const totalCount = reviews.length || reviewCount || 0
+
+  const bars = [5, 4, 3, 2, 1].map(stars => ({
+    stars,
+    pct: reviews.length
+      ? Math.round(reviews.filter(r => r.rating === stars).length / reviews.length * 100)
+      : [72, 18, 6, 2, 2][5 - stars],
+  }))
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    if (starValue === 0) { setSubmitError('Please select a star rating.'); return }
+    if (!body.trim()) { setSubmitError('Please write a review.'); return }
+    setSubmitting(true)
+    setSubmitError('')
+    const { error } = await supabase.from('reviews').insert({
+      product_id: productId,
+      user_id: user?.id,
+      user_name: user?.name ?? 'Anonymous',
+      rating: starValue,
+      body: body.trim(),
+    })
+    setSubmitting(false)
+    if (error) { setSubmitError(error.message); return }
+    setStarValue(0)
+    setBody('')
+    setShowForm(false)
+    loadReviews()
+  }
+
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.25 }} className="mt-16">
-      <div className="mb-6">
-        <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-1" style={{ color: '#0056b3' }}>
-          ◈ {t('product.reviewsSub')}
-        </p>
-        <h2 className="text-xl font-black text-ink">{t('product.reviewsTitle')}</h2>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-1" style={{ color: '#0056b3' }}>
+            ◈ {t('product.reviewsSub')}
+          </p>
+          <h2 className="text-xl font-black text-ink">{t('product.reviewsTitle')}</h2>
+        </div>
+        {isAuthenticated && !showForm && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="px-4 py-2 rounded-xl text-sm font-bold text-white"
+            style={{ backgroundColor: '#0056b3' }}
+          >
+            + Write a Review
+          </button>
+        )}
       </div>
+
+      {/* Review form */}
+      {showForm && (
+        <motion.form
+          initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+          onSubmit={handleSubmit}
+          className="mb-6 p-5 rounded-2xl border space-y-4"
+          style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}
+        >
+          <h3 className="text-sm font-black text-ink">Your Review</h3>
+          <div>
+            <p className="text-xs font-bold text-ink mb-2">Rating</p>
+            <StarPicker value={starValue} onChange={setStarValue} />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-ink mb-1.5">Comment</p>
+            <textarea
+              value={body}
+              onChange={e => { setBody(e.target.value); setSubmitError('') }}
+              placeholder="Share your experience with this product..."
+              rows={3}
+              className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all bg-white resize-none"
+              style={{ borderColor: '#e0e0e0' }}
+              onFocus={e => { e.target.style.borderColor = '#0056b3' }}
+              onBlur={e => { e.target.style.borderColor = '#e0e0e0' }}
+            />
+          </div>
+          {submitError && <p className="text-xs text-red-500 font-medium">{submitError}</p>}
+          <div className="flex gap-3">
+            <button type="submit" disabled={submitting}
+              className="px-5 py-2 rounded-xl text-sm font-black text-white disabled:opacity-60"
+              style={{ backgroundColor: '#0056b3' }}
+            >
+              {submitting ? 'Submitting...' : 'Submit Review'}
+            </button>
+            <button type="button" onClick={() => { setShowForm(false); setSubmitError('') }}
+              className="px-5 py-2 rounded-xl text-sm font-bold text-muted hover:text-ink transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </motion.form>
+      )}
+
+      {/* Rating summary */}
       <div className="flex flex-col sm:flex-row items-start gap-8 mb-8 p-6 rounded-2xl border" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
         <div className="text-center shrink-0">
-          <p className="text-5xl font-black text-ink">{(rating ?? 4.8).toFixed(1)}</p>
+          <p className="text-5xl font-black text-ink">{avgRating.toFixed(1)}</p>
           <div className="flex justify-center gap-0.5 my-2">
             {Array.from({ length: 5 }, (_, i) => (
               <svg key={i} className={`w-4 h-4 ${i < ratingInt ? 'text-amber-400' : 'text-gray-200'}`} viewBox="0 0 20 20" fill="currentColor">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                <path d={STAR_PATH} />
               </svg>
             ))}
           </div>
-          {reviewCount > 0 && <p className="text-xs text-muted">{reviewCount.toLocaleString()} {t('product.reviews.label')}</p>}
+          {totalCount > 0 && <p className="text-xs text-muted">{totalCount.toLocaleString()} {t('product.reviews.label')}</p>}
         </div>
         <div className="flex-1 w-full space-y-2">
           {bars.map(({ stars, pct }) => (
             <div key={stars} className="flex items-center gap-3">
               <span className="text-xs text-muted w-6 text-end shrink-0">{stars}★</span>
               <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#e0e0e0' }}>
-                <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: '#f59e0b' }} />
+                <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: '#f59e0b' }} />
               </div>
               <span className="text-xs text-muted w-8 shrink-0">{pct}%</span>
             </div>
           ))}
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {SAMPLE_REVIEWS.map((review, i) => (
-          <ReviewCard key={review.name} review={review} colorIndex={i} />
-        ))}
-      </div>
+
+      {/* Reviews list */}
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1,2].map(i => (
+            <div key={i} className="p-5 rounded-2xl border animate-pulse" style={{ borderColor: '#e0e0e0' }}>
+              <div className="flex gap-3 mb-3">
+                <div className="w-9 h-9 rounded-full bg-gray-200" />
+                <div className="space-y-1.5 flex-1">
+                  <div className="h-3 bg-gray-200 rounded w-1/3" />
+                  <div className="h-2 bg-gray-200 rounded w-1/4" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <div className="h-2 bg-gray-200 rounded" />
+                <div className="h-2 bg-gray-200 rounded w-5/6" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : reviews.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {reviews.map((review, i) => (
+            <motion.div key={review.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+              className="p-5 rounded-2xl border" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-black text-white shrink-0"
+                    style={{ backgroundColor: ['#0056b3','#7c3aed','#059669','#d97706'][i % 4] }}
+                  >
+                    {(review.user_name ?? 'A').charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-ink">{review.user_name ?? 'Anonymous'}</p>
+                    <p className="text-[11px] text-muted">{new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                  </div>
+                </div>
+                <div className="flex gap-0.5">
+                  {Array.from({ length: 5 }, (_, j) => (
+                    <svg key={j} className={`w-3.5 h-3.5 ${j < review.rating ? 'text-amber-400' : 'text-gray-200'}`} viewBox="0 0 20 20" fill="currentColor">
+                      <path d={STAR_PATH} />
+                    </svg>
+                  ))}
+                </div>
+              </div>
+              <p className="text-sm text-muted leading-relaxed">{review.body}</p>
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-10">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3" style={{ backgroundColor: '#fffbeb' }}>⭐</div>
+          <p className="text-sm font-bold text-ink">No reviews yet</p>
+          <p className="text-xs text-muted mt-1">Be the first to review this product.</p>
+          {!isAuthenticated && (
+            <Link to="/account" className="text-xs font-bold mt-2 inline-block" style={{ color: '#0056b3' }}>Sign in to write a review</Link>
+          )}
+        </div>
+      )}
     </motion.div>
   )
 }
@@ -579,7 +762,7 @@ export default function ProductDetailPage() {
           </motion.div>
         )}
 
-        <ReviewsSection rating={product.rating} reviewCount={product.reviews} />
+        <ReviewsSection productId={product.id} rating={product.rating} reviewCount={product.reviews} />
 
         {/* Related Products */}
         {relatedToShow.length > 0 && (
