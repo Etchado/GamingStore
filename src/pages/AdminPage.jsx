@@ -46,23 +46,32 @@ function Badge({ status }) {
   )
 }
 
+const PAGE_SIZE = 15
+
 function OrdersTab() {
   const [orders, setOrders]     = useState([])
   const [loading, setLoading]   = useState(true)
   const [expanded, setExpanded] = useState(null)
   const [updating, setUpdating] = useState(null)
+  const [page, setPage]         = useState(0)
+  const [total, setTotal]       = useState(0)
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (p = 0) => {
     setLoading(true)
-    const { data } = await supabase
+    const from = p * PAGE_SIZE
+    const to   = from + PAGE_SIZE - 1
+    const { data, count } = await supabase
       .from('orders')
-      .select('*, order_items(*)')
+      .select('*, order_items(*)', { count: 'exact' })
       .order('created_at', { ascending: false })
+      .range(from, to)
     setOrders(data ?? [])
+    setTotal(count ?? 0)
+    setExpanded(null)
     setLoading(false)
   }, [])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => { load(page) }, [load, page])
 
   async function updateStatus(orderId, newStatus) {
     setUpdating(orderId)
@@ -170,6 +179,31 @@ function OrdersTab() {
           })}
         </tbody>
       </table>
+
+      {/* Pagination */}
+      {total > PAGE_SIZE && (
+        <div className="flex items-center justify-between px-2 pt-4 border-t border-gray-100 mt-2">
+          <p className="text-xs text-gray-400">
+            {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} of {total} orders
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPage(p => p - 1)}
+              disabled={page === 0}
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              ← Previous
+            </button>
+            <button
+              onClick={() => setPage(p => p + 1)}
+              disabled={(page + 1) * PAGE_SIZE >= total}
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Next →
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

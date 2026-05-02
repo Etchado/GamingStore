@@ -589,7 +589,7 @@ export default function CheckoutPage() {
           order_id: order.id,
           product_id: String(product.id ?? ''),
           title: product.title,
-          price: product.price,
+          price: parseFloat(String(product.price).replace(/[^0-9.]/g, '')) || 0,
           qty,
           image: product.image ?? null,
         }))
