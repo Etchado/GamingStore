@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useToast } from '@/context/ToastContext'
+import { EMAIL_RE } from '@/lib/utils'
 
 const SHOP_KEYS = [
   { key: 'shop.customPCs',  href: '/?category=System' },
@@ -88,8 +89,6 @@ function FooterCol({ heading, links }) {
   )
 }
 
-const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.(com|net|org|edu|gov|mil|co|io|me|info|biz|app|dev|store|shop|online|tech|site|web|email|name|pro|[a-z]{2})$/i
-
 export default function Footer() {
   const [email, setEmail]         = useState('')
   const [subscribed, setSubscribed] = useState(false)
@@ -100,12 +99,20 @@ export default function Footer() {
   const shopLinks    = SHOP_KEYS.map(({ key, href }) => ({ label: t(`footer.${key}`), href }))
   const supportLinks = SUPPORT_KEYS.map(({ key, href }) => ({ label: t(`footer.${key}`), href }))
 
+  const isValid = EMAIL_RE.test(email)
+
+  function handleEmailChange(val) {
+    setEmail(val)
+    if (val.includes('@') && val.includes('.')) {
+      if (!EMAIL_RE.test(val)) { setEmailError(t('newsletter.errorTLD')); return }
+    }
+    setEmailError('')
+  }
+
   function handleSubscribe(e) {
     e.preventDefault()
-    if (!email || !EMAIL_RE.test(email)) {
-      setEmailError(t('checkout.errEmail'))
-      return
-    }
+    if (!email.trim()) { setEmailError(t('checkout.errRequired')); return }
+    if (!isValid) { setEmailError(t('checkout.errEmail')); return }
     setEmailError('')
     setSubscribed(true)
     addToast(t('footer.subscribed'), 'success')
@@ -179,7 +186,7 @@ export default function Footer() {
                   <input
                     type="email"
                     value={email}
-                    onChange={(e) => { setEmail(e.target.value); setEmailError('') }}
+                    onChange={(e) => handleEmailChange(e.target.value)}
                     placeholder="your@email.com"
                     className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all bg-white"
                     style={{ borderColor: emailError ? '#e53e3e' : '#e0e0e0' }}
@@ -193,9 +200,10 @@ export default function Footer() {
                 </div>
                 <button
                   type="submit"
-                  className="w-full py-2.5 rounded-xl text-sm font-black text-white transition-colors"
+                  disabled={!isValid}
+                  className="w-full py-2.5 rounded-xl text-sm font-black text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ backgroundColor: '#0056b3' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
+                  onMouseEnter={(e) => { if (isValid) e.currentTarget.style.backgroundColor = '#004494' }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
                 >
                   {t('footer.subscribe')}

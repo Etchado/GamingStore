@@ -6,7 +6,7 @@ import { useCart } from '@/context/CartContext'
 import { useWishlist } from '@/context/WishlistContext'
 import { useCurrency } from '@/context/CurrencyContext'
 import AnnouncementBar from '@/components/AnnouncementBar'
-import { PRODUCTS } from '@/data/products'
+import { useProducts } from '@/context/ProductsContext'
 import { onImgError } from '@/lib/imgFallback'
 
 /* ── Support links ── */
@@ -139,9 +139,10 @@ export default function Navbar() {
   const searchRef   = useRef(null)
   const currencyRef = useRef(null)
   const supportRef  = useRef(null)
+  const { products } = useProducts()
 
   const suggestions = query.trim().length >= 2
-    ? PRODUCTS.filter(p =>
+    ? products.filter(p =>
         p.title.toLowerCase().includes(query.toLowerCase()) ||
         p.brand?.toLowerCase().includes(query.toLowerCase()) ||
         p.category?.toLowerCase().includes(query.toLowerCase())

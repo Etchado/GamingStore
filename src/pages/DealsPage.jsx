@@ -6,7 +6,7 @@ import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { useWishlist } from '@/context/WishlistContext'
 import { useCurrency } from '@/context/CurrencyContext'
-import { PRODUCTS } from '@/data/products'
+import { useProducts } from '@/context/ProductsContext'
 import { onImgError } from '@/lib/imgFallback'
 import { useSEO } from '@/hooks/useSEO'
 
@@ -218,25 +218,26 @@ function DealCard({ product }) {
 }
 
 /* ── Page ─────────────────────────────────────────── */
-const DEAL_PRODUCTS = PRODUCTS.filter(p => p.oldPrice)
-
-const CATEGORIES = [
-  'all',
-  ...Array.from(new Set(DEAL_PRODUCTS.map(p => p.category))),
-]
-
 export default function DealsPage() {
   const { t } = useTranslation()
   const { h, m, s } = useCountdown()
   const [activeCategory, setActiveCategory] = useState('all')
+  const { products } = useProducts()
 
   useSEO({ title: t('dealsPage.title'), description: t('dealsPage.sub') })
 
+  const dealProducts = useMemo(() => products.filter(p => p.oldPrice), [products])
+
+  const categories = useMemo(() => [
+    'all',
+    ...Array.from(new Set(dealProducts.map(p => p.category))),
+  ], [dealProducts])
+
   const filtered = useMemo(() =>
     activeCategory === 'all'
-      ? DEAL_PRODUCTS
-      : DEAL_PRODUCTS.filter(p => p.category === activeCategory),
-    [activeCategory]
+      ? dealProducts
+      : dealProducts.filter(p => p.category === activeCategory),
+    [dealProducts, activeCategory]
   )
 
   return (
@@ -285,7 +286,7 @@ export default function DealsPage() {
         {/* Category filter + count */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map(cat => (
+            {categories.map(cat => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}

@@ -1,16 +1,17 @@
 import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useCompare } from '@/context/CompareContext'
-import { PRODUCTS } from '@/data/products'
+import { useProducts } from '@/context/ProductsContext'
 import { onImgError } from '@/lib/imgFallback'
 
 export default function CompareBar({ onOpen }) {
   const { t } = useTranslation()
   const { ids, remove, clear, count } = useCompare()
+  const { products: allProducts } = useProducts()
 
   if (count < 1) return null
 
-  const products = ids.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean)
+  const products = ids.map(id => allProducts.find(p => p.id === id)).filter(Boolean)
 
   return (
     <AnimatePresence>

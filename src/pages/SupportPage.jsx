@@ -104,7 +104,7 @@ function ContactSection() {
   function validate() {
     const e = {}
     if (!form.name.trim())               e.name    = t('contactPage.errName')
-    if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = t('checkout.errEmail')
+    if (!form.email || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(form.email)) e.email = t('checkout.errEmail')
     if (!form.subject)                   e.subject = t('contactPage.errSubject')
     if (form.message.trim().length < 20) e.message = t('contactPage.errMessage')
     return e
@@ -650,7 +650,7 @@ function LiveChatSection() {
   function validate() {
     const e = {}
     if (!form.name.trim()) e.name = t('liveChatPage.errName')
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = t('liveChatPage.errEmail')
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(form.email)) e.email = t('liveChatPage.errEmail')
     if (!form.topic) e.topic = t('liveChatPage.errTopic')
     if (form.message.trim().length < 10) e.message = t('liveChatPage.errMessage')
     return e

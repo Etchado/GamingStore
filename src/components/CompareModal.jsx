@@ -6,7 +6,7 @@ import { useCompare } from '@/context/CompareContext'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { useCurrency } from '@/context/CurrencyContext'
-import { PRODUCTS } from '@/data/products'
+import { useProducts } from '@/context/ProductsContext'
 import { onImgError } from '@/lib/imgFallback'
 
 function StarRow({ rating = 0, count = 0 }) {
@@ -123,7 +123,8 @@ function Cell({ row, product }) {
 export default function CompareModal({ isOpen, onClose }) {
   const { t } = useTranslation()
   const { ids, remove } = useCompare()
-  const products = ids.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean)
+  const { products: allProducts } = useProducts()
+  const products = ids.map(id => allProducts.find(p => p.id === id)).filter(Boolean)
 
   useEffect(() => {
     if (!isOpen) return

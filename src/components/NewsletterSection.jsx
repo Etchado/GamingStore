@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
+import { EMAIL_RE } from '@/lib/utils'
 
 const PERKS = ['perk1', 'perk2', 'perk3']
 
@@ -10,10 +11,20 @@ export default function NewsletterSection() {
   const [error, setError] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
+  const isValid = EMAIL_RE.test(email)
+
+  function handleEmailChange(val) {
+    setEmail(val)
+    if (val.includes('@') && val.includes('.')) {
+      if (!EMAIL_RE.test(val)) { setError(t('newsletter.errorTLD')); return }
+    }
+    setError('')
+  }
+
   function handleSubmit(e) {
     e.preventDefault()
     if (!email.trim()) { setError(t('newsletter.errorEmpty')); return }
-    if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.(com|net|org|edu|gov|mil|co|io|me|info|biz|app|dev|store|shop|online|tech|site|web|email|name|pro|[a-z]{2})$/i.test(email)) { setError(t('newsletter.errorInvalid')); return }
+    if (!isValid) { setError(t('newsletter.errorInvalid')); return }
     setError('')
     setSubmitted(true)
   }
@@ -115,7 +126,7 @@ export default function NewsletterSection() {
                   <input
                     type="email"
                     value={email}
-                    onChange={e => { setEmail(e.target.value); setError('') }}
+                    onChange={e => handleEmailChange(e.target.value)}
                     placeholder={t('newsletter.placeholder')}
                     className="w-full px-4 py-3.5 rounded-xl text-sm font-medium outline-none border-2 transition-colors"
                     style={{
@@ -142,9 +153,10 @@ export default function NewsletterSection() {
                 </div>
                 <button
                   type="submit"
-                  className="shrink-0 px-6 py-3.5 rounded-xl text-sm font-black text-white transition-colors whitespace-nowrap"
+                  disabled={!isValid}
+                  className="shrink-0 px-6 py-3.5 rounded-xl text-sm font-black text-white transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ backgroundColor: '#e53e3e' }}
-                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#c53030' }}
+                  onMouseEnter={e => { if (isValid) e.currentTarget.style.backgroundColor = '#c53030' }}
                   onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#e53e3e' }}
                 >
                   {t('newsletter.cta')}

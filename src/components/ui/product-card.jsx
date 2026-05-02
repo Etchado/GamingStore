@@ -158,18 +158,18 @@ export function ProductCard({ product, onQuickView }) {
           </svg>
         </button>
 
-        {/* Out of Stock overlay */}
+        {/* Out of Stock overlay — pointer-events-none so buttons above it stay clickable */}
         {product.inStock === false && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/50">
+          <div className="absolute inset-0 z-10 flex items-start justify-center pt-[38%] bg-black/48 pointer-events-none">
             <span className="px-3 py-1.5 rounded-full text-[11px] font-black tracking-widest uppercase text-white border border-white/40 bg-black/30 backdrop-blur-sm">
               {t('product.outOfStock')}
             </span>
           </div>
         )}
 
-        {/* Quick View overlay */}
-        {onQuickView && product.inStock !== false && (
-          <div className="absolute inset-x-0 bottom-0 z-10 translate-y-full group-hover:translate-y-0 transition-transform duration-200">
+        {/* Quick View / Notify Me overlay — shown for ALL products */}
+        {onQuickView && (
+          <div className="absolute inset-x-0 bottom-0 z-20 translate-y-full group-hover:translate-y-0 transition-transform duration-200">
             <button
               onClick={handleQuickView}
               className="w-full py-2.5 text-xs font-bold text-white bg-black/70 backdrop-blur-sm hover:bg-black/85 transition-colors"
@@ -222,11 +222,18 @@ export function ProductCard({ product, onQuickView }) {
           )}
         </div>
 
-        {/* Add to Cart */}
+        {/* Add to Cart / Notify Me */}
         {product.inStock === false ? (
-          <div className="relative z-10 mt-2 w-full py-2.5 rounded-xl text-sm font-bold text-center cursor-not-allowed" style={{ backgroundColor: '#f3f4f6', color: '#9ca3af' }}>
-            {t('product.outOfStock')}
-          </div>
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={handleQuickView}
+            className="relative z-10 mt-2 w-full py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-1.5"
+            style={{ backgroundColor: '#fffbeb', color: '#92400e', border: '1px solid #fde68a' }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#fef3c7' }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#fffbeb' }}
+          >
+            🔔 {t('product.notifyMeBtn')}
+          </motion.button>
         ) : (
           <motion.button
             whileTap={{ scale: 0.97 }}

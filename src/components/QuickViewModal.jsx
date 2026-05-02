@@ -6,6 +6,7 @@ import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { useWishlist } from '@/context/WishlistContext'
 import { useCurrency } from '@/context/CurrencyContext'
+import { useAuth } from '@/context/AuthContext'
 import { onImgError } from '@/lib/imgFallback'
 
 export default function QuickViewModal({ product, onClose }) {
@@ -14,16 +15,21 @@ export default function QuickViewModal({ product, onClose }) {
   const { addToast } = useToast()
   const { toggle, has } = useWishlist()
   const { formatPrice, parseUSD } = useCurrency()
+  const { isAuthenticated, user } = useAuth()
   const inWishlist = product ? has(product.id) : false
   const [qty, setQty] = useState(1)
+  const [notifyEmail, setNotifyEmail] = useState('')
+  const [notifySent, setNotifySent] = useState(false)
 
   useEffect(() => {
     if (!product) return
     setQty(1)
+    setNotifySent(false)
+    setNotifyEmail(user?.email || '')
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [product, onClose])
+  }, [product, onClose, user])
 
   function handleAddToCart() {
     for (let i = 0; i < qty; i++) addItem(product)
@@ -36,6 +42,12 @@ export default function QuickViewModal({ product, onClose }) {
     toggle(product.id)
     const label = product.title.slice(0, 28) + (product.title.length > 28 ? '…' : '')
     addToast(`${label} — ${inWishlist ? t('products.removedFromWishlist') : t('products.savedToWishlist')}`, 'wishlist')
+  }
+
+  function handleNotify() {
+    if (!notifyEmail) return
+    addToast(t('product.notifyMeSuccess', { email: notifyEmail }), 'success')
+    setNotifySent(true)
   }
 
   return (
@@ -79,6 +91,26 @@ export default function QuickViewModal({ product, onClose }) {
                       {product.badge}
                     </span>
                   )}
+                  {/* Wishlist heart — top-right of image, same as product cards */}
+                  <button
+                    onClick={handleWishlist}
+                    aria-label={inWishlist ? 'Remove from wishlist' : 'Save to wishlist'}
+                    className="absolute top-3 end-3 z-10 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm border transition-colors"
+                    style={{
+                      borderColor: inWishlist ? '#fca5a5' : 'rgba(0,0,0,0.08)',
+                      backgroundColor: inWishlist ? '#fff1f1' : 'rgba(255,255,255,0.9)',
+                    }}
+                  >
+                    <svg
+                      style={{ color: inWishlist ? '#ef4444' : '#9ca3af', width: 15, height: 15 }}
+                      fill={inWishlist ? 'currentColor' : 'none'}
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                    </svg>
+                  </button>
                 </div>
 
                 {/* Details */}
@@ -139,56 +171,80 @@ export default function QuickViewModal({ product, onClose }) {
                     </div>
                   )}
 
-                  {/* Qty */}
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-ink">{t('quickView.qty')}</span>
-                    <div className="flex items-center border border-border rounded-xl overflow-hidden">
-                      <button
-                        onClick={() => setQty(q => Math.max(1, q - 1))}
-                        className="w-9 h-9 flex items-center justify-center text-muted hover:bg-surface transition-colors font-bold text-base"
-                      >
-                        −
-                      </button>
-                      <span className="w-10 text-center text-sm font-bold text-ink">{qty}</span>
-                      <button
-                        onClick={() => setQty(q => q + 1)}
-                        className="w-9 h-9 flex items-center justify-center text-muted hover:bg-surface transition-colors font-bold text-base"
-                      >
-                        +
-                      </button>
+                  {/* Qty — hidden when out of stock */}
+                  {product.inStock !== false && (
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-semibold text-ink">{t('quickView.qty')}</span>
+                      <div className="flex items-center border border-border rounded-xl overflow-hidden">
+                        <button
+                          onClick={() => setQty(q => Math.max(1, q - 1))}
+                          className="w-9 h-9 flex items-center justify-center text-muted hover:bg-surface transition-colors font-bold text-base"
+                        >
+                          −
+                        </button>
+                        <span className="w-10 text-center text-sm font-bold text-ink">{qty}</span>
+                        <button
+                          onClick={() => setQty(q => q + 1)}
+                          className="w-9 h-9 flex items-center justify-center text-muted hover:bg-surface transition-colors font-bold text-base"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
-                  {/* Add to cart + Wishlist */}
+                  {/* Add to Cart / Notify Me */}
                   <div className="flex gap-2 mt-auto">
-                    <button
-                      onClick={handleAddToCart}
-                      className="flex-1 py-3 rounded-xl text-sm font-black text-white transition-colors"
-                      style={{ backgroundColor: '#0056b3' }}
-                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
-                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
-                    >
-                      {qty > 1 ? t('quickView.addToCartQty', { qty }) : t('quickView.addToCart')}
-                    </button>
-                    <button
-                      onClick={handleWishlist}
-                      className="w-11 h-11 rounded-xl border-2 flex items-center justify-center transition-colors shrink-0"
-                      style={{
-                        borderColor: inWishlist ? '#fca5a5' : '#e0e0e0',
-                        backgroundColor: inWishlist ? '#fff1f1' : 'transparent',
-                      }}
-                    >
-                      <svg
-                        className="w-4.5 h-4.5"
-                        style={{ color: inWishlist ? '#ef4444' : '#9ca3af', width: 18, height: 18 }}
-                        fill={inWishlist ? 'currentColor' : 'none'}
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        viewBox="0 0 24 24"
+                    {product.inStock === false ? (
+                      /* ── Out of stock: Notify Me ── */
+                      notifySent ? (
+                        <div className="flex-1 flex items-center gap-2 px-4 py-3 rounded-xl" style={{ backgroundColor: '#e9f7ed' }}>
+                          <span className="font-black" style={{ color: '#1e8035' }}>✓</span>
+                          <p className="text-xs font-semibold text-ink leading-snug">{t('product.notifyMeSuccess', { email: notifyEmail })}</p>
+                        </div>
+                      ) : isAuthenticated && user ? (
+                        <div className="flex-1 flex gap-2">
+                          <input
+                            type="email"
+                            value={notifyEmail}
+                            onChange={e => setNotifyEmail(e.target.value)}
+                            placeholder="your@email.com"
+                            className="flex-1 min-w-0 border rounded-xl px-3 py-2.5 text-sm outline-none transition-colors"
+                            style={{ borderColor: '#e0e0e0' }}
+                            onFocus={e => { e.target.style.borderColor = '#0056b3' }}
+                            onBlur={e => { e.target.style.borderColor = '#e0e0e0' }}
+                          />
+                          <button
+                            onClick={handleNotify}
+                            className="px-4 py-2.5 rounded-xl text-sm font-black text-white shrink-0 transition-opacity hover:opacity-90"
+                            style={{ backgroundColor: '#0056b3' }}
+                          >
+                            🔔 {t('product.notifyMeBtn')}
+                          </button>
+                        </div>
+                      ) : (
+                        <Link
+                          to="/account"
+                          onClick={onClose}
+                          className="flex-1 py-3 rounded-xl text-sm font-black text-white text-center transition-opacity hover:opacity-90"
+                          style={{ backgroundColor: '#0056b3' }}
+                        >
+                          {t('account.signIn')} · {t('product.notifyMeBtn')}
+                        </Link>
+                      )
+                    ) : (
+                      /* ── In stock: Add to Cart ── */
+                      <button
+                        onClick={handleAddToCart}
+                        className="flex-1 py-3 rounded-xl text-sm font-black text-white transition-colors"
+                        style={{ backgroundColor: '#0056b3' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#004494' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0056b3' }}
                       >
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                      </svg>
-                    </button>
+                        {qty > 1 ? t('quickView.addToCartQty', { qty }) : t('quickView.addToCart')}
+                      </button>
+                    )}
+
                   </div>
 
                   {/* View full details */}

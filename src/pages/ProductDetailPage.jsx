@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
 import { useWishlist } from '@/context/WishlistContext'
 import { useCurrency } from '@/context/CurrencyContext'
+import { useAuth } from '@/context/AuthContext'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { useSEO } from '@/hooks/useSEO'
 import { onImgError } from '@/lib/imgFallback'
-import { PRODUCTS } from '@/data/products'
+import { useProducts } from '@/context/ProductsContext'
 import { ProductCard } from '@/components/ui/product-card'
 
 const badges = {
@@ -159,7 +160,9 @@ export default function ProductDetailPage() {
   const { toggle, has } = useWishlist()
   const { formatPrice, parseUSD } = useCurrency()
 
-  const product = PRODUCTS.find(p => p.id === id)
+  const { isAuthenticated, user } = useAuth()
+  const { products } = useProducts()
+  const product = products.find(p => p.id === id)
   useSEO({ title: product?.title, description: product?.description, image: product?.image })
   const inWishlist = has(id)
   const recentIds = useRecentlyViewed(id)
@@ -167,6 +170,26 @@ export default function ProductDetailPage() {
   const gallery = product?.images?.length > 1 ? product.images : product ? [product.image] : []
   const [activeImg, setActiveImg] = useState(0)
   const [lightbox, setLightbox] = useState(false)
+  const [zoom, setZoom] = useState({ active: false, x: 50, y: 50 })
+  const [notifyEmail, setNotifyEmail] = useState('')
+  const [notifySent, setNotifySent] = useState(false)
+
+  function handleZoomMove(e) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = Math.round(((e.clientX - rect.left) / rect.width) * 100)
+    const y = Math.round(((e.clientY - rect.top) / rect.height) * 100)
+    setZoom({ active: true, x, y })
+  }
+
+  function handleNotifySubmit() {
+    if (!notifyEmail) return
+    addToast(t('product.notifyMeSuccess', { email: notifyEmail }), 'success')
+    setNotifySent(true)
+  }
+
+  useEffect(() => {
+    if (user?.email) setNotifyEmail(user.email)
+  }, [user])
 
   useEffect(() => {
     if (!lightbox) return
@@ -179,9 +202,9 @@ export default function ProductDetailPage() {
     return () => window.removeEventListener('keydown', onKey)
   }, [lightbox, gallery.length])
 
-  const recentProducts = recentIds.map(rid => PRODUCTS.find(p => p.id === rid)).filter(Boolean)
-  const related = PRODUCTS.filter(p => p.id !== id && p.category === product?.category).slice(0, 4)
-  const fallbackRelated = PRODUCTS.filter(p => p.id !== id).slice(0, 4)
+  const recentProducts = recentIds.map(rid => products.find(p => p.id === rid)).filter(Boolean)
+  const related = products.filter(p => p.id !== id && p.category === product?.category).slice(0, 4)
+  const fallbackRelated = products.filter(p => p.id !== id).slice(0, 4)
 
   if (!product) {
     return (
@@ -256,6 +279,8 @@ export default function ProductDetailPage() {
             <div
               className="group relative rounded-3xl overflow-hidden border cursor-zoom-in"
               onClick={() => setLightbox(true)}
+              onMouseMove={handleZoomMove}
+              onMouseLeave={() => setZoom(z => ({ ...z, active: false }))}
               style={{ aspectRatio: '4/3', borderColor: '#e0e0e0', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}
             >
               <AnimatePresence mode="wait">
@@ -272,6 +297,18 @@ export default function ProductDetailPage() {
                   transition={{ duration: 0.28, ease: 'easeInOut' }}
                 />
               </AnimatePresence>
+
+              {/* Hover zoom overlay — desktop only, pointer-events-none so clicks pass through */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 pointer-events-none transition-opacity duration-150 hidden sm:block"
+                style={{
+                  opacity: zoom.active ? 1 : 0,
+                  backgroundImage: `url(${gallery[activeImg]})`,
+                  backgroundSize: '260%',
+                  backgroundPosition: `${zoom.x}% ${zoom.y}%`,
+                }}
+              />
 
               {/* Badge — glassmorphism, top-right */}
               {product.badge && (
@@ -470,6 +507,59 @@ export default function ProductDetailPage() {
                 </svg>
               </motion.button>
             </div>
+
+            {/* ── Notify Me — only when out of stock ── */}
+            {!product.inStock && (
+              <div className="rounded-2xl border p-4" style={{ borderColor: '#fde68a', backgroundColor: '#fffbeb' }}>
+                {isAuthenticated && user ? (
+                  notifySent ? (
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-white text-[11px] font-black" style={{ backgroundColor: '#1e8035' }}>✓</span>
+                      <p className="text-sm font-semibold text-ink">{t('product.notifyMeSuccess', { email: notifyEmail })}</p>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm font-black text-ink mb-3">{t('product.notifyMeTitle')}</p>
+                      <div className="flex gap-2">
+                        <input
+                          type="email"
+                          value={notifyEmail}
+                          onChange={e => setNotifyEmail(e.target.value)}
+                          placeholder="your@email.com"
+                          className="flex-1 border rounded-xl px-3 py-2 text-sm outline-none transition-colors"
+                          style={{ borderColor: '#e0e0e0' }}
+                          onFocus={e => { e.target.style.borderColor = '#0056b3' }}
+                          onBlur={e => { e.target.style.borderColor = '#e0e0e0' }}
+                        />
+                        <button
+                          onClick={handleNotifySubmit}
+                          className="px-4 py-2 rounded-xl text-sm font-bold text-white shrink-0 transition-opacity hover:opacity-90"
+                          style={{ backgroundColor: '#0056b3' }}
+                        >
+                          {t('product.notifyMeBtn')}
+                        </button>
+                      </div>
+                      <p className="text-[11px] text-muted mt-2">{t('product.notifyMeDesc')}</p>
+                    </>
+                  )
+                ) : (
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <div>
+                      <p className="text-sm font-bold text-ink">{t('product.notifyMeTitle')}</p>
+                      <p className="text-xs text-muted mt-0.5">{t('product.notifyMeSignIn')}</p>
+                    </div>
+                    <Link
+                      to="/account"
+                      className="text-sm font-black px-4 py-2 rounded-xl text-white shrink-0"
+                      style={{ backgroundColor: '#0056b3' }}
+                    >
+                      {t('account.signIn')} →
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+
           </motion.div>
         </div>
 

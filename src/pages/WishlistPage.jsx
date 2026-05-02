@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useWishlist } from '@/context/WishlistContext'
 import { useCart } from '@/context/CartContext'
 import { useToast } from '@/context/ToastContext'
-import { PRODUCTS } from '@/data/products'
+import { useProducts } from '@/context/ProductsContext'
 import { ProductCard } from '@/components/ui/product-card'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
@@ -19,8 +19,9 @@ export default function WishlistPage() {
   const { addItem } = useCart()
   const { addToast } = useToast()
   const navigate = useNavigate()
+  const { products } = useProducts()
 
-  const items = PRODUCTS.filter(p => ids.includes(p.id))
+  const items = products.filter(p => ids.includes(p.id))
   const total = items.reduce((s, p) => s + parsePrice(p.price), 0)
 
   function handleAddAll() {

@@ -7,6 +7,9 @@ import { ToastProvider } from './context/ToastContext'
 import { WishlistProvider } from './context/WishlistContext'
 import { CompareProvider } from './context/CompareContext'
 import { CurrencyProvider } from './context/CurrencyContext'
+import { AuthProvider } from './context/AuthContext'
+import { ProductsProvider } from './context/ProductsContext'
+import { useAuth } from './context/AuthContext'
 import Navbar from './components/Navbar'
 import HeroSection from './components/HeroSection'
 import TrustBar from './components/TrustBar'
@@ -25,6 +28,8 @@ import ScrollProgressBar from './components/ScrollProgressBar'
 import AnnouncementBar from './components/AnnouncementBar'
 import CompareBar from './components/CompareBar'
 import CompareModal from './components/CompareModal'
+import WhatsAppButton from './components/WhatsAppButton'
+import CookieBanner from './components/CookieBanner'
 import './App.css'
 
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'))
@@ -71,6 +76,21 @@ function HomePage() {
   )
 }
 
+function AuthLoadingGate({ children }) {
+  const { loading } = useAuth()
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div
+          className="w-9 h-9 rounded-full border-[3px] animate-spin"
+          style={{ borderColor: '#0056b3', borderTopColor: 'transparent' }}
+        />
+      </div>
+    )
+  }
+  return children
+}
+
 function AppShell() {
   const { i18n } = useTranslation()
   const { pathname } = useLocation()
@@ -87,6 +107,7 @@ function AppShell() {
       <ScrollProgressBar />
       <ScrollToTop />
       <Navbar />
+      <AuthLoadingGate>
       <ErrorBoundary key={pathname}>
         <Suspense fallback={<PageLoader />}>
           <Routes>
@@ -118,8 +139,11 @@ function AppShell() {
       <CartDrawer />
       <ToastContainer />
       <BackToTop />
+      <WhatsAppButton />
+      <CookieBanner />
       <CompareBar onOpen={() => setCompareOpen(true)} />
       <CompareModal isOpen={compareOpen} onClose={() => setCompareOpen(false)} />
+      </AuthLoadingGate>
     </div>
   )
 }
@@ -127,17 +151,21 @@ function AppShell() {
 function App() {
   return (
     <BrowserRouter>
-      <CurrencyProvider>
-        <ToastProvider>
-          <WishlistProvider>
-            <CartProvider>
-              <CompareProvider>
-                <AppShell />
-              </CompareProvider>
-            </CartProvider>
-          </WishlistProvider>
-        </ToastProvider>
-      </CurrencyProvider>
+      <AuthProvider>
+        <ProductsProvider>
+        <CurrencyProvider>
+          <ToastProvider>
+            <WishlistProvider>
+              <CartProvider>
+                <CompareProvider>
+                  <AppShell />
+                </CompareProvider>
+              </CartProvider>
+            </WishlistProvider>
+          </ToastProvider>
+        </CurrencyProvider>
+        </ProductsProvider>
+      </AuthProvider>
     </BrowserRouter>
   )
 }

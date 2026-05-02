@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { ProductCard } from '@/components/ui/product-card'
 import SkeletonCard from '@/components/ui/SkeletonCard'
 import QuickViewModal from '@/components/QuickViewModal'
-import { PRODUCTS } from '@/data/products'
+import { useProducts } from '@/context/ProductsContext'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
 const FILTERS = ['All', 'System', 'GPU', 'CPU', 'Monitor', 'Mouse', 'Keyboard', 'Headset', 'Storage', 'Desk', 'Chair', 'Mouse Pad']
@@ -18,7 +18,6 @@ const SORT_KEYS = [
   { value: 'deals',      key: 'products.sort.deals' },
 ]
 
-const BRANDS = [...new Set(PRODUCTS.map(p => p.brand).filter(Boolean))].sort()
 const PRICE_MIN = 0
 const PRICE_MAX = 2500
 const RATING_OPTIONS = [
@@ -218,6 +217,7 @@ function FilterSidebar({
 const PAGE_SIZE = 8
 
 export default function ProductGrid() {
+  const { products } = useProducts()
   const [searchParams, setSearchParams] = useSearchParams()
   const [loading, setLoading]           = useState(true)
   const [quickView, setQuickView]       = useState(null)
@@ -225,6 +225,7 @@ export default function ProductGrid() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const navigate  = useNavigate()
   const { t, i18n } = useTranslation()
+  const BRANDS = useMemo(() => [...new Set(products.map(p => p.brand).filter(Boolean))].sort(), [products])
   const isRTL = i18n.language?.startsWith('ar')
 
   // ── URL params ──
@@ -352,7 +353,7 @@ export default function ProductGrid() {
   }, [categoryParam, queryParam, sortParam, badgeParam, minPriceParam, maxPriceParam, brandsParam, minRatingParam, inStockParam])
 
   // ── Filtered + sorted products ──
-  const filtered = useMemo(() => PRODUCTS
+  const filtered = useMemo(() => products
     .filter(p => {
       if (active === 'multi' && !activeCategories.includes(p.category)) return false
       if (active !== 'All' && active !== 'multi' && p.category !== active) return false
@@ -375,7 +376,7 @@ export default function ProductGrid() {
       if (sortParam === 'deals')      return parsePrice(b.saving ?? b.oldPrice ?? '0') - parsePrice(a.saving ?? a.oldPrice ?? '0')
       return 0
     }),
-  [active, activeCategories, badgeParam, sortParam, minPriceParam, maxPriceParam, selectedBrands, minRatingParam, inStockParam, queryParam]
+  [products, active, activeCategories, badgeParam, sortParam, minPriceParam, maxPriceParam, selectedBrands, minRatingParam, inStockParam, queryParam]
   )
 
   // ── Shared filter sidebar props ──

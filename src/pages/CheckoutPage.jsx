@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '@/context/CartContext'
 import { useCurrency } from '@/context/CurrencyContext'
+import { useAuth } from '@/context/AuthContext'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { onImgError } from '@/lib/imgFallback'
 
@@ -86,7 +87,7 @@ function Input({ error, ...props }) {
 }
 
 /* ── Order Summary sidebar ── */
-function OrderSummary({ items, subtotal, shipping, tax, total }) {
+function OrderSummary({ items, subtotal, shipping, vat, total, discount, coupon, couponInput, setCouponInput, couponError, onApply, onRemove }) {
   const { t } = useTranslation()
   const { formatPrice, parseUSD } = useCurrency()
   return (
@@ -113,9 +114,58 @@ function OrderSummary({ items, subtotal, shipping, tax, total }) {
           </div>
         ))}
       </div>
+
+      {/* Coupon input */}
+      <div className="px-5 py-3 border-t" style={{ borderColor: '#e0e0e0' }}>
+        {coupon ? (
+          <div className="flex items-center justify-between rounded-xl px-3 py-2" style={{ backgroundColor: '#e9f7ed' }}>
+            <div>
+              <p className="text-xs font-black" style={{ color: '#1e8035' }}>🏷 {coupon.code}</p>
+              <p className="text-[10px] text-muted">{t('checkout.couponApplied')}</p>
+            </div>
+            <button
+              onClick={onRemove}
+              className="text-xs font-bold transition-colors"
+              style={{ color: '#ef4444' }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#b91c1c' }}
+              onMouseLeave={e => { e.currentTarget.style.color = '#ef4444' }}
+            >
+              {t('checkout.removeCoupon')}
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={couponInput}
+                onChange={e => setCouponInput(e.target.value.toUpperCase())}
+                onKeyDown={e => e.key === 'Enter' && onApply()}
+                placeholder={t('checkout.couponPlaceholder')}
+                className="flex-1 min-w-0 border rounded-xl px-3 py-2 text-xs outline-none transition-colors font-bold tracking-wider"
+                style={{ borderColor: couponError ? '#f87171' : '#e0e0e0' }}
+                onFocus={e => { e.target.style.borderColor = '#0056b3' }}
+                onBlur={e => { e.target.style.borderColor = couponError ? '#f87171' : '#e0e0e0' }}
+              />
+              <button
+                onClick={onApply}
+                className="px-3 py-2 rounded-xl text-xs font-black text-white shrink-0 transition-opacity hover:opacity-90"
+                style={{ backgroundColor: '#0056b3' }}
+              >
+                {t('checkout.apply')}
+              </button>
+            </div>
+            {couponError && (
+              <p className="text-xs mt-1.5 font-medium" style={{ color: '#ef4444' }}>{couponError}</p>
+            )}
+          </>
+        )}
+      </div>
+
       <div className="px-5 py-4 border-t space-y-2" style={{ borderColor: '#e0e0e0' }}>
         <div className="flex justify-between text-sm text-muted">
-          <span>{t('checkout.subtotal')}</span><span className="text-ink font-semibold">{formatPrice(subtotal)}</span>
+          <span>{t('checkout.subtotal')}</span>
+          <span className="text-ink font-semibold">{formatPrice(subtotal)}</span>
         </div>
         <div className="flex justify-between text-sm text-muted">
           <span>{t('checkout.shipping')}</span>
@@ -123,12 +173,22 @@ function OrderSummary({ items, subtotal, shipping, tax, total }) {
             {shipping === 0 ? t('checkout.free') : formatPrice(shipping)}
           </span>
         </div>
-        <div className="flex justify-between text-sm text-muted">
-          <span>{t('checkout.tax')}</span><span className="text-ink font-semibold">{formatPrice(tax)}</span>
+        <div className="flex justify-between text-sm" style={{ color: '#856404' }}>
+          <span className="font-semibold">{t('checkout.vat')}</span>
+          <span className="font-bold">{formatPrice(vat)}</span>
         </div>
+        {discount > 0 && (
+          <div className="flex justify-between text-sm">
+            <span className="font-semibold" style={{ color: '#1e8035' }}>{t('checkout.discount')}</span>
+            <span className="font-bold" style={{ color: '#1e8035' }}>−{formatPrice(discount)}</span>
+          </div>
+        )}
         <div className="h-px" style={{ backgroundColor: '#e0e0e0' }} />
         <div className="flex justify-between">
-          <span className="text-sm font-black text-ink">{t('checkout.total')}</span>
+          <div>
+            <span className="text-sm font-black text-ink">{t('checkout.total')}</span>
+            <p className="text-[10px] text-muted mt-0.5">{t('checkout.vatIncluded')}</p>
+          </div>
           <span className="text-base font-black" style={{ color: '#0056b3' }}>{formatPrice(total)}</span>
         </div>
       </div>
@@ -390,6 +450,23 @@ function ConfirmedStep({ orderId, shipping, items }) {
   )
 }
 
+/* ── Coupon codes ── */
+const COUPONS = {
+  GAMING10:  { type: 'percent',  value: 10 },
+  SAVE50:    { type: 'flat',     value: 50 },
+  WELCOME15: { type: 'percent',  value: 15 },
+  FREESHIP:  { type: 'shipping', value: 0  },
+  VIP20:     { type: 'percent',  value: 20 },
+}
+
+function calcDiscount(coupon, subtotal, shipping) {
+  if (!coupon) return { discount: 0, freeShipping: false }
+  if (coupon.type === 'percent')  return { discount: subtotal * coupon.value / 100, freeShipping: false }
+  if (coupon.type === 'flat')     return { discount: Math.min(coupon.value, subtotal), freeShipping: false }
+  if (coupon.type === 'shipping') return { discount: shipping, freeShipping: true }
+  return { discount: 0, freeShipping: false }
+}
+
 /* ── Main CheckoutPage ── */
 const SHIPPING_INIT = { firstName: '', lastName: '', email: '', phone: '', address: '', city: '', state: '', zip: '', country: '' }
 const PAYMENT_INIT  = { cardName: '', cardNumber: '', expiry: '', cvv: '' }
@@ -397,7 +474,13 @@ const PAYMENT_INIT  = { cardName: '', cardNumber: '', expiry: '', cvv: '' }
 export default function CheckoutPage() {
   const { t } = useTranslation()
   const { items, total, setIsOpen } = useCart()
+  const { formatPrice } = useCurrency()
+  const { isAuthenticated, loading: authLoading, signInWithGoogle, signInWithApple, requestOTP, verifyOTP, pendingPhone } = useAuth()
   const navigate = useNavigate()
+  const [phoneNum, setPhoneNum] = useState('')
+  const [otpCode, setOtpCode]   = useState('')
+  const [authView, setAuthView] = useState('main') // 'main' | 'phone' | 'otp'
+  const [authErrors, setAuthErrors] = useState({})
 
   const [searchParams]          = useSearchParams()
   const step                    = Math.min(Math.max(parseInt(searchParams.get('step') || '1', 10), 1), 3)
@@ -408,6 +491,10 @@ export default function CheckoutPage() {
   const [orderId]               = useState(genOrderId)
   const [placing, setPlacing]   = useState(false)
 
+  const [appliedCoupon, setAppliedCoupon] = useState(null)
+  const [couponInput, setCouponInput]     = useState('')
+  const [couponError, setCouponError]     = useState('')
+
   // Guard against direct URL access to later steps (e.g. refresh on /checkout?step=2)
   useEffect(() => {
     if (step > 1 && !shipping.firstName.trim()) {
@@ -415,17 +502,35 @@ export default function CheckoutPage() {
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const subtotal     = total
-  const shippingCost = subtotal >= 199 ? 0 : 15
-  const tax          = subtotal * 0.08
-  const grandTotal   = subtotal + shippingCost + tax
+  const subtotal                    = total
+  const shippingCost                = subtotal >= 199 ? 0 : 15
+  const { discount, freeShipping }  = calcDiscount(appliedCoupon, subtotal, shippingCost)
+  const effectiveShipping           = freeShipping ? 0 : shippingCost
+  const vat                         = subtotal * 0.15
+  const grandTotal                  = subtotal + effectiveShipping + vat - discount
+
+  function handleApplyCoupon() {
+    const code = couponInput.trim().toUpperCase()
+    if (COUPONS[code]) {
+      setAppliedCoupon({ code, ...COUPONS[code] })
+      setCouponError('')
+    } else {
+      setCouponError(t('checkout.couponInvalid'))
+    }
+  }
+
+  function handleRemoveCoupon() {
+    setAppliedCoupon(null)
+    setCouponInput('')
+    setCouponError('')
+  }
 
   function validateShipping() {
     const e = {}
     if (!shipping.firstName.trim()) e.firstName = t('checkout.errRequired')
     if (!shipping.lastName.trim())  e.lastName  = t('checkout.errRequired')
     if (!shipping.email.trim())     e.email     = t('checkout.errRequired')
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(shipping.email)) e.email = t('checkout.errEmail')
+    else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(shipping.email)) e.email = t('checkout.errEmail')
     if (!shipping.phone.trim())     e.phone     = t('checkout.errRequired')
     if (!shipping.address.trim())   e.address   = t('checkout.errRequired')
     if (!shipping.city.trim())      e.city      = t('checkout.errRequired')
@@ -464,6 +569,144 @@ export default function CheckoutPage() {
       setPlacing(false)
       navigate('/checkout?step=3', { replace: true })
     }, 1400)
+  }
+
+  /* ── Auth gate ── */
+  if (authLoading) {
+    return (
+      <div className="pt-36 lg:pt-44 min-h-screen flex items-center justify-center">
+        <div className="w-9 h-9 rounded-full border-[3px] animate-spin" style={{ borderColor: '#0056b3', borderTopColor: 'transparent' }} />
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    const PHONE_RE = /^[0-9]{9}$/
+    async function handlePhoneSend(e) {
+      e.preventDefault()
+      if (!PHONE_RE.test(phoneNum)) { setAuthErrors({ phone: t('account.phoneInvalid') }); return }
+      const { error } = await requestOTP(phoneNum)
+      if (error) { setAuthErrors({ phone: error.message }); return }
+      setAuthView('otp')
+      setAuthErrors({})
+    }
+    async function handleOTPVerify(e) {
+      e.preventDefault()
+      if (otpCode.length < 6) { setAuthErrors({ otp: t('account.otpIncomplete') }); return }
+      const { error } = await verifyOTP(otpCode)
+      if (error) setAuthErrors({ otp: t('account.otpInvalid') })
+    }
+
+    return (
+      <div className="pt-36 lg:pt-44 min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: '#f8fafc' }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
+          className="w-full max-w-sm bg-white rounded-2xl shadow-sm border overflow-hidden"
+          style={{ borderColor: '#e0e0e0' }}
+        >
+          <div className="px-6 py-5 border-b text-center" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg mx-auto mb-2" style={{ backgroundColor: '#e6f0fa' }}>🔒</div>
+            <h2 className="text-sm font-black text-ink">{t('checkout.signInRequired')}</h2>
+            <p className="text-xs text-muted mt-0.5">{t('checkout.signInRequiredSub')}</p>
+          </div>
+
+          <div className="p-5">
+            <AnimatePresence mode="wait">
+              {authView === 'main' && (
+                <motion.div key="gate-main" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
+                  {[
+                    { icon: '📱', label: t('account.continueWithPhone'), action: () => setAuthView('phone') },
+                    { icon: '🔵', label: t('account.continueWithGoogle'), action: signInWithGoogle },
+                    { icon: '⚫', label: t('account.continueWithApple'), action: signInWithApple },
+                  ].map(({ icon, label, action }) => (
+                    <button key={label} onClick={action}
+                      className="flex items-center justify-center gap-2.5 w-full py-3 rounded-xl border text-sm font-bold text-ink hover:bg-gray-50 transition-colors"
+                      style={{ borderColor: '#e0e0e0' }}
+                    >
+                      {icon} {label}
+                    </button>
+                  ))}
+                  <div className="text-center">
+                    <Link to="/account" className="text-xs font-bold" style={{ color: '#0056b3' }}>
+                      {t('checkout.useEmailInstead')}
+                    </Link>
+                  </div>
+                </motion.div>
+              )}
+
+              {authView === 'phone' && (
+                <motion.div key="gate-phone" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}>
+                  <button onClick={() => setAuthView('main')} className="flex items-center gap-1 text-xs font-bold text-muted mb-4 hover:text-ink transition-colors">
+                    ← {t('account.back')}
+                  </button>
+                  <form onSubmit={handlePhoneSend} className="space-y-4" noValidate>
+                    <div>
+                      <label className="block text-xs font-bold text-ink mb-1.5">{t('account.phoneNumber')}</label>
+                      <div className="flex">
+                        <div className="flex items-center px-3 border border-e-0 rounded-s-xl text-sm font-bold bg-gray-50 shrink-0" style={{ borderColor: '#e0e0e0' }}>
+                          🇸🇦 +966
+                        </div>
+                        <input type="tel" inputMode="numeric" maxLength={9} value={phoneNum}
+                          onChange={e => { setPhoneNum(e.target.value.replace(/\D/g, '').slice(0, 9)); setAuthErrors({}) }}
+                          placeholder="5X XXX XXXX"
+                          className="flex-1 border rounded-e-xl px-4 py-2.5 text-sm outline-none transition-colors"
+                          style={{ borderColor: authErrors.phone ? '#e53e3e' : '#e0e0e0' }}
+                          onFocus={e => { e.target.style.borderColor = '#0056b3' }}
+                          onBlur={e => { e.target.style.borderColor = authErrors.phone ? '#e53e3e' : '#e0e0e0' }}
+                        />
+                      </div>
+                      {authErrors.phone && <p className="text-xs mt-1" style={{ color: '#e53e3e' }}>{authErrors.phone}</p>}
+                    </div>
+                    <button type="submit" className="w-full py-3 rounded-xl text-white text-sm font-black" style={{ backgroundColor: '#0056b3' }}>
+                      {t('account.sendOTP')}
+                    </button>
+                  </form>
+                </motion.div>
+              )}
+
+              {authView === 'otp' && (
+                <motion.div key="gate-otp" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}>
+                  <button onClick={() => setAuthView('phone')} className="flex items-center gap-1 text-xs font-bold text-muted mb-4 hover:text-ink transition-colors">
+                    ← {t('account.back')}
+                  </button>
+                  <p className="text-xs text-center text-muted mb-4">
+                    {t('account.otpSentTo')} <span className="font-bold text-ink">+966 {phoneNum}</span>
+                    <br /><span style={{ color: '#0056b3' }}>{t('account.otpDemoHint')}</span>
+                  </p>
+                  <form onSubmit={handleOTPVerify} className="space-y-4" noValidate>
+                    <div className="flex gap-2 justify-center">
+                      {Array.from({ length: 6 }, (_, i) => (
+                        <input key={i} type="text" inputMode="numeric" maxLength={1}
+                          value={otpCode[i] || ''}
+                          onChange={e => {
+                            const d = e.target.value.replace(/\D/g, '').slice(-1)
+                            const arr = otpCode.split(''); arr[i] = d
+                            const next = arr.join('').padEnd(6, ' ').slice(0, 6)
+                            setOtpCode(next.trimEnd()); setAuthErrors({})
+                            if (d && i < 5) e.target.nextSibling?.focus()
+                          }}
+                          onKeyDown={e => { if (e.key === 'Backspace' && !e.target.value && i > 0) e.target.previousSibling?.focus() }}
+                          className="w-10 h-11 text-center text-base font-black border-2 rounded-xl outline-none transition-colors"
+                          style={{ borderColor: authErrors.otp ? '#e53e3e' : '#e0e0e0' }}
+                          onFocus={e => { e.target.style.borderColor = '#0056b3' }}
+                          onBlur={e => { e.target.style.borderColor = authErrors.otp ? '#e53e3e' : '#e0e0e0' }}
+                        />
+                      ))}
+                    </div>
+                    {authErrors.otp && <p className="text-xs text-center" style={{ color: '#e53e3e' }}>{authErrors.otp}</p>}
+                    <button type="submit" disabled={otpCode.length < 6}
+                      className="w-full py-3 rounded-xl text-white text-sm font-black disabled:opacity-50"
+                      style={{ backgroundColor: '#0056b3' }}
+                    >
+                      {t('account.verifyOTP')}
+                    </button>
+                  </form>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      </div>
+    )
   }
 
   if (items.length === 0 && step !== 3) {
@@ -566,7 +809,7 @@ export default function CheckoutPage() {
                         {t('checkout.processing')}
                       </>
                     ) : (
-                      t('checkout.placeOrder', { amount: fmt(grandTotal) })
+                      t('checkout.placeOrder', { amount: formatPrice(grandTotal) })
                     )}
                   </motion.button>
                 </motion.div>
@@ -583,12 +826,23 @@ export default function CheckoutPage() {
           {step < 3 && (
             <div className="lg:sticky lg:top-28">
               <OrderSummary
-                items={items} subtotal={subtotal} shipping={shippingCost} tax={tax} total={grandTotal}
+                items={items}
+                subtotal={subtotal}
+                shipping={effectiveShipping}
+                vat={vat}
+                total={grandTotal}
+                discount={discount}
+                coupon={appliedCoupon}
+                couponInput={couponInput}
+                setCouponInput={setCouponInput}
+                couponError={couponError}
+                onApply={handleApplyCoupon}
+                onRemove={handleRemoveCoupon}
               />
-              {subtotal < 199 && (
+              {subtotal < 199 && !freeShipping && (
                 <p
                   className="mt-3 text-xs text-center text-muted"
-                  dangerouslySetInnerHTML={{ __html: t('checkout.addMoreFreeShipping', { amount: fmt(199 - subtotal) }) }}
+                  dangerouslySetInnerHTML={{ __html: t('checkout.addMoreFreeShipping', { amount: formatPrice(199 - subtotal) }) }}
                 />
               )}
             </div>
