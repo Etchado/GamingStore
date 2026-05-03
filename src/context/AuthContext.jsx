@@ -3,19 +3,24 @@ import { supabase } from '@/lib/supabase'
 
 const AuthContext = createContext(null)
 
-function mapUser(sbUser) {
+function mapUser(sbUser, displayName = null) {
   if (!sbUser) return null
   const meta = sbUser.user_metadata ?? {}
   const firstName = meta.first_name ?? meta.full_name?.split(' ')[0] ?? ''
   const lastName  = meta.last_name  ?? meta.full_name?.split(' ').slice(1).join(' ') ?? ''
-  const name = [firstName, lastName].filter(Boolean).join(' ') || sbUser.email?.split('@')[0] || 'User'
+  const fallbackName = [firstName, lastName].filter(Boolean).join(' ') || sbUser.email?.split('@')[0] || 'User'
   return {
     id:     sbUser.id,
-    name,
+    name:   displayName ?? fallbackName,
     email:  sbUser.email  ?? null,
     phone:  sbUser.phone  ?? null,
     method: sbUser.app_metadata?.provider ?? 'email',
   }
+}
+
+async function fetchDisplayName(userId) {
+  const { data } = await supabase.from('profiles').select('display_name').eq('id', userId).maybeSingle()
+  return data?.display_name ?? null
 }
 
 export function AuthProvider({ children }) {
@@ -24,13 +29,23 @@ export function AuthProvider({ children }) {
   const [pendingPhone, setPendingPhone] = useState(null)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session ? mapUser(session.user) : null)
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session?.user) {
+        const displayName = await fetchDisplayName(session.user.id)
+        setUser(mapUser(session.user, displayName))
+      } else {
+        setUser(null)
+      }
       setLoading(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session ? mapUser(session.user) : null)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const displayName = await fetchDisplayName(session.user.id)
+        setUser(mapUser(session.user, displayName))
+      } else {
+        setUser(null)
+      }
     })
 
     return () => subscription.unsubscribe()
