@@ -40,7 +40,7 @@ export function CartProvider({ children }) {
 
   const itemCount = items.reduce((s, i) => s + i.qty, 0)
   const total = items.reduce((s, i) => {
-    const p = parseFloat(i.product.price.replace(/[^0-9.]/g, ''))
+    const p = parseFloat(String(i.product.price).replace(/[^0-9.]/g, ''))
     return s + p * i.qty
   }, 0)
 
