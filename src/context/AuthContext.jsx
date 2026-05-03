@@ -33,20 +33,22 @@ export function AuthProvider({ children }) {
   const [pendingPhone, setPendingPhone] = useState(null)
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        const displayName = await fetchDisplayName(session.user.id)
-        setUser(mapUser(session.user, displayName))
-      } else {
-        setUser(null)
+        setUser(mapUser(session.user, null))
+        fetchDisplayName(session.user.id).then(displayName => {
+          if (displayName) setUser(prev => prev ? { ...prev, name: displayName } : prev)
+        })
       }
       setLoading(false)
     }).catch(() => setLoading(false))
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        const displayName = await fetchDisplayName(session.user.id)
-        setUser(mapUser(session.user, displayName))
+        setUser(mapUser(session.user, null))
+        fetchDisplayName(session.user.id).then(displayName => {
+          if (displayName) setUser(prev => prev ? { ...prev, name: displayName } : prev)
+        })
       } else {
         setUser(null)
       }
