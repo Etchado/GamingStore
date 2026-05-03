@@ -19,8 +19,12 @@ function mapUser(sbUser, displayName = null) {
 }
 
 async function fetchDisplayName(userId) {
-  const { data } = await supabase.from('profiles').select('display_name').eq('id', userId).maybeSingle()
-  return data?.display_name ?? null
+  try {
+    const { data } = await supabase.from('profiles').select('display_name').eq('id', userId).maybeSingle()
+    return data?.display_name ?? null
+  } catch {
+    return null
+  }
 }
 
 export function AuthProvider({ children }) {
@@ -37,7 +41,7 @@ export function AuthProvider({ children }) {
         setUser(null)
       }
       setLoading(false)
-    })
+    }).catch(() => setLoading(false))
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
