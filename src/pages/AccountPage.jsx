@@ -204,13 +204,27 @@ function ProfileEditor({ user }) {
   const [success, setSuccess]   = useState(false)
   const [error, setError]       = useState('')
 
+  // Load custom display name from profiles table on mount
+  useEffect(() => {
+    supabase
+      .from('profiles')
+      .select('display_name')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.display_name) setName(data.display_name)
+      })
+  }, [user.id])
+
   async function handleSave(e) {
     e.preventDefault()
     if (!name.trim()) { setError(t('checkout.errRequired')); return }
     setSaving(true)
     setError('')
     setSuccess(false)
-    const { error: err } = await supabase.auth.updateUser({ data: { full_name: name.trim() } })
+    const { error: err } = await supabase
+      .from('profiles')
+      .upsert({ id: user.id, display_name: name.trim(), updated_at: new Date().toISOString() })
     setSaving(false)
     if (err) { setError(err.message); return }
     setSuccess(true)
