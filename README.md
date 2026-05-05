@@ -6,7 +6,7 @@ A production-ready e-commerce web application for a gaming hardware store. Built
 
 ## Live Demo
 
-Deployed on Vercel — [gamingstore.vercel.app](https://gamingstore.vercel.app)
+Deployed on Vercel — [gaming-st0re.vercel.app](https://gaming-st0re.vercel.app/)
 
 ---
 
