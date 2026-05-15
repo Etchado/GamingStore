@@ -8,6 +8,7 @@ import { useToast } from '@/context/ToastContext'
 import { useWishlist } from '@/context/WishlistContext'
 import { useCompare } from '@/context/CompareContext'
 import { useCurrency } from '@/context/CurrencyContext'
+import { useTheme } from '@/context/ThemeContext'
 
 /* ── Star Rating ──────────────────────────────── */
 function StarRating({ rating = 4.8, count = 0 }) {
@@ -63,6 +64,7 @@ export function ProductCard({ product, onQuickView }) {
   const { toggle, has } = useWishlist()
   const { toggle: compareToggle, has: inCompare, maxed } = useCompare()
   const { formatPrice, parseUSD } = useCurrency()
+  const { dark } = useTheme()
   const badge = badges[product.category] ?? badges.System
   const inWishlist = has(product.id)
   const isCompared = inCompare(product.id)
@@ -93,19 +95,22 @@ export function ProductCard({ product, onQuickView }) {
     <motion.article
       whileHover={{ y: -4 }}
       transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-      className="relative group bg-white rounded-2xl border overflow-hidden flex flex-col h-full"
+      className="relative group rounded-2xl border overflow-hidden flex flex-col h-full"
       style={{
-        borderColor: '#e0e0e0',
+        backgroundColor: dark ? '#161b22' : '#ffffff',
+        borderColor: dark ? '#30363d' : '#e0e0e0',
         boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
         transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,86,179,0.10), 0 2px 8px rgba(0,0,0,0.06)'
-        e.currentTarget.style.borderColor = '#cce1f5'
+        e.currentTarget.style.boxShadow = dark
+          ? '0 10px 30px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2)'
+          : '0 10px 30px rgba(0,86,179,0.10), 0 2px 8px rgba(0,0,0,0.06)'
+        e.currentTarget.style.borderColor = dark ? '#484f58' : '#cce1f5'
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)'
-        e.currentTarget.style.borderColor = '#e0e0e0'
+        e.currentTarget.style.borderColor = dark ? '#30363d' : '#e0e0e0'
       }}
     >
       {/*
@@ -228,9 +233,13 @@ export function ProductCard({ product, onQuickView }) {
             whileTap={{ scale: 0.97 }}
             onClick={handleQuickView}
             className="relative z-10 mt-2 w-full py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-1.5"
-            style={{ backgroundColor: '#fffbeb', color: '#92400e', border: '1px solid #fde68a' }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#fef3c7' }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#fffbeb' }}
+            style={{
+              backgroundColor: dark ? '#21262d' : '#fffbeb',
+              color: dark ? '#8b949e' : '#92400e',
+              border: `1px solid ${dark ? '#30363d' : '#fde68a'}`,
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = dark ? '#2d333b' : '#fef3c7' }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = dark ? '#21262d' : '#fffbeb' }}
           >
             🔔 {t('product.notifyMeBtn')}
           </motion.button>
