@@ -95,6 +95,12 @@ html { scroll-behavior: smooth; }
 
 /* Announcement bar stays its own color — no override */
 
+/* Filter sidebar dividers in dark mode */
+.dark [style*="backgroundColor: '#e0e0e0'"],
+.dark [style*='backgroundColor: "#e0e0e0"'] {
+  background-color: #30363d !important;
+}
+
 /* Transition for smooth dark/light switch */
 body, #root, header, main, footer, section, div, span, p, a, button, input, select {
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;

@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/context/ThemeContext'
 
 const REVIEW_META = [
   { name: 'Alex M.',  product: 'White Phantom Custom PC',    avatar: 'AM', avatarBg: '#e6f0fa', avatarColor: '#004494', key: 'review1' },
@@ -22,9 +23,13 @@ function Stars({ count }) {
 
 export default function Testimonials() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
 
   return (
-    <section className="py-20 px-6 bg-white">
+    <section
+      className="py-20 px-6"
+      style={{ backgroundColor: dark ? '#0d1117' : '#ffffff' }}
+    >
       <div className="max-w-7xl mx-auto">
 
         <motion.div
@@ -37,11 +42,15 @@ export default function Testimonials() {
           <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
             ◈ {t('testimonials.sub')}
           </p>
-          <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
+          <h2
+            className="text-3xl sm:text-4xl font-black tracking-tight"
+            style={{ color: dark ? '#e6edf3' : '#1a202c' }}
+          >
             {t('testimonials.title')}
           </h2>
           <p
-            className="text-sm text-muted mt-3"
+            className="text-sm mt-3"
+            style={{ color: dark ? '#8b949e' : '#718096' }}
             dangerouslySetInnerHTML={{ __html: t('testimonials.subtext') }}
           />
         </motion.div>
@@ -54,12 +63,23 @@ export default function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="bg-white rounded-2xl border p-5 flex flex-col gap-3 hover:shadow-md transition-shadow"
-              style={{ borderColor: '#e0e0e0' }}
+              className="rounded-2xl border p-5 flex flex-col gap-3 hover:shadow-md transition-shadow"
+              style={{
+                backgroundColor: dark ? '#161b22' : '#ffffff',
+                borderColor:     dark ? '#30363d' : '#e0e0e0',
+              }}
             >
               <Stars count={5} />
-              <p className="text-sm text-ink leading-relaxed flex-1">"{t(`testimonials.${r.key}`)}"</p>
-              <div className="border-t pt-3 flex items-center gap-3" style={{ borderColor: '#f0f0f0' }}>
+              <p
+                className="text-sm leading-relaxed flex-1"
+                style={{ color: dark ? '#e6edf3' : '#1a202c' }}
+              >
+                "{t(`testimonials.${r.key}`)}"
+              </p>
+              <div
+                className="border-t pt-3 flex items-center gap-3"
+                style={{ borderColor: dark ? '#30363d' : '#f0f0f0' }}
+              >
                 <div
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-black shrink-0"
                   style={{ backgroundColor: r.avatarBg, color: r.avatarColor }}
@@ -67,8 +87,18 @@ export default function Testimonials() {
                   {r.avatar}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-bold text-ink leading-none">{r.name}</p>
-                  <p className="text-[11px] text-muted mt-0.5 truncate">{t('testimonials.bought')} {r.product}</p>
+                  <p
+                    className="text-sm font-bold leading-none"
+                    style={{ color: dark ? '#e6edf3' : '#1a202c' }}
+                  >
+                    {r.name}
+                  </p>
+                  <p
+                    className="text-[11px] mt-0.5 truncate"
+                    style={{ color: dark ? '#8b949e' : '#718096' }}
+                  >
+                    {t('testimonials.bought')} {r.product}
+                  </p>
                 </div>
               </div>
             </motion.div>

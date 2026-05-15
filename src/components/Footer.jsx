@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useToast } from '@/context/ToastContext'
 import { EMAIL_RE } from '@/lib/utils'
+import { useTheme } from '@/context/ThemeContext'
 
 const SHOP_KEYS = [
   { key: 'shop.customPCs',  href: '/?category=System' },
@@ -72,14 +73,20 @@ const SOCIALS = [
   },
 ]
 
-function FooterCol({ heading, links }) {
+function FooterCol({ heading, links, dark }) {
   return (
     <div>
-      <h4 className="text-sm font-black text-ink tracking-wide mb-4">{heading}</h4>
+      <h4 className="text-sm font-black tracking-wide mb-4" style={{ color: dark ? '#e6edf3' : '#1a202c' }}>{heading}</h4>
       <ul className="space-y-2.5">
         {links.map(({ label, href }) => (
           <li key={label}>
-            <Link to={href} className="text-sm text-muted hover:text-ink transition-colors">
+            <Link
+              to={href}
+              className="text-sm transition-colors"
+              style={{ color: dark ? '#8b949e' : '#718096' }}
+              onMouseEnter={e => e.currentTarget.style.color = dark ? '#e6edf3' : '#1a202c'}
+              onMouseLeave={e => e.currentTarget.style.color = dark ? '#8b949e' : '#718096'}
+            >
               {label}
             </Link>
           </li>
@@ -95,6 +102,7 @@ export default function Footer() {
   const [emailError, setEmailError] = useState('')
   const { t } = useTranslation()
   const { addToast } = useToast()
+  const { dark } = useTheme()
 
   const shopLinks    = SHOP_KEYS.map(({ key, href }) => ({ label: t(`footer.${key}`), href }))
   const supportLinks = SUPPORT_KEYS.map(({ key, href }) => ({ label: t(`footer.${key}`), href }))
@@ -119,7 +127,7 @@ export default function Footer() {
   }
 
   return (
-    <footer style={{ backgroundColor: '#f8fafc', borderTop: '1px solid #e0e0e0' }}>
+    <footer style={{ backgroundColor: dark ? '#0d1117' : '#f8fafc', borderTop: `1px solid ${dark ? '#30363d' : '#e0e0e0'}` }}>
 
       {/* ── Main columns ── */}
       <div className="max-w-7xl mx-auto px-6 py-16">
@@ -134,12 +142,12 @@ export default function Footer() {
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                 </svg>
               </div>
-              <span className="font-black text-ink text-base tracking-tight">
+              <span className="font-black text-base tracking-tight" style={{ color: dark ? '#e6edf3' : '#1a202c' }}>
                 {t('nav.brandFirst')}<span style={{ color: '#0056b3' }}>{t('nav.brandSecond')}</span>
               </span>
             </Link>
 
-            <p className="text-sm text-muted leading-relaxed max-w-[220px]">
+            <p className="text-sm leading-relaxed max-w-[220px]" style={{ color: dark ? '#8b949e' : '#718096' }}>
               {t('footer.tagline')}
             </p>
 
@@ -150,7 +158,10 @@ export default function Footer() {
                   key={s.label}
                   href={s.href}
                   aria-label={s.label}
-                  className="w-9 h-9 rounded-xl border border-border bg-white flex items-center justify-center text-muted hover:text-ink hover:border-gray-300 transition-colors"
+                  className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors"
+                  style={{ border: `1px solid ${dark ? '#30363d' : '#e0e0e0'}`, backgroundColor: dark ? '#161b22' : '#ffffff', color: dark ? '#8b949e' : '#718096' }}
+                  onMouseEnter={e => e.currentTarget.style.color = dark ? '#e6edf3' : '#1a202c'}
+                  onMouseLeave={e => e.currentTarget.style.color = dark ? '#8b949e' : '#718096'}
                 >
                   {s.icon}
                 </a>
@@ -159,15 +170,15 @@ export default function Footer() {
           </div>
 
           {/* Col 2 — Shop */}
-          <FooterCol heading={t('footer.shopTitle')} links={shopLinks} />
+          <FooterCol heading={t('footer.shopTitle')} links={shopLinks} dark={dark} />
 
           {/* Col 3 — Support */}
-          <FooterCol heading={t('footer.supportTitle')} links={supportLinks} />
+          <FooterCol heading={t('footer.supportTitle')} links={supportLinks} dark={dark} />
 
           {/* Col 4 — Newsletter */}
           <div>
-            <h4 className="text-sm font-black text-ink tracking-wide mb-4">{t('footer.newsletterTitle')}</h4>
-            <p className="text-sm text-muted leading-relaxed mb-4">
+            <h4 className="text-sm font-black tracking-wide mb-4" style={{ color: dark ? '#e6edf3' : '#1a202c' }}>{t('footer.newsletterTitle')}</h4>
+            <p className="text-sm leading-relaxed mb-4" style={{ color: dark ? '#8b949e' : '#718096' }}>
               {t('footer.newsletterSub')}
             </p>
 
@@ -188,10 +199,10 @@ export default function Footer() {
                     value={email}
                     onChange={(e) => handleEmailChange(e.target.value)}
                     placeholder="your@email.com"
-                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all bg-white"
-                    style={{ borderColor: emailError ? '#e53e3e' : '#e0e0e0' }}
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all"
+                    style={{ backgroundColor: dark ? '#161b22' : '#fff', color: dark ? '#e6edf3' : '#1a202c', borderColor: emailError ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0') }}
                     onFocus={(e) => { e.target.style.borderColor = emailError ? '#e53e3e' : '#0056b3'; e.target.style.boxShadow = '0 0 0 3px rgba(0,86,179,0.12)' }}
-                    onBlur={(e)  => { e.target.style.borderColor = emailError ? '#e53e3e' : '#e0e0e0'; e.target.style.boxShadow = 'none' }}
+                    onBlur={(e)  => { e.target.style.borderColor = emailError ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0'); e.target.style.boxShadow = 'none' }}
                     aria-describedby={emailError ? 'footer-email-error' : undefined}
                   />
                   {emailError && (
@@ -211,7 +222,7 @@ export default function Footer() {
               </form>
             )}
 
-            <p className="text-[11px] text-muted mt-3">
+            <p className="text-[11px] mt-3" style={{ color: dark ? '#8b949e' : '#718096' }}>
               {t('footer.noSpam')}
             </p>
           </div>
@@ -220,14 +231,20 @@ export default function Footer() {
       </div>
 
       {/* ── Bottom bar ── */}
-      <div className="border-t" style={{ borderColor: '#e0e0e0' }}>
+      <div className="border-t" style={{ borderColor: dark ? '#30363d' : '#e0e0e0' }}>
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-muted">
+          <p className="text-xs" style={{ color: dark ? '#8b949e' : '#718096' }}>
             {t('footer.copyright', { year: new Date().getFullYear() })}
           </p>
           <div className="flex items-center gap-6">
             {BOTTOM_LINKS.map(({ key, href }) => (
-              <Link key={key} to={href} className="text-xs text-muted hover:text-ink transition-colors">
+              <Link
+                key={key} to={href}
+                className="text-xs transition-colors"
+                style={{ color: dark ? '#8b949e' : '#718096' }}
+                onMouseEnter={e => e.currentTarget.style.color = dark ? '#e6edf3' : '#1a202c'}
+                onMouseLeave={e => e.currentTarget.style.color = dark ? '#8b949e' : '#718096'}
+              >
                 {t(`footer.${key}`)}
               </Link>
             ))}

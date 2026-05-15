@@ -1,17 +1,19 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/context/ThemeContext'
 
 const CAT_CONFIG = [
-  { key: 'pcBuilds',  icon: '🖥️', filter: 'System',  bg: '#e6f0fa', border: '#99c3eb', text: '#004494' },
-  { key: 'gpuCpu',   icon: '⚡',  filter: 'GPU,CPU', bg: '#f3f0ff', border: '#c4b5fd', text: '#5521b5' },
-  { key: 'monitors', icon: '🖱️', filter: 'Monitor', bg: '#e9f7ed', border: '#a7dfb7', text: '#1e8035' },
-  { key: 'furniture',icon: '🪑', filter: 'Desk',    bg: '#fffbeb', border: '#fcd34d', text: '#92400e' },
+  { key: 'pcBuilds',   icon: '🖥️', filter: 'System',    lightBg: '#e6f0fa', lightBorder: '#99c3eb', lightText: '#004494', darkBg: 'rgba(0,86,179,0.15)',   darkBorder: 'rgba(0,86,179,0.3)',   darkText: '#6db3f2' },
+  { key: 'gpuCpu',     icon: '⚡',  filter: 'GPU,CPU',   lightBg: '#f3f0ff', lightBorder: '#c4b5fd', lightText: '#5521b5', darkBg: 'rgba(85,33,181,0.15)',  darkBorder: 'rgba(85,33,181,0.3)',  darkText: '#c4b5fd' },
+  { key: 'monitors',   icon: '🖱️', filter: 'Monitor',   lightBg: '#e9f7ed', lightBorder: '#a7dfb7', lightText: '#1e8035', darkBg: 'rgba(30,128,53,0.15)',  darkBorder: 'rgba(30,128,53,0.3)',  darkText: '#7dcf8e' },
+  { key: 'furniture',  icon: '🪑', filter: 'Desk',      lightBg: '#fffbeb', lightBorder: '#fcd34d', lightText: '#92400e', darkBg: 'rgba(146,64,14,0.15)',  darkBorder: 'rgba(146,64,14,0.3)',  darkText: '#fcd34d' },
 ]
 
 export default function CategoryShowcase() {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const { dark } = useTheme()
 
   function handleCategoryClick(filter) {
     navigate(`/?category=${filter}`)
@@ -21,10 +23,12 @@ export default function CategoryShowcase() {
   }
 
   return (
-    <section className="bg-white py-16 px-6">
+    <section
+      className="py-16 px-6"
+      style={{ backgroundColor: dark ? '#0d1117' : '#ffffff' }}
+    >
       <div className="max-w-7xl mx-auto">
 
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -36,7 +40,10 @@ export default function CategoryShowcase() {
             <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
               {t('categories.sub')}
             </p>
-            <h2 className="text-2xl sm:text-3xl font-black text-ink tracking-tight">
+            <h2
+              className="text-2xl sm:text-3xl font-black tracking-tight"
+              style={{ color: dark ? '#e6edf3' : '#1a202c' }}
+            >
               {t('categories.title')}
             </h2>
           </div>
@@ -49,7 +56,6 @@ export default function CategoryShowcase() {
           </button>
         </motion.div>
 
-        {/* Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {CAT_CONFIG.map((c, i) => (
             <motion.div
@@ -63,16 +69,19 @@ export default function CategoryShowcase() {
               <button
                 onClick={() => handleCategoryClick(c.filter)}
                 className="w-full text-start block rounded-2xl border p-5 transition-shadow hover:shadow-card-hover cursor-pointer"
-                style={{ background: c.bg, borderColor: c.border }}
+                style={{
+                  background:   dark ? c.darkBg     : c.lightBg,
+                  borderColor:  dark ? c.darkBorder  : c.lightBorder,
+                }}
               >
                 <div className="text-3xl mb-3" aria-hidden="true">{c.icon}</div>
-                <h3 className="text-sm font-black mb-0.5" style={{ color: c.text }}>
+                <h3 className="text-sm font-black mb-0.5" style={{ color: dark ? c.darkText : c.lightText }}>
                   {t(`categories.${c.key}`)}
                 </h3>
-                <p className="text-xs text-muted leading-relaxed mb-3">
+                <p className="text-xs leading-relaxed mb-3" style={{ color: dark ? '#8b949e' : '#718096' }}>
                   {t(`categories.${c.key}Sub`)}
                 </p>
-                <span className="text-[11px] font-black tracking-wide" style={{ color: c.text }}>
+                <span className="text-[11px] font-black tracking-wide" style={{ color: dark ? c.darkText : c.lightText }}>
                   {t(`categories.${c.key}Count`)} →
                 </span>
               </button>

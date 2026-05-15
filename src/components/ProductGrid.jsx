@@ -7,6 +7,7 @@ import SkeletonCard from '@/components/ui/SkeletonCard'
 import QuickViewModal from '@/components/QuickViewModal'
 import { useProducts } from '@/context/ProductsContext'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { useTheme } from '@/context/ThemeContext'
 
 const FILTERS = ['All', 'System', 'GPU', 'CPU', 'Monitor', 'Mouse', 'Keyboard', 'Headset', 'Storage', 'Desk', 'Chair', 'Mouse Pad']
 
@@ -127,7 +128,7 @@ function FilterSidebar({
         </div>
       </div>
 
-      <div className="h-px" style={{ backgroundColor: '#e0e0e0' }} />
+      <div className="h-px" style={{ backgroundColor: '#e0e0e0' }} /* sidebar dividers — color handled via CSS dark override */ />
 
       {/* ── Brand ── */}
       <div>
@@ -151,7 +152,7 @@ function FilterSidebar({
         </div>
       </div>
 
-      <div className="h-px" style={{ backgroundColor: '#e0e0e0' }} />
+      <div className="h-px" style={{ backgroundColor: '#e0e0e0' }} /* sidebar dividers — color handled via CSS dark override */ />
 
       {/* ── Min Rating ── */}
       <div>
@@ -177,7 +178,7 @@ function FilterSidebar({
         </div>
       </div>
 
-      <div className="h-px" style={{ backgroundColor: '#e0e0e0' }} />
+      <div className="h-px" style={{ backgroundColor: '#e0e0e0' }} /* sidebar dividers — color handled via CSS dark override */ />
 
       {/* ── In Stock toggle ── */}
       <div className="flex items-center justify-between">
@@ -218,6 +219,7 @@ function FilterSidebar({
 const PAGE_SIZE = 8
 
 export default function ProductGrid() {
+  const { dark } = useTheme()
   const { products } = useProducts()
   const [searchParams, setSearchParams] = useSearchParams()
   const [loading, setLoading]           = useState(true)
@@ -398,7 +400,7 @@ export default function ProductGrid() {
   }
 
   return (
-    <section id="products" className="py-20 px-6" style={{ backgroundColor: '#f8fafc' }}>
+    <section id="products" className="py-20 px-6" style={{ backgroundColor: dark ? '#0d1117' : '#f8fafc' }}>
       <div className="max-w-7xl mx-auto">
 
         {/* ── Section header ── */}
@@ -506,8 +508,8 @@ export default function ProductGrid() {
             {/* Mobile Filters button */}
             <button
               onClick={() => setMobileFiltersOpen(true)}
-              className="lg:hidden flex items-center gap-1.5 text-xs font-bold border rounded-lg px-3 py-1.5 transition-colors bg-white"
-              style={{ borderColor: '#e0e0e0', color: '#444' }}
+              className="lg:hidden flex items-center gap-1.5 text-xs font-bold border rounded-lg px-3 py-1.5 transition-colors"
+              style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0', color: dark ? '#e6edf3' : '#444' }}
               aria-label={t('products.advancedFilters.showFilters')}
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -529,10 +531,10 @@ export default function ProductGrid() {
               <select
                 value={sortParam}
                 onChange={(e) => setSort(e.target.value)}
-                className="text-xs font-semibold border rounded-lg px-3 py-1.5 outline-none cursor-pointer transition-colors bg-white text-ink"
-                style={{ borderColor: '#e0e0e0' }}
+                className="text-xs font-semibold border rounded-lg px-3 py-1.5 outline-none cursor-pointer transition-colors"
+                style={{ backgroundColor: dark ? '#161b22' : '#ffffff', color: dark ? '#e6edf3' : '#1a202c', borderColor: dark ? '#30363d' : '#e0e0e0' }}
                 onFocus={(e)  => { e.target.style.borderColor = '#0056b3' }}
-                onBlur={(e)   => { e.target.style.borderColor = '#e0e0e0' }}
+                onBlur={(e)   => { e.target.style.borderColor = dark ? '#30363d' : '#e0e0e0' }}
               >
                 {SORT_KEYS.map(o => (
                   <option key={o.value} value={o.value}>{t(o.key)}</option>
@@ -556,8 +558,8 @@ export default function ProductGrid() {
               className="px-4 py-1.5 rounded-full text-xs font-bold border transition-all"
               style={
                 active === f
-                  ? { backgroundColor: '#0056b3', color: '#fff',     borderColor: '#0056b3' }
-                  : { backgroundColor: '#fff',     color: '#718096', borderColor: '#e0e0e0' }
+                  ? { backgroundColor: '#0056b3', color: '#fff', borderColor: '#0056b3' }
+                  : { backgroundColor: dark ? '#161b22' : '#fff', color: dark ? '#8b949e' : '#718096', borderColor: dark ? '#30363d' : '#e0e0e0' }
               }
             >
               {t(`products.filters.${f.toLowerCase()}`)}
@@ -566,7 +568,7 @@ export default function ProductGrid() {
         </motion.div>
 
         {/* ── Divider ── */}
-        <div className="h-px mb-8" style={{ backgroundColor: '#e0e0e0' }} />
+        <div className="h-px mb-8" style={{ backgroundColor: dark ? '#30363d' : '#e0e0e0' }} />
 
         {/* ── Main layout: sidebar + grid ── */}
         <div className={`flex gap-8 items-start ${isRTL ? 'flex-row-reverse' : ''}`}>
@@ -782,7 +784,8 @@ export default function ProductGrid() {
               animate={{ x: 0 }}
               exit={{ x: isRTL ? '100%' : '-100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className={`fixed top-0 ${isRTL ? 'right-0' : 'left-0'} h-full w-72 bg-white z-50 overflow-y-auto shadow-2xl lg:hidden`}
+              className={`fixed top-0 ${isRTL ? 'right-0' : 'left-0'} h-full w-72 z-50 overflow-y-auto shadow-2xl lg:hidden`}
+              style={{ backgroundColor: dark ? '#161b22' : '#ffffff' }}
               role="dialog"
               aria-modal="true"
               aria-label={t('products.advancedFilters.title')}
