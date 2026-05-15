@@ -234,12 +234,12 @@ export function ProductCard({ product, onQuickView }) {
             onClick={handleQuickView}
             className="relative z-10 mt-2 w-full py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-1.5"
             style={{
-              backgroundColor: dark ? '#21262d' : '#fffbeb',
-              color: dark ? '#8b949e' : '#92400e',
-              border: `1px solid ${dark ? '#30363d' : '#fde68a'}`,
+              backgroundColor: dark ? '#21262d' : '#e6f0fa',
+              color: dark ? '#8b949e' : '#0056b3',
+              border: `1px solid ${dark ? '#30363d' : '#b3d4f5'}`,
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = dark ? '#2d333b' : '#fef3c7' }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = dark ? '#21262d' : '#fffbeb' }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = dark ? '#2d333b' : '#cce1f5' }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = dark ? '#21262d' : '#e6f0fa' }}
           >
             🔔 {t('product.notifyMeBtn')}
           </motion.button>
