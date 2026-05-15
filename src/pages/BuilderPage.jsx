@@ -8,6 +8,7 @@ import { useCurrency } from '@/context/CurrencyContext'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { BUILDER_CATEGORIES, BUILDER_PARTS, TIER_LABELS } from '@/data/builderParts'
 import { onImgError } from '@/lib/imgFallback'
+import { useTheme } from '@/context/ThemeContext'
 
 /* ── Tier badge ── */
 function TierBadge({ tier }) {
@@ -26,6 +27,7 @@ function TierBadge({ tier }) {
 /* ── Single part option card ── */
 function PartCard({ part, selected, onSelect }) {
   const { formatPrice } = useCurrency()
+  const { dark } = useTheme()
   const isSelected = selected?.id === part.id
   return (
     <motion.button
@@ -33,11 +35,11 @@ function PartCard({ part, selected, onSelect }) {
       onClick={() => onSelect(part)}
       className="w-full text-start flex items-center gap-4 p-4 rounded-2xl border-2 transition-all"
       style={{
-        borderColor:     isSelected ? '#0056b3' : '#e0e0e0',
-        backgroundColor: isSelected ? '#f0f7ff' : '#fff',
+        borderColor:     isSelected ? '#0056b3' : (dark ? '#30363d' : '#e0e0e0'),
+        backgroundColor: dark ? (isSelected ? 'rgba(0,86,179,0.15)' : '#161b22') : (isSelected ? '#f0f7ff' : '#fff'),
       }}
       onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.borderColor = '#a8c8f0' }}
-      onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.borderColor = '#e0e0e0' }}
+      onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.borderColor = dark ? '#30363d' : '#e0e0e0' }}
     >
       <img src={part.image} alt={part.name} loading="lazy" onError={onImgError} className="w-16 h-16 rounded-xl object-cover shrink-0 bg-surface" />
       <div className="flex-1 min-w-0">
@@ -66,18 +68,19 @@ function PartCard({ part, selected, onSelect }) {
 /* ── Category row ── */
 function CategoryRow({ cat, selected, open, onToggle, onSelect }) {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const { formatPrice } = useCurrency()
   const hasSelection = !!selected
 
   return (
     <div
       className="rounded-2xl border overflow-hidden transition-all"
-      style={{ borderColor: open ? '#0056b3' : hasSelection ? '#a8c8f0' : '#e0e0e0' }}
+      style={{ borderColor: open ? '#0056b3' : hasSelection ? '#a8c8f0' : (dark ? '#30363d' : '#e0e0e0') }}
     >
       <button
         onClick={onToggle}
         className="w-full flex items-center gap-4 px-5 py-4 text-start transition-colors"
-        style={{ backgroundColor: open ? '#f0f7ff' : '#fff' }}
+        style={{ backgroundColor: open ? (dark ? 'rgba(0,86,179,0.15)' : '#f0f7ff') : (dark ? '#161b22' : '#fff') }}
       >
         <span className="text-2xl w-8 text-center shrink-0">{cat.icon}</span>
         <div className="flex-1 min-w-0">
@@ -121,7 +124,7 @@ function CategoryRow({ cat, selected, open, onToggle, onSelect }) {
             transition={{ duration: 0.22, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5 pt-1 space-y-3 border-t" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafcff' }}>
+            <div className="px-5 pb-5 pt-1 space-y-3 border-t" style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#161b22' : '#fafcff' }}>
               {BUILDER_PARTS[cat.key].map((part) => (
                 <PartCard
                   key={part.id}
@@ -141,6 +144,7 @@ function CategoryRow({ cat, selected, open, onToggle, onSelect }) {
 /* ── Build summary sidebar ── */
 function BuildSummary({ selections, onAddToCart, adding }) {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const { formatPrice } = useCurrency()
   const total = Object.values(selections).reduce((s, p) => s + (p?.price ?? 0), 0)
   const selected = Object.values(selections).filter(Boolean)
@@ -149,15 +153,15 @@ function BuildSummary({ selections, onAddToCart, adding }) {
   const remaining = BUILDER_CATEGORIES.length - selected.length
 
   return (
-    <div className="rounded-2xl border overflow-hidden" style={{ borderColor: '#e0e0e0' }}>
-      <div className="px-5 py-4 border-b" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
+    <div className="rounded-2xl border overflow-hidden" style={{ borderColor: dark ? '#30363d' : '#e0e0e0' }}>
+      <div className="px-5 py-4 border-b" style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#161b22' : '#fafafa' }}>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-black text-ink">{t('builder.yourBuild')}</h3>
           <span className="text-xs font-bold text-muted">
             {t('builder.parts', { selected: selected.length, total: BUILDER_CATEGORIES.length })}
           </span>
         </div>
-        <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+        <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: dark ? '#30363d' : '#e5e7eb' }}>
           <motion.div
             className="h-full rounded-full"
             style={{ backgroundColor: complete ? '#1e8035' : '#0056b3' }}
@@ -195,7 +199,7 @@ function BuildSummary({ selections, onAddToCart, adding }) {
         })}
       </div>
 
-      <div className="px-5 py-4 border-t space-y-3" style={{ borderColor: '#e0e0e0' }}>
+      <div className="px-5 py-4 border-t space-y-3" style={{ borderColor: dark ? '#30363d' : '#e0e0e0' }}>
         <div className="flex justify-between items-baseline">
           <span className="text-sm font-black text-ink">{t('builder.total')}</span>
           <span className="text-xl font-black" style={{ color: '#0056b3' }}>{formatPrice(total)}</span>
@@ -236,6 +240,7 @@ function BuildSummary({ selections, onAddToCart, adding }) {
 /* ── Page ── */
 export default function BuilderPage() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   usePageTitle(t('builder.sub'))
   const navigate = useNavigate()
   const { addItem } = useCart()
@@ -319,9 +324,9 @@ export default function BuilderPage() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
       className="pt-36 lg:pt-44 min-h-screen"
-      style={{ backgroundColor: '#f8fafc' }}
+      style={{ backgroundColor: dark ? '#0d1117' : '#f8fafc' }}
     >
-      <div className="border-b bg-white" style={{ borderColor: '#e0e0e0' }}>
+      <div className="border-b" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
         <div className="max-w-7xl mx-auto px-6 py-8">
           <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
             ◈ {t('builder.sub')}
@@ -381,7 +386,7 @@ export default function BuilderPage() {
                 <div
                   key={label}
                   className="flex flex-col items-center gap-1 py-3 rounded-2xl border text-center"
-                  style={{ borderColor: '#e0e0e0', backgroundColor: '#fff' }}
+                  style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#161b22' : '#fff' }}
                 >
                   <span className="text-lg">{icon}</span>
                   <span className="text-[10px] font-bold text-muted leading-tight">{label}</span>

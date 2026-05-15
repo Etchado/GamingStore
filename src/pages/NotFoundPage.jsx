@@ -2,9 +2,11 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { useTheme } from '@/context/ThemeContext'
 
 export default function NotFoundPage() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   usePageTitle(t('notFound.title'))
   const navigate = useNavigate()
 
@@ -14,6 +16,7 @@ export default function NotFoundPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       className="min-h-[80vh] flex flex-col items-center justify-center gap-6 text-center px-6 pt-36 lg:pt-44"
+      style={{ backgroundColor: dark ? '#0d1117' : '#ffffff' }}
     >
       <div
         className="w-24 h-24 rounded-3xl flex items-center justify-center text-5xl"
@@ -50,8 +53,8 @@ export default function NotFoundPage() {
         <button
           onClick={() => navigate(-1)}
           className="px-8 py-3 rounded-xl text-sm font-bold border transition-colors"
-          style={{ borderColor: '#e0e0e0', color: '#555' }}
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f5f5f5' }}
+          style={{ borderColor: dark ? '#30363d' : '#e0e0e0', color: dark ? '#8b949e' : '#555' }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = dark ? '#161b22' : '#f5f5f5' }}
           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
         >
           {t('notFound.goBack')}

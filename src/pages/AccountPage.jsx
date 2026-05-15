@@ -8,6 +8,7 @@ import { useCurrency } from '@/context/CurrencyContext'
 import { useAuth } from '@/context/AuthContext'
 import { stripArabic, stripName } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
+import { useTheme } from '@/context/ThemeContext'
 
 /* ── Zod schemas ─────────────────────────────────── */
 const NAME_RULE = z.string()
@@ -68,14 +69,15 @@ const PHONE_RE = /^[0-9]{9}$/
 
 /* ── Shared field components ── */
 function FieldInput({ label, error, ...props }) {
+  const { dark } = useTheme()
   return (
     <div>
       <label className="block text-xs font-bold text-ink mb-1.5">{label}</label>
       <input
         className="w-full border rounded-xl px-4 py-2.5 text-sm outline-none transition-colors"
-        style={{ borderColor: error ? '#e53e3e' : '#e0e0e0' }}
+        style={{ backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c', borderColor: error ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0') }}
         onFocus={e => { e.target.style.borderColor = '#0056b3' }}
-        onBlur={e => { e.target.style.borderColor = error ? '#e53e3e' : '#e0e0e0' }}
+        onBlur={e => { e.target.style.borderColor = error ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0') }}
         {...props}
       />
       {error && <p className="text-xs mt-1" style={{ color: '#e53e3e' }}>{error}</p>}
@@ -84,6 +86,7 @@ function FieldInput({ label, error, ...props }) {
 }
 
 function PasswordInput({ label, error, value, onChange, ...props }) {
+  const { dark } = useTheme()
   const [show, setShow] = useState(false)
   return (
     <div>
@@ -94,9 +97,9 @@ function PasswordInput({ label, error, value, onChange, ...props }) {
           value={value}
           onChange={onChange}
           className="w-full border rounded-xl px-4 py-2.5 pe-10 text-sm outline-none transition-colors"
-          style={{ borderColor: error ? '#e53e3e' : '#e0e0e0' }}
+          style={{ backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c', borderColor: error ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0') }}
           onFocus={e => { e.target.style.borderColor = '#0056b3' }}
-          onBlur={e => { e.target.style.borderColor = error ? '#e53e3e' : '#e0e0e0' }}
+          onBlur={e => { e.target.style.borderColor = error ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0') }}
           {...props}
         />
         <button
@@ -125,6 +128,7 @@ function PasswordInput({ label, error, value, onChange, ...props }) {
 
 /* 6-digit OTP boxes */
 function OTPInput({ value, onChange, error }) {
+  const { dark } = useTheme()
   const refs = Array.from({ length: 6 }, () => useRef(null))
 
   function handleKey(i, e) {
@@ -159,9 +163,9 @@ function OTPInput({ value, onChange, error }) {
             onKeyDown={e => handleKey(i, e)}
             onPaste={handlePaste}
             className="w-11 h-12 text-center text-lg font-black border-2 rounded-xl outline-none transition-colors"
-            style={{ borderColor: error ? '#e53e3e' : '#e0e0e0' }}
+            style={{ backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c', borderColor: error ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0') }}
             onFocus={e => { e.target.style.borderColor = '#0056b3' }}
-            onBlur={e => { e.target.style.borderColor = error ? '#e53e3e' : '#e0e0e0' }}
+            onBlur={e => { e.target.style.borderColor = error ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0') }}
           />
         ))}
       </div>
@@ -172,13 +176,14 @@ function OTPInput({ value, onChange, error }) {
 
 /* ── Social button ── */
 function SocialBtn({ icon, label, onClick, disabled }) {
+  const { dark } = useTheme()
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="flex items-center justify-center gap-2.5 w-full py-3 rounded-xl border text-sm font-bold text-ink hover:bg-gray-50 transition-colors disabled:opacity-60"
-      style={{ borderColor: '#e0e0e0' }}
+      className="flex items-center justify-center gap-2.5 w-full py-3 rounded-xl border text-sm font-bold text-ink transition-colors disabled:opacity-60"
+      style={{ backgroundColor: dark ? '#161b22' : '#fff', borderColor: dark ? '#30363d' : '#e0e0e0' }}
     >
       {icon}
       {label}
@@ -199,6 +204,7 @@ function Spinner() {
 /* ── Profile Editor ── */
 function ProfileEditor({ user }) {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const [name, setName]           = useState(user.name ?? '')
   const [saving, setSaving]       = useState(false)
   const [success, setSuccess]     = useState(false)
@@ -263,10 +269,10 @@ function ProfileEditor({ user }) {
               value={name}
               onChange={e => { setName(e.target.value); setError('') }}
               placeholder="Your name"
-              className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all bg-white"
-              style={{ borderColor: error ? '#f87171' : '#e0e0e0' }}
+              className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all"
+              style={{ backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c', borderColor: error ? '#f87171' : (dark ? '#30363d' : '#e0e0e0') }}
               onFocus={e => { e.target.style.borderColor = '#0056b3'; e.target.style.boxShadow = '0 0 0 3px rgba(0,86,179,0.10)' }}
-              onBlur={e => { e.target.style.borderColor = error ? '#f87171' : '#e0e0e0'; e.target.style.boxShadow = 'none' }}
+              onBlur={e => { e.target.style.borderColor = error ? '#f87171' : (dark ? '#30363d' : '#e0e0e0'); e.target.style.boxShadow = 'none' }}
             />
             {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
           </div>
@@ -299,7 +305,7 @@ function ProfileEditor({ user }) {
     </form>
 
       {/* Email change */}
-      <form onSubmit={handleEmailChange} className="space-y-4 pt-6 border-t" style={{ borderColor: '#f0f0f0' }}>
+      <form onSubmit={handleEmailChange} className="space-y-4 pt-6 border-t" style={{ borderColor: dark ? '#30363d' : '#f0f0f0' }}>
         <p className="text-[11px] font-black tracking-[0.15em] uppercase" style={{ color: '#0056b3' }}>
           Change Email
         </p>
@@ -320,10 +326,10 @@ function ProfileEditor({ user }) {
             value={newEmail}
             onChange={e => { setNewEmail(e.target.value); setEmailError(''); setEmailSent(false) }}
             placeholder="Enter new email"
-            className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all bg-white"
-            style={{ borderColor: emailError ? '#f87171' : '#e0e0e0' }}
+            className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all"
+            style={{ backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c', borderColor: emailError ? '#f87171' : (dark ? '#30363d' : '#e0e0e0') }}
             onFocus={e => { e.target.style.borderColor = '#0056b3'; e.target.style.boxShadow = '0 0 0 3px rgba(0,86,179,0.10)' }}
-            onBlur={e => { e.target.style.borderColor = emailError ? '#f87171' : '#e0e0e0'; e.target.style.boxShadow = 'none' }}
+            onBlur={e => { e.target.style.borderColor = emailError ? '#f87171' : (dark ? '#30363d' : '#e0e0e0'); e.target.style.boxShadow = 'none' }}
           />
           {emailError && <p className="text-xs text-red-500 font-medium">{emailError}</p>}
           {emailSent && (
@@ -349,12 +355,12 @@ function ProfileEditor({ user }) {
         </motion.button>
       </form>
 
-      <div className="pt-6 border-t space-y-3" style={{ borderColor: '#f0f0f0' }}>
+      <div className="pt-6 border-t space-y-3" style={{ borderColor: dark ? '#30363d' : '#f0f0f0' }}>
         {[
           { icon: '📍', label: t('account.savedAddresses') },
           { icon: '💳', label: t('account.paymentMethods') },
         ].map(({ icon, label }) => (
-          <div key={label} className="flex items-center gap-3 p-4 rounded-xl border" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
+          <div key={label} className="flex items-center gap-3 p-4 rounded-xl border" style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#161b22' : '#fafafa' }}>
             <span className="text-xl">{icon}</span>
             <div>
               <p className="text-sm font-bold text-ink">{label}</p>
@@ -373,6 +379,7 @@ function ProfileEditor({ user }) {
 /* ── Dashboard ── */
 function Dashboard({ user, onSignOut }) {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const { formatPrice, parseUSD } = useCurrency()
   const [activeTab, setActiveTab] = useState('orders')
   const [orders, setOrders] = useState([])
@@ -400,8 +407,8 @@ function Dashboard({ user, onSignOut }) {
     <div className="max-w-4xl mx-auto">
       <motion.div
         initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.38 }}
-        className="bg-white rounded-2xl border p-6 mb-6 flex items-center gap-5"
-        style={{ borderColor: '#e0e0e0' }}
+        className="rounded-2xl border p-6 mb-6 flex items-center gap-5"
+        style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}
       >
         <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-black text-white shrink-0" style={{ backgroundColor: '#0056b3' }}>
           {user.name.charAt(0).toUpperCase()}
@@ -426,10 +433,10 @@ function Dashboard({ user, onSignOut }) {
 
       <motion.div
         initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.38, delay: 0.05 }}
-        className="bg-white rounded-2xl border overflow-hidden"
-        style={{ borderColor: '#e0e0e0' }}
+        className="rounded-2xl border overflow-hidden"
+        style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}
       >
-        <div className="flex border-b" style={{ borderColor: '#e0e0e0' }}>
+        <div className="flex border-b" style={{ borderColor: dark ? '#30363d' : '#e0e0e0' }}>
           {tabs.map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               className="flex-1 sm:flex-none sm:px-6 py-4 text-sm font-bold relative transition-colors"
@@ -450,7 +457,7 @@ function Dashboard({ user, onSignOut }) {
                 {ordersLoading ? (
                   <div className="space-y-3">
                     {[1, 2, 3].map(i => (
-                      <div key={i} className="flex items-center gap-4 p-4 rounded-xl border animate-pulse" style={{ borderColor: '#f0f0f0', backgroundColor: '#fafafa' }}>
+                      <div key={i} className="flex items-center gap-4 p-4 rounded-xl border animate-pulse" style={{ borderColor: dark ? '#30363d' : '#f0f0f0', backgroundColor: dark ? '#0d1117' : '#fafafa' }}>
                         <div className="w-12 h-12 rounded-xl bg-gray-200 shrink-0" />
                         <div className="flex-1 space-y-2">
                           <div className="h-3 bg-gray-200 rounded w-2/3" />
@@ -480,7 +487,7 @@ function Dashboard({ user, onSignOut }) {
                         <motion.div
                           key={order.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
                           className="flex items-center gap-4 p-4 rounded-xl border"
-                          style={{ borderColor: '#f0f0f0', backgroundColor: '#fafafa' }}
+                          style={{ borderColor: dark ? '#30363d' : '#f0f0f0', backgroundColor: dark ? '#0d1117' : '#fafafa' }}
                         >
                           <img
                             src={firstItem?.image || 'https://placehold.co/80x80?text=📦'}
@@ -506,7 +513,7 @@ function Dashboard({ user, onSignOut }) {
                         </motion.div>
                       )
                     })}
-                    <div className="mt-4 pt-4 border-t text-center" style={{ borderColor: '#f0f0f0' }}>
+                    <div className="mt-4 pt-4 border-t text-center" style={{ borderColor: dark ? '#30363d' : '#f0f0f0' }}>
                       <Link to="/" className="text-sm font-bold" style={{ color: '#0056b3' }}>
                         {t('checkout.continueShopping')} →
                       </Link>
@@ -530,6 +537,7 @@ function Dashboard({ user, onSignOut }) {
 /* ── Main ── */
 export default function AccountPage() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const {
     isAuthenticated, user, pendingPhone,
     signInWithEmail, register: authRegister,
@@ -632,7 +640,7 @@ export default function AccountPage() {
   /* ── Authenticated: show dashboard ── */
   if (isAuthenticated && user) {
     return (
-      <div className="min-h-[80vh] px-4 pt-36 lg:pt-44 pb-16" style={{ backgroundColor: '#f8fafc' }}>
+      <div className="min-h-[80vh] px-4 pt-36 lg:pt-44 pb-16" style={{ backgroundColor: dark ? '#0d1117' : '#f8fafc' }}>
         <div className="max-w-4xl mx-auto mb-6">
           <div className="flex items-center gap-1.5 text-xs text-muted">
             <Link to="/" className="hover:text-ink transition-colors">{t('product.home')}</Link>
@@ -646,7 +654,7 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 pt-36 lg:pt-44" style={{ backgroundColor: '#f8fafc' }}>
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 pt-36 lg:pt-44" style={{ backgroundColor: dark ? '#0d1117' : '#f8fafc' }}>
       <div className="w-full max-w-md">
 
         <div className="flex items-center gap-1.5 text-xs text-muted mb-8">
@@ -657,12 +665,12 @@ export default function AccountPage() {
 
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-          className="bg-white rounded-2xl shadow-sm border overflow-hidden"
-          style={{ borderColor: '#e0e0e0' }}
+          className="rounded-2xl shadow-sm border overflow-hidden"
+          style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}
         >
           {/* Tab bar */}
           {tab !== 'forgot' && signinView === 'main' && !registerSent && (
-            <div className="flex border-b" style={{ borderColor: '#e0e0e0' }}>
+            <div className="flex border-b" style={{ borderColor: dark ? '#30363d' : '#e0e0e0' }}>
               {['signin', 'register'].map(t_ => (
                 <button key={t_} onClick={() => switchTab(t_)}
                   className="flex-1 py-4 text-sm font-bold transition-colors relative"
@@ -712,9 +720,9 @@ export default function AccountPage() {
                   />
 
                   <div className="relative flex items-center gap-3 text-xs text-muted">
-                    <div className="flex-1 h-px" style={{ backgroundColor: '#e0e0e0' }} />
+                    <div className="flex-1 h-px" style={{ backgroundColor: dark ? '#30363d' : '#e0e0e0' }} />
                     {t('account.orWithEmail')}
-                    <div className="flex-1 h-px" style={{ backgroundColor: '#e0e0e0' }} />
+                    <div className="flex-1 h-px" style={{ backgroundColor: dark ? '#30363d' : '#e0e0e0' }} />
                   </div>
 
                   <form onSubmit={handleSignin} className="space-y-3" noValidate>
@@ -844,9 +852,9 @@ export default function AccountPage() {
                   />
 
                   <div className="relative flex items-center gap-3 text-xs text-muted">
-                    <div className="flex-1 h-px" style={{ backgroundColor: '#e0e0e0' }} />
+                    <div className="flex-1 h-px" style={{ backgroundColor: dark ? '#30363d' : '#e0e0e0' }} />
                     {t('account.orWithEmail')}
-                    <div className="flex-1 h-px" style={{ backgroundColor: '#e0e0e0' }} />
+                    <div className="flex-1 h-px" style={{ backgroundColor: dark ? '#30363d' : '#e0e0e0' }} />
                   </div>
 
                   <form onSubmit={handleRegister} className="space-y-3" noValidate>

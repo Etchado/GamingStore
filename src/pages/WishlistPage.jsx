@@ -7,6 +7,7 @@ import { useToast } from '@/context/ToastContext'
 import { useProducts } from '@/context/ProductsContext'
 import { ProductCard } from '@/components/ui/product-card'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { useTheme } from '@/context/ThemeContext'
 
 function parsePrice(str) {
   return parseFloat(String(str).replace(/[^0-9.]/g, '')) || 0
@@ -14,6 +15,7 @@ function parsePrice(str) {
 
 export default function WishlistPage() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   usePageTitle(t('wishlist.title'))
   const { ids, count, clear } = useWishlist()
   const { addItem } = useCart()
@@ -40,10 +42,10 @@ export default function WishlistPage() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
       className="pt-36 lg:pt-44 min-h-screen"
-      style={{ backgroundColor: '#f8fafc' }}
+      style={{ backgroundColor: dark ? '#0d1117' : '#f8fafc' }}
     >
       {/* Header */}
-      <div className="border-b bg-white" style={{ borderColor: '#e0e0e0' }}>
+      <div className="border-b" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
         <div className="max-w-7xl mx-auto px-6 py-8">
           <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
             ◈ {t('wishlist.sub')}

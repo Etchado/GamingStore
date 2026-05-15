@@ -9,6 +9,7 @@ import { useCurrency } from '@/context/CurrencyContext'
 import { useProducts } from '@/context/ProductsContext'
 import { onImgError } from '@/lib/imgFallback'
 import { useSEO } from '@/hooks/useSEO'
+import { useTheme } from '@/context/ThemeContext'
 
 /* ── helpers ─────────────────────────────────────── */
 function parseDollars(str) {
@@ -78,6 +79,7 @@ function Separator() {
 /* ── Deal Card ────────────────────────────────────── */
 function DealCard({ product }) {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const { addItem } = useCart()
   const { addToast } = useToast()
   const { toggle, has } = useWishlist()
@@ -95,19 +97,20 @@ function DealCard({ product }) {
       exit={{ opacity: 0, scale: 0.96 }}
       transition={{ type: 'spring', stiffness: 280, damping: 28 }}
       whileHover={{ y: -4 }}
-      className="group bg-white rounded-2xl border overflow-hidden flex flex-col"
+      className="group rounded-2xl border overflow-hidden flex flex-col"
       style={{
-        borderColor: '#e0e0e0',
+        backgroundColor: dark ? '#161b22' : '#ffffff',
+        borderColor: dark ? '#30363d' : '#e0e0e0',
         boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
         transition: 'box-shadow 0.2s, border-color 0.2s',
       }}
       onMouseEnter={e => {
         e.currentTarget.style.boxShadow = '0 10px 30px rgba(229,62,62,0.10), 0 2px 8px rgba(0,0,0,0.06)'
-        e.currentTarget.style.borderColor = '#fecaca'
+        e.currentTarget.style.borderColor = dark ? '#fecaca' : '#fecaca'
       }}
       onMouseLeave={e => {
         e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.06)'
-        e.currentTarget.style.borderColor = '#e0e0e0'
+        e.currentTarget.style.borderColor = dark ? '#30363d' : '#e0e0e0'
       }}
     >
       {/* Image */}
@@ -187,7 +190,7 @@ function DealCard({ product }) {
           <div className="flex justify-between text-[10px] font-semibold text-muted">
             <span>{claimed}% {t('dealsPage.claimed')}</span>
           </div>
-          <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#f0f0f0' }}>
+          <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: dark ? '#30363d' : '#f0f0f0' }}>
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${claimed}%` }}
@@ -220,6 +223,7 @@ function DealCard({ product }) {
 /* ── Page ─────────────────────────────────────────── */
 export default function DealsPage() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const { h, m, s } = useCountdown()
   const [activeCategory, setActiveCategory] = useState('all')
   const { products } = useProducts()
@@ -241,7 +245,7 @@ export default function DealsPage() {
   )
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen" style={{ backgroundColor: dark ? '#0d1117' : '#ffffff' }}>
       {/* Hero banner */}
       <div
         className="pt-36 lg:pt-44 pb-10"
@@ -292,14 +296,14 @@ export default function DealsPage() {
                 onClick={() => setActiveCategory(cat)}
                 className="px-4 py-1.5 rounded-full text-xs font-bold transition-colors"
                 style={{
-                  backgroundColor: activeCategory === cat ? '#e53e3e' : '#f5f5f5',
-                  color: activeCategory === cat ? '#fff' : '#555',
+                  backgroundColor: activeCategory === cat ? '#e53e3e' : (dark ? '#21262d' : '#f5f5f5'),
+                  color: activeCategory === cat ? '#fff' : (dark ? '#e6edf3' : '#555'),
                 }}
                 onMouseEnter={e => {
-                  if (activeCategory !== cat) e.currentTarget.style.backgroundColor = '#e0e0e0'
+                  if (activeCategory !== cat) e.currentTarget.style.backgroundColor = dark ? '#30363d' : '#e0e0e0'
                 }}
                 onMouseLeave={e => {
-                  if (activeCategory !== cat) e.currentTarget.style.backgroundColor = '#f5f5f5'
+                  if (activeCategory !== cat) e.currentTarget.style.backgroundColor = dark ? '#21262d' : '#f5f5f5'
                 }}
               >
                 {cat === 'all' ? t('dealsPage.allDeals') : cat}

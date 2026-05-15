@@ -2,6 +2,7 @@ import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { useTheme } from '@/context/ThemeContext'
 
 const stagger = (i) => ({
   initial:    { opacity: 0, y: 20 },
@@ -60,6 +61,7 @@ const VALUES = [
 
 export default function AboutPage() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   usePageTitle('About Us')
 
   return (
@@ -68,10 +70,10 @@ export default function AboutPage() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
       className="pt-36 lg:pt-44 min-h-screen"
-      style={{ backgroundColor: '#f8fafc' }}
+      style={{ backgroundColor: dark ? '#0d1117' : '#f8fafc' }}
     >
       {/* ── Hero ── */}
-      <div className="bg-white border-b" style={{ borderColor: '#e0e0e0' }}>
+      <div className="border-b" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
         <div className="max-w-4xl mx-auto px-6 py-16 text-center">
           <motion.p {...stagger(0)} className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>
             ◈ Our Story
@@ -90,7 +92,7 @@ export default function AboutPage() {
       </div>
 
       {/* ── Stats ── */}
-      <div className="bg-white border-b" style={{ borderColor: '#e0e0e0' }}>
+      <div className="border-b" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
         <div className="max-w-4xl mx-auto px-6 py-10">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
             {STATS.map((s, i) => (
@@ -111,8 +113,8 @@ export default function AboutPage() {
             <motion.div
               key={v.title}
               {...stagger(i)}
-              className="bg-white rounded-2xl border p-6"
-              style={{ borderColor: '#e0e0e0' }}
+              className="rounded-2xl border p-6"
+              style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}
             >
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
@@ -131,7 +133,7 @@ export default function AboutPage() {
       <div className="max-w-4xl mx-auto px-6 pb-16 text-center">
         <div
           className="rounded-2xl px-8 py-12 border"
-          style={{ backgroundColor: '#fff', borderColor: '#e0e0e0' }}
+          style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}
         >
           <h2 className="text-2xl font-black text-ink mb-3">Ready to Build?</h2>
           <p className="text-muted mb-6 max-w-md mx-auto">Browse our full catalog or configure your dream PC with our interactive builder.</p>
@@ -148,7 +150,7 @@ export default function AboutPage() {
             <Link
               to="/builder"
               className="px-8 py-3 rounded-xl text-sm font-bold border-2"
-              style={{ borderColor: '#28a745', color: '#1e8035' }}
+              style={{ borderColor: dark ? 'rgba(255,255,255,0.15)' : '#1e293b', color: dark ? '#e6edf3' : '#ffffff', backgroundColor: dark ? 'transparent' : '#1e293b' }}
             >
               PC Builder
             </Link>

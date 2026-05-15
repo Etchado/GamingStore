@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useSEO } from '@/hooks/useSEO'
+import { useTheme } from '@/context/ThemeContext'
 
 /* ── Shared breadcrumb ─────────────────────────────────────────── */
 function Crumb({ label }) {
@@ -19,6 +20,7 @@ function Crumb({ label }) {
 /* ── FAQ ───────────────────────────────────────────────────────── */
 function FAQSection() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const [open, setOpen] = useState(null)
   useSEO({ title: t('pages.faq'), description: t('pages.faqDesc') })
 
@@ -41,7 +43,7 @@ function FAQSection() {
             <div
               key={i}
               className="rounded-2xl border overflow-hidden transition-shadow hover:shadow-sm"
-              style={{ borderColor: open === i ? '#99c3eb' : '#e0e0e0', backgroundColor: open === i ? '#f8fbff' : '#fff' }}
+              style={{ borderColor: open === i ? '#99c3eb' : (dark ? '#30363d' : '#e0e0e0'), backgroundColor: open === i ? (dark ? 'rgba(0,86,179,0.12)' : '#f8fbff') : (dark ? '#161b22' : '#fff') }}
             >
               <button
                 className="w-full flex items-center justify-between gap-4 px-5 py-4 text-start"
@@ -93,6 +95,7 @@ function FAQSection() {
 /* ── Contact ───────────────────────────────────────────────────── */
 function ContactSection() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
   const [errors, setErrors] = useState({})
   const [sent, setSent] = useState(false)
@@ -119,7 +122,7 @@ function ContactSection() {
   }
 
   const fieldBase = (err) =>
-    `w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all bg-white ${err ? 'border-red-400' : 'border-border'}`
+    `w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all ${err ? 'border-red-400' : 'border-border'}`
 
   const focusStyle = (e, err) => { e.target.style.borderColor = err ? '#e53e3e' : '#0056b3'; e.target.style.boxShadow = '0 0 0 3px rgba(0,86,179,0.10)' }
   const blurStyle  = (e, err) => { e.target.style.borderColor = err ? '#e53e3e' : '#e0e0e0'; e.target.style.boxShadow = 'none' }
@@ -132,7 +135,7 @@ function ContactSection() {
 
         {/* Form */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-          className="bg-white rounded-2xl border p-6 sm:p-8" style={{ borderColor: '#e0e0e0' }}
+          className="rounded-2xl border p-6 sm:p-8" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}
         >
           <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>◈ {t('pages.contact')}</p>
           <h1 className="text-2xl font-black text-ink mb-6">{t('contactPage.infoTitle')}</h1>
@@ -160,7 +163,7 @@ function ContactSection() {
                     <input value={form.name} onChange={e => { setForm(p => ({ ...p, name: e.target.value })); setErrors(p => ({ ...p, name: '' })) }}
                       className={fieldBase(errors.name)} placeholder="John Doe"
                       onFocus={e => focusStyle(e, errors.name)} onBlur={e => blurStyle(e, errors.name)}
-                      style={{ borderColor: errors.name ? '#e53e3e' : '#e0e0e0' }}
+                      style={{ borderColor: errors.name ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0'), backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c' }}
                     />
                     {errors.name && <p className="text-xs mt-1 text-red-500">{errors.name}</p>}
                   </div>
@@ -169,7 +172,7 @@ function ContactSection() {
                     <input type="email" value={form.email} onChange={e => { setForm(p => ({ ...p, email: e.target.value })); setErrors(p => ({ ...p, email: '' })) }}
                       className={fieldBase(errors.email)} placeholder="you@example.com"
                       onFocus={e => focusStyle(e, errors.email)} onBlur={e => blurStyle(e, errors.email)}
-                      style={{ borderColor: errors.email ? '#e53e3e' : '#e0e0e0' }}
+                      style={{ borderColor: errors.email ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0'), backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c' }}
                     />
                     {errors.email && <p className="text-xs mt-1 text-red-500">{errors.email}</p>}
                   </div>
@@ -179,7 +182,7 @@ function ContactSection() {
                   <label className="block text-xs font-bold text-ink mb-1.5">{t('contactPage.subjectLabel')}</label>
                   <select value={form.subject} onChange={e => { setForm(p => ({ ...p, subject: e.target.value })); setErrors(p => ({ ...p, subject: '' })) }}
                     className={fieldBase(errors.subject) + ' cursor-pointer'}
-                    style={{ borderColor: errors.subject ? '#e53e3e' : '#e0e0e0' }}
+                    style={{ borderColor: errors.subject ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0'), backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c' }}
                   >
                     <option value="">{t('contactPage.subjectPlaceholder')}</option>
                     {subjects.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
@@ -194,7 +197,7 @@ function ContactSection() {
                     placeholder={t('contactPage.messagePlaceholder')}
                     className={fieldBase(errors.message) + ' resize-none'}
                     onFocus={e => focusStyle(e, errors.message)} onBlur={e => blurStyle(e, errors.message)}
-                    style={{ borderColor: errors.message ? '#e53e3e' : '#e0e0e0' }}
+                    style={{ borderColor: errors.message ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0'), backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c' }}
                   />
                   <div className="flex items-center justify-between mt-1">
                     {errors.message ? <p className="text-xs text-red-500">{errors.message}</p> : <span />}
@@ -225,7 +228,7 @@ function ContactSection() {
 
         {/* Info sidebar */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08 }} className="space-y-4">
-          <div className="bg-white rounded-2xl border p-6" style={{ borderColor: '#e0e0e0' }}>
+          <div className="rounded-2xl border p-6" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
             <h3 className="text-sm font-black text-ink mb-4">{t('contactPage.infoTitle')}</h3>
             <p className="text-xs text-muted leading-relaxed mb-5">{t('contactPage.infoSub')}</p>
             {[
@@ -233,7 +236,7 @@ function ContactSection() {
               { icon: '📞', label: t('pages.callUs'),    val: '+1 (800) 123-4567' },
               { icon: '⏰', label: t('pages.hours'),     val: t('pages.hoursValue') },
             ].map(({ icon, label, val }) => (
-              <div key={label} className="flex items-start gap-3 py-3 border-t" style={{ borderColor: '#f0f0f0' }}>
+              <div key={label} className="flex items-start gap-3 py-3 border-t" style={{ borderColor: dark ? '#30363d' : '#f0f0f0' }}>
                 <span className="text-lg mt-0.5">{icon}</span>
                 <div>
                   <p className="text-xs font-bold text-ink">{label}</p>
@@ -273,6 +276,7 @@ const MOCK_ORDERS = {
 
 function TrackOrderSection() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const [orderId, setOrderId] = useState('')
   const [result, setResult]   = useState(null)
   const [notFound, setNotFound] = useState(false)
@@ -307,10 +311,10 @@ function TrackOrderSection() {
             value={orderId}
             onChange={e => { setOrderId(e.target.value); setNotFound(false) }}
             placeholder={t('trackOrderPage.idPlaceholder')}
-            className="flex-1 px-4 py-3 rounded-xl border text-sm outline-none transition-all bg-white"
-            style={{ borderColor: '#e0e0e0' }}
+            className="flex-1 px-4 py-3 rounded-xl border text-sm outline-none transition-all"
+            style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c' }}
             onFocus={e => { e.target.style.borderColor = '#0056b3'; e.target.style.boxShadow = '0 0 0 3px rgba(0,86,179,0.10)' }}
-            onBlur={e =>  { e.target.style.borderColor = '#e0e0e0'; e.target.style.boxShadow = 'none' }}
+            onBlur={e =>  { e.target.style.borderColor = dark ? '#30363d' : '#e0e0e0'; e.target.style.boxShadow = 'none' }}
           />
           <button
             type="submit"
@@ -337,10 +341,10 @@ function TrackOrderSection() {
 
           {result && (
             <motion.div key="result" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-              className="rounded-2xl border overflow-hidden" style={{ borderColor: '#e0e0e0' }}
+              className="rounded-2xl border overflow-hidden" style={{ borderColor: dark ? '#30363d' : '#e0e0e0' }}
             >
               {/* Header */}
-              <div className="px-6 py-4 flex items-center justify-between gap-4" style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e0e0e0' }}>
+              <div className="px-6 py-4 flex items-center justify-between gap-4" style={{ backgroundColor: dark ? '#161b22' : '#f8fafc', borderBottom: `1px solid ${dark ? '#30363d' : '#e0e0e0'}` }}>
                 <div>
                   <p className="text-xs text-muted font-medium">{t('checkout.orderId')}</p>
                   <p className="text-sm font-black text-ink">{result.id}</p>
@@ -362,7 +366,7 @@ function TrackOrderSection() {
                     { l: t('trackOrderPage.carrier'),    v: result.carrier },
                     { l: t('trackOrderPage.trackingNum'), v: result.tracking.slice(-8) },
                   ].map(({ l, v }) => (
-                    <div key={l} className="rounded-xl p-3" style={{ backgroundColor: '#f8fafc', border: '1px solid #e0e0e0' }}>
+                    <div key={l} className="rounded-xl p-3" style={{ backgroundColor: dark ? '#161b22' : '#f8fafc', border: `1px solid ${dark ? '#30363d' : '#e0e0e0'}` }}>
                       <p className="text-[10px] text-muted uppercase tracking-wide mb-1">{l}</p>
                       <p className="text-xs font-black text-ink">{v}</p>
                     </div>
@@ -419,6 +423,7 @@ function TrackOrderSection() {
 /* ── Returns ───────────────────────────────────────────────────── */
 function ReturnsSection() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   useSEO({ title: t('pages.returns'), description: t('pages.returnsDesc') })
 
   const policies = [
@@ -438,7 +443,7 @@ function ReturnsSection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
           {policies.map(({ icon, titleKey, descKey }) => (
-            <div key={titleKey} className="bg-white rounded-2xl border p-5" style={{ borderColor: '#e0e0e0' }}>
+            <div key={titleKey} className="rounded-2xl border p-5" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
               <div className="text-2xl mb-3">{icon}</div>
               <h3 className="text-sm font-black text-ink mb-1.5">{t(`returnsPage.${titleKey}`)}</h3>
               <p className="text-xs text-muted leading-relaxed">{t(`returnsPage.${descKey}`)}</p>
@@ -446,7 +451,7 @@ function ReturnsSection() {
           ))}
         </div>
 
-        <div className="bg-white rounded-2xl border p-6 mb-6" style={{ borderColor: '#e0e0e0' }}>
+        <div className="rounded-2xl border p-6 mb-6" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
           <h2 className="text-base font-black text-ink mb-5">{t('returnsPage.stepsTitle')}</h2>
           <div className="space-y-4">
             {[1, 2, 3, 4].map(n => (
@@ -476,6 +481,7 @@ function ReturnsSection() {
 /* ── Warranty ──────────────────────────────────────────────────── */
 function WarrantySection() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   useSEO({ title: t('pages.warranty'), description: t('pages.warrantyDesc') })
 
   const tiers = [
@@ -504,7 +510,7 @@ function WarrantySection() {
           ))}
         </div>
 
-        <div className="bg-white rounded-2xl border p-6 text-center" style={{ borderColor: '#e0e0e0' }}>
+        <div className="rounded-2xl border p-6 text-center" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
           <h2 className="text-base font-black text-ink mb-2">{t('warrantyPage.claimsTitle')}</h2>
           <p className="text-sm text-muted mb-5 max-w-md mx-auto">{t('warrantyPage.claimsDesc')}</p>
           <Link to="/contact" className="inline-block px-8 py-3 rounded-xl text-white text-sm font-black" style={{ backgroundColor: '#0056b3' }}>
@@ -519,6 +525,7 @@ function WarrantySection() {
 /* ── Locations ─────────────────────────────────────────────────── */
 function LocationsSection() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   useSEO({ title: t('pages.locations'), description: t('pages.locationsDesc') })
 
   const LOC_MAPS = [
@@ -547,12 +554,12 @@ function LocationsSection() {
             <motion.div key={city}
               whileHover={{ y: -4 }}
               transition={{ type: 'spring', stiffness: 300 }}
-              className="bg-white rounded-2xl border p-6 flex flex-col" style={{ borderColor: '#e0e0e0' }}
+              className="rounded-2xl border p-6 flex flex-col" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}
             >
               <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-4" style={{ backgroundColor: '#e6f0fa' }}>📍</div>
               <h2 className="text-base font-black text-ink mb-3">{city}</h2>
               <p className="text-xs text-muted leading-relaxed mb-2">{address}</p>
-              <div className="mt-auto space-y-2 pt-4 border-t" style={{ borderColor: '#f0f0f0' }}>
+              <div className="mt-auto space-y-2 pt-4 border-t" style={{ borderColor: dark ? '#30363d' : '#f0f0f0' }}>
                 <div className="flex items-start gap-2">
                   <span className="text-xs text-muted font-bold shrink-0">{t('locationsPage.hours')}:</span>
                   <span className="text-xs text-muted">{hours}</span>
@@ -582,6 +589,7 @@ function LocationsSection() {
 /* ── Builder Guide ─────────────────────────────────────────────── */
 function BuilderGuideSection() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   useSEO({ title: t('pages.builderGuide'), description: t('pages.builderGuideDesc') })
 
   const STEP_ICONS = ['💰', '🔲', '💾', '🖼️', '⚡', '🔧', '🔌', '🚀']
@@ -602,7 +610,7 @@ function BuilderGuideSection() {
 
         <div className="space-y-4 mb-10">
           {steps.map(({ n, icon, title, desc }) => (
-            <div key={n} className="bg-white rounded-2xl border p-5 flex gap-5 items-start" style={{ borderColor: '#e0e0e0' }}>
+            <div key={n} className="rounded-2xl border p-5 flex gap-5 items-start" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
               <div className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-xl" style={{ backgroundColor: '#e6f0fa' }}>
                 {icon}
               </div>
@@ -639,6 +647,7 @@ function BuilderGuideSection() {
 /* ── Live Chat ─────────────────────────────────────────────────── */
 function LiveChatSection() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const [form, setForm] = useState({ name: '', email: '', topic: '', message: '' })
   const [errors, setErrors] = useState({})
   const [sent, setSent] = useState(false)
@@ -666,7 +675,7 @@ function LiveChatSection() {
 
   const focusStyle = e => { e.target.style.borderColor = '#0056b3'; e.target.style.boxShadow = '0 0 0 3px rgba(0,86,179,0.10)' }
   const blurStyle  = e => { e.target.style.borderColor = '#e0e0e0'; e.target.style.boxShadow = 'none' }
-  const fieldCls   = err => `w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all bg-white`
+  const fieldCls   = err => `w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all`
 
   return (
     <div className="max-w-4xl mx-auto px-6 pt-4 pb-16">
@@ -678,7 +687,7 @@ function LiveChatSection() {
           <h1 className="text-3xl font-black text-ink mb-2">{t('liveChatPage.offlineTitle')}</h1>
           <p className="text-sm text-muted mb-8">{t('liveChatPage.offlineSub')}</p>
 
-          <div className="bg-white rounded-2xl border p-6 sm:p-8" style={{ borderColor: '#e0e0e0' }}>
+          <div className="rounded-2xl border p-6 sm:p-8" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
             <AnimatePresence mode="wait">
               {sent ? (
                 <motion.div key="success" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-8">
@@ -695,7 +704,7 @@ function LiveChatSection() {
                       <label className="block text-xs font-bold text-ink mb-1.5">{t('liveChatPage.nameLabel')}</label>
                       <input value={form.name} onChange={e => { setForm(p => ({ ...p, name: e.target.value })); setErrors(p => ({ ...p, name: '' })) }}
                         className={fieldCls(errors.name)} placeholder="Your name"
-                        style={{ borderColor: errors.name ? '#e53e3e' : '#e0e0e0' }}
+                        style={{ borderColor: errors.name ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0'), backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c' }}
                         onFocus={focusStyle} onBlur={blurStyle}
                       />
                       {errors.name && <p className="text-xs mt-1 text-red-500">{errors.name}</p>}
@@ -704,7 +713,7 @@ function LiveChatSection() {
                       <label className="block text-xs font-bold text-ink mb-1.5">{t('liveChatPage.emailLabel')}</label>
                       <input type="email" value={form.email} onChange={e => { setForm(p => ({ ...p, email: e.target.value })); setErrors(p => ({ ...p, email: '' })) }}
                         className={fieldCls(errors.email)} placeholder="you@example.com"
-                        style={{ borderColor: errors.email ? '#e53e3e' : '#e0e0e0' }}
+                        style={{ borderColor: errors.email ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0'), backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c' }}
                         onFocus={focusStyle} onBlur={blurStyle}
                       />
                       {errors.email && <p className="text-xs mt-1 text-red-500">{errors.email}</p>}
@@ -714,7 +723,7 @@ function LiveChatSection() {
                     <label className="block text-xs font-bold text-ink mb-1.5">{t('liveChatPage.topicLabel')}</label>
                     <select value={form.topic} onChange={e => { setForm(p => ({ ...p, topic: e.target.value })); setErrors(p => ({ ...p, topic: '' })) }}
                       className={fieldCls(errors.topic) + ' cursor-pointer'}
-                      style={{ borderColor: errors.topic ? '#e53e3e' : '#e0e0e0' }}
+                      style={{ borderColor: errors.topic ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0'), backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c' }}
                     >
                       <option value="">{t('liveChatPage.selectTopic')}</option>
                       {topics.map(tp => <option key={tp.value} value={tp.value}>{tp.label}</option>)}
@@ -727,7 +736,7 @@ function LiveChatSection() {
                       onChange={e => { setForm(p => ({ ...p, message: e.target.value })); setErrors(p => ({ ...p, message: '' })) }}
                       placeholder={t('liveChatPage.messagePlaceholder')}
                       className={fieldCls(errors.message) + ' resize-none'}
-                      style={{ borderColor: errors.message ? '#e53e3e' : '#e0e0e0' }}
+                      style={{ borderColor: errors.message ? '#e53e3e' : (dark ? '#30363d' : '#e0e0e0'), backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c' }}
                       onFocus={focusStyle} onBlur={blurStyle}
                     />
                     {errors.message && <p className="text-xs mt-1 text-red-500">{errors.message}</p>}
@@ -755,14 +764,14 @@ function LiveChatSection() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08 }} className="space-y-4">
-          <div className="rounded-2xl border p-5 bg-white" style={{ borderColor: '#e0e0e0' }}>
+          <div className="rounded-2xl border p-5" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
             <div className="flex items-center gap-2 mb-3">
               <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
               <span className="text-xs font-bold text-muted">{t('liveChatPage.offline')}</span>
             </div>
             <p className="text-xs font-bold text-ink mb-1">{t('pages.liveChat')}</p>
             <p className="text-xs text-muted leading-relaxed">{t('pages.liveChatDesc')}</p>
-            <div className="mt-4 pt-4 border-t space-y-2" style={{ borderColor: '#f0f0f0' }}>
+            <div className="mt-4 pt-4 border-t space-y-2" style={{ borderColor: dark ? '#30363d' : '#f0f0f0' }}>
               {[
                 { icon: '📧', val: 'support@gamingstore.com' },
                 { icon: '📞', val: '+1 (800) 123-4567' },
@@ -775,7 +784,7 @@ function LiveChatSection() {
               ))}
             </div>
           </div>
-          <div className="rounded-2xl border p-5 bg-white" style={{ borderColor: '#e0e0e0' }}>
+          <div className="rounded-2xl border p-5" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
             <p className="text-xs font-black text-ink mb-3">{t('liveChatPage.orTry')}</p>
             <Link to="/faq" className="block text-xs font-bold transition-colors" style={{ color: '#0056b3' }}>
               {t('liveChatPage.faqBtn')}
@@ -790,6 +799,7 @@ function LiveChatSection() {
 /* ── Privacy ────────────────────────────────────────────────────── */
 function PrivacySection() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   useSEO({ title: t('pages.privacy'), description: t('pages.privacyDesc') })
 
   return (
@@ -802,7 +812,7 @@ function PrivacySection() {
         <p className="text-sm text-muted mb-10 leading-relaxed">{t('privacyPage.intro')}</p>
         <div className="space-y-4">
           {[1,2,3,4,5,6,7].map(n => (
-            <div key={n} className="bg-white rounded-2xl border p-6" style={{ borderColor: '#e0e0e0' }}>
+            <div key={n} className="rounded-2xl border p-6" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
               <h2 className="text-sm font-black text-ink mb-2">{n}. {t(`privacyPage.s${n}Title`)}</h2>
               <p className="text-sm text-muted leading-relaxed">{t(`privacyPage.s${n}Desc`)}</p>
             </div>
@@ -816,6 +826,7 @@ function PrivacySection() {
 /* ── Terms ──────────────────────────────────────────────────────── */
 function TermsSection() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   useSEO({ title: t('pages.terms'), description: t('pages.termsDesc') })
 
   return (
@@ -828,7 +839,7 @@ function TermsSection() {
         <p className="text-sm text-muted mb-10 leading-relaxed">{t('termsPage.intro')}</p>
         <div className="space-y-4">
           {[1,2,3,4,5,6,7].map(n => (
-            <div key={n} className="bg-white rounded-2xl border p-6" style={{ borderColor: '#e0e0e0' }}>
+            <div key={n} className="rounded-2xl border p-6" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
               <h2 className="text-sm font-black text-ink mb-2">{n}. {t(`termsPage.s${n}Title`)}</h2>
               <p className="text-sm text-muted leading-relaxed">{t(`termsPage.s${n}Desc`)}</p>
             </div>
@@ -842,6 +853,7 @@ function TermsSection() {
 /* ── Cookies ────────────────────────────────────────────────────── */
 function CookiesSection() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   useSEO({ title: t('pages.cookies'), description: t('pages.cookiesDesc') })
 
   const [prefs, setPrefs] = useState({ analytics: true, marketing: false, preference: true })
@@ -868,7 +880,7 @@ function CookiesSection() {
           {categories.map(({ key, badgeKey, titleKey, descKey, forced }) => {
             const enabled = forced || !!prefs[key]
             return (
-              <div key={key} className="bg-white rounded-2xl border p-5 flex items-start gap-4" style={{ borderColor: '#e0e0e0' }}>
+              <div key={key} className="rounded-2xl border p-5 flex items-start gap-4" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                     <h3 className="text-sm font-black text-ink">{t(`cookiesPage.${titleKey}`)}</h3>
@@ -947,9 +959,10 @@ function GenericPlaceholder() {
 /* ── Router ────────────────────────────────────────────────────── */
 export default function SupportPage() {
   const { pathname } = useLocation()
+  const { dark } = useTheme()
 
   return (
-    <div className="min-h-[80vh] pt-36 lg:pt-44" style={{ backgroundColor: '#f8fafc' }}>
+    <div className="min-h-[80vh] pt-36 lg:pt-44" style={{ backgroundColor: dark ? '#0d1117' : '#f8fafc' }}>
       {pathname === '/faq'           && <FAQSection />}
       {pathname === '/contact'       && <ContactSection />}
       {pathname === '/track-order'   && <TrackOrderSection />}

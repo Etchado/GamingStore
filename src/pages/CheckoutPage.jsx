@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { onImgError } from '@/lib/imgFallback'
 import { supabase } from '@/lib/supabase'
+import { useTheme } from '@/context/ThemeContext'
 
 function genOrderId() {
   return 'GS-' + Math.random().toString(36).slice(2, 8).toUpperCase()
@@ -16,6 +17,7 @@ function genOrderId() {
 /* ── Step indicator ── */
 function StepBar({ current }) {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const STEPS = [t('checkout.step1'), t('checkout.step2'), t('checkout.step3')]
 
   return (
@@ -30,8 +32,8 @@ function StepBar({ current }) {
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black transition-colors"
                 style={{
-                  backgroundColor: done || active ? '#0056b3' : '#f0f0f0',
-                  color:           done || active ? '#fff'     : '#aaa',
+                  backgroundColor: done || active ? '#0056b3' : (dark ? '#30363d' : '#f0f0f0'),
+                  color:           done || active ? '#fff'     : (dark ? '#8b949e' : '#aaa'),
                 }}
               >
                 {done ? (
@@ -50,7 +52,7 @@ function StepBar({ current }) {
             {i < STEPS.length - 1 && (
               <div
                 className="flex-1 h-0.5 mx-2 mb-4 transition-colors"
-                style={{ backgroundColor: done ? '#0056b3' : '#e0e0e0' }}
+                style={{ backgroundColor: done ? '#0056b3' : (dark ? '#30363d' : '#e0e0e0') }}
               />
             )}
           </div>
@@ -72,16 +74,17 @@ function Field({ label, error, children }) {
 }
 
 const inputClass = (err) =>
-  `w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all bg-white ${
+  `w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all ${
     err ? 'border-red-400' : 'border-border'
   }`
 
-function Input({ error, ...props }) {
+function Input({ error, dark, ...props }) {
   return (
     <input
       className={inputClass(error)}
+      style={{ backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c' }}
       onFocus={(e)  => { if (!error) e.target.style.borderColor = '#0056b3'; e.target.style.boxShadow = '0 0 0 3px rgba(0,86,179,0.10)' }}
-      onBlur={(e)   => { e.target.style.borderColor = error ? '#f87171' : '#e0e0e0'; e.target.style.boxShadow = 'none' }}
+      onBlur={(e)   => { e.target.style.borderColor = error ? '#f87171' : (dark ? '#30363d' : '#e0e0e0'); e.target.style.boxShadow = 'none' }}
       {...props}
     />
   )
@@ -90,10 +93,11 @@ function Input({ error, ...props }) {
 /* ── Order Summary sidebar ── */
 function OrderSummary({ items, subtotal, shipping, vat, total, discount, coupon, couponInput, setCouponInput, couponError, onApply, onRemove }) {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const { formatPrice, parseUSD } = useCurrency()
   return (
-    <div className="rounded-2xl border overflow-hidden" style={{ borderColor: '#e0e0e0' }}>
-      <div className="px-5 py-4 border-b" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
+    <div className="rounded-2xl border overflow-hidden" style={{ borderColor: dark ? '#30363d' : '#e0e0e0' }}>
+      <div className="px-5 py-4 border-b" style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#161b22' : '#fafafa' }}>
         <h3 className="text-sm font-black text-ink">{t('checkout.orderSummary')}</h3>
       </div>
       <div className="px-5 py-4 space-y-3 max-h-64 overflow-y-auto">
@@ -103,7 +107,7 @@ function OrderSummary({ items, subtotal, shipping, vat, total, discount, coupon,
               src={product.image} alt={product.title}
               loading="lazy" onError={onImgError}
               className="w-12 h-12 rounded-xl object-cover shrink-0 bg-surface border"
-              style={{ borderColor: '#e0e0e0' }}
+              style={{ borderColor: dark ? '#30363d' : '#e0e0e0' }}
             />
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-ink line-clamp-1">{product.title}</p>
@@ -117,7 +121,7 @@ function OrderSummary({ items, subtotal, shipping, vat, total, discount, coupon,
       </div>
 
       {/* Coupon input */}
-      <div className="px-5 py-3 border-t" style={{ borderColor: '#e0e0e0' }}>
+      <div className="px-5 py-3 border-t" style={{ borderColor: dark ? '#30363d' : '#e0e0e0' }}>
         {coupon ? (
           <div className="flex items-center justify-between rounded-xl px-3 py-2" style={{ backgroundColor: '#e9f7ed' }}>
             <div>
@@ -144,9 +148,9 @@ function OrderSummary({ items, subtotal, shipping, vat, total, discount, coupon,
                 onKeyDown={e => e.key === 'Enter' && onApply()}
                 placeholder={t('checkout.couponPlaceholder')}
                 className="flex-1 min-w-0 border rounded-xl px-3 py-2 text-xs outline-none transition-colors font-bold tracking-wider"
-                style={{ borderColor: couponError ? '#f87171' : '#e0e0e0' }}
+                style={{ borderColor: couponError ? '#f87171' : (dark ? '#30363d' : '#e0e0e0'), backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c' }}
                 onFocus={e => { e.target.style.borderColor = '#0056b3' }}
-                onBlur={e => { e.target.style.borderColor = couponError ? '#f87171' : '#e0e0e0' }}
+                onBlur={e => { e.target.style.borderColor = couponError ? '#f87171' : (dark ? '#30363d' : '#e0e0e0') }}
               />
               <button
                 onClick={onApply}
@@ -163,7 +167,7 @@ function OrderSummary({ items, subtotal, shipping, vat, total, discount, coupon,
         )}
       </div>
 
-      <div className="px-5 py-4 border-t space-y-2" style={{ borderColor: '#e0e0e0' }}>
+      <div className="px-5 py-4 border-t space-y-2" style={{ borderColor: dark ? '#30363d' : '#e0e0e0' }}>
         <div className="flex justify-between text-sm text-muted">
           <span>{t('checkout.subtotal')}</span>
           <span className="text-ink font-semibold">{formatPrice(subtotal)}</span>
@@ -184,7 +188,7 @@ function OrderSummary({ items, subtotal, shipping, vat, total, discount, coupon,
             <span className="font-bold" style={{ color: '#1e8035' }}>−{formatPrice(discount)}</span>
           </div>
         )}
-        <div className="h-px" style={{ backgroundColor: '#e0e0e0' }} />
+        <div className="h-px" style={{ backgroundColor: dark ? '#30363d' : '#e0e0e0' }} />
         <div className="flex justify-between">
           <div>
             <span className="text-sm font-black text-ink">{t('checkout.total')}</span>
@@ -200,9 +204,11 @@ function OrderSummary({ items, subtotal, shipping, vat, total, discount, coupon,
 /* ── Step 1: Shipping ── */
 function ShippingStep({ data, onChange, errors }) {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const field = (name) => ({
     value: data[name],
     error: errors[name],
+    dark,
     onChange: (e) => onChange(name, e.target.value),
   })
 
@@ -257,6 +263,7 @@ function ShippingStep({ data, onChange, errors }) {
                 value={data.country}
                 onChange={(e) => onChange('country', e.target.value)}
                 className={inputClass(errors.country) + ' cursor-pointer'}
+                style={{ backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c' }}
               >
                 <option value="">{t('checkout.selectCountry')}</option>
                 {COUNTRIES.map(c => (
@@ -274,6 +281,7 @@ function ShippingStep({ data, onChange, errors }) {
 /* ── Step 2: Payment ── */
 function PaymentStep({ data, onChange, errors }) {
   const { t } = useTranslation()
+  const { dark } = useTheme()
 
   function handleCardNumber(e) {
     const raw = e.target.value.replace(/\D/g, '').slice(0, 16)
@@ -326,6 +334,7 @@ function PaymentStep({ data, onChange, errors }) {
             placeholder="John Doe"
             value={data.cardName}
             error={errors.cardName}
+            dark={dark}
             onChange={(e) => onChange('cardName', e.target.value.toUpperCase())}
           />
         </Field>
@@ -334,6 +343,7 @@ function PaymentStep({ data, onChange, errors }) {
             placeholder="0000 0000 0000 0000"
             value={data.cardNumber}
             error={errors.cardNumber}
+            dark={dark}
             onChange={handleCardNumber}
             maxLength={19}
           />
@@ -344,6 +354,7 @@ function PaymentStep({ data, onChange, errors }) {
               placeholder="MM/YY"
               value={data.expiry}
               error={errors.expiry}
+              dark={dark}
               onChange={handleExpiry}
               maxLength={5}
             />
@@ -353,6 +364,7 @@ function PaymentStep({ data, onChange, errors }) {
               placeholder="•••"
               value={data.cvv}
               error={errors.cvv}
+              dark={dark}
               onChange={(e) => onChange('cvv', e.target.value.replace(/\D/g, '').slice(0, 4))}
               maxLength={4}
             />
@@ -362,7 +374,7 @@ function PaymentStep({ data, onChange, errors }) {
 
       <div
         className="flex items-center gap-2.5 rounded-xl px-4 py-3 text-xs font-medium text-muted"
-        style={{ backgroundColor: '#f8fafc', border: '1px solid #e0e0e0' }}
+        style={{ backgroundColor: dark ? '#161b22' : '#f8fafc', border: `1px solid ${dark ? '#30363d' : '#e0e0e0'}` }}
       >
         <svg className="w-4 h-4 shrink-0" style={{ color: '#28a745' }} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -377,6 +389,7 @@ function PaymentStep({ data, onChange, errors }) {
 /* ── Step 3: Confirmed ── */
 function ConfirmedStep({ orderId, shipping, items }) {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const navigate = useNavigate()
   const { clearCart } = useCart()
 
@@ -409,7 +422,7 @@ function ConfirmedStep({ orderId, shipping, items }) {
 
       <div
         className="w-full rounded-2xl px-6 py-4 text-start"
-        style={{ backgroundColor: '#f8fafc', border: '1px solid #e0e0e0' }}
+        style={{ backgroundColor: dark ? '#161b22' : '#f8fafc', border: `1px solid ${dark ? '#30363d' : '#e0e0e0'}` }}
       >
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs font-black uppercase tracking-widest text-muted">{t('checkout.orderId')}</span>
@@ -474,6 +487,7 @@ const PAYMENT_INIT  = { cardName: '', cardNumber: '', expiry: '', cvv: '' }
 
 export default function CheckoutPage() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const { items, total, setIsOpen } = useCart()
   const { formatPrice } = useCurrency()
   const { isAuthenticated, loading: authLoading, signInWithGoogle, signInWithApple, user } = useAuth()
@@ -614,27 +628,27 @@ export default function CheckoutPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="pt-36 lg:pt-44 min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: '#f8fafc' }}>
+      <div className="pt-36 lg:pt-44 min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: dark ? '#0d1117' : '#f8fafc' }}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-          className="w-full max-w-sm bg-white rounded-2xl shadow-sm border overflow-hidden"
-          style={{ borderColor: '#e0e0e0' }}
+          className="w-full max-w-sm rounded-2xl shadow-sm border overflow-hidden"
+          style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}
         >
-          <div className="px-6 py-5 border-b text-center" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
+          <div className="px-6 py-5 border-b text-center" style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#0d1117' : '#fafafa' }}>
             <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg mx-auto mb-2" style={{ backgroundColor: '#e6f0fa' }}>🔒</div>
             <h2 className="text-sm font-black text-ink">{t('checkout.signInRequired')}</h2>
             <p className="text-xs text-muted mt-0.5">{t('checkout.signInRequiredSub')}</p>
           </div>
           <div className="p-5 space-y-3">
             <button onClick={signInWithGoogle}
-              className="flex items-center justify-center gap-2.5 w-full py-3 rounded-xl border text-sm font-bold text-ink hover:bg-gray-50 transition-colors"
-              style={{ borderColor: '#e0e0e0' }}
+              className="flex items-center justify-center gap-2.5 w-full py-3 rounded-xl border text-sm font-bold text-ink transition-colors"
+              style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#161b22' : '#fff' }}
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
               {t('account.continueWithGoogle')}
             </button>
             <button onClick={signInWithApple}
-              className="flex items-center justify-center gap-2.5 w-full py-3 rounded-xl border text-sm font-bold text-ink hover:bg-gray-50 transition-colors"
-              style={{ borderColor: '#e0e0e0' }}
+              className="flex items-center justify-center gap-2.5 w-full py-3 rounded-xl border text-sm font-bold text-ink transition-colors"
+              style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#161b22' : '#fff' }}
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
               {t('account.continueWithApple')}
@@ -668,8 +682,8 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="pt-36 lg:pt-44 min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
-      <div className="border-b bg-white" style={{ borderColor: '#e0e0e0' }}>
+    <div className="pt-36 lg:pt-44 min-h-screen" style={{ backgroundColor: dark ? '#0d1117' : '#f8fafc' }}>
+      <div className="border-b" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center gap-2 text-xs text-muted font-medium">
           <Link to="/" className="hover:text-ink transition-colors">{t('checkout.home')}</Link>
           <span className="text-gray-300">›</span>
@@ -687,8 +701,8 @@ export default function CheckoutPage() {
             initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="bg-white rounded-2xl border p-6 sm:p-8"
-            style={{ borderColor: '#e0e0e0' }}
+            className="rounded-2xl border p-6 sm:p-8"
+            style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}
           >
             <StepBar current={step} />
 

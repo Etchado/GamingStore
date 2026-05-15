@@ -13,6 +13,7 @@ import { onImgError } from '@/lib/imgFallback'
 import { useProducts } from '@/context/ProductsContext'
 import { ProductCard } from '@/components/ui/product-card'
 import { supabase } from '@/lib/supabase'
+import { useTheme } from '@/context/ThemeContext'
 
 const badges = {
   System:   { bg: '#e6f0fa', text: '#004494' },
@@ -65,8 +66,9 @@ const AVATAR_COLORS = ['#0056b3', '#7e22ce', '#1e8035', '#c2410c']
 
 function ReviewCard({ review, colorIndex }) {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   return (
-    <div className="rounded-2xl border p-6" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
+    <div className="rounded-2xl border p-6" style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#161b22' : '#fafafa' }}>
       <div className="flex items-start justify-between gap-4 mb-4">
         <div className="flex items-center gap-3">
           <div
@@ -127,6 +129,7 @@ function StarPicker({ value, onChange }) {
 
 function ReviewsSection({ productId, rating, reviewCount }) {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const { isAuthenticated, user } = useAuth()
   const [reviews, setReviews]     = useState([])
   const [loading, setLoading]     = useState(true)
@@ -208,7 +211,7 @@ function ReviewsSection({ productId, rating, reviewCount }) {
           initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
           onSubmit={handleSubmit}
           className="mb-6 p-5 rounded-2xl border space-y-4"
-          style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}
+          style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#161b22' : '#fafafa' }}
         >
           <h3 className="text-sm font-black text-ink">Your Review</h3>
           <div>
@@ -222,10 +225,10 @@ function ReviewsSection({ productId, rating, reviewCount }) {
               onChange={e => { setBody(e.target.value); setSubmitError('') }}
               placeholder="Share your experience with this product..."
               rows={3}
-              className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all bg-white resize-none"
-              style={{ borderColor: '#e0e0e0' }}
+              className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all resize-none"
+              style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c' }}
               onFocus={e => { e.target.style.borderColor = '#0056b3' }}
-              onBlur={e => { e.target.style.borderColor = '#e0e0e0' }}
+              onBlur={e => { e.target.style.borderColor = dark ? '#30363d' : '#e0e0e0' }}
             />
           </div>
           {submitError && <p className="text-xs text-red-500 font-medium">{submitError}</p>}
@@ -246,7 +249,7 @@ function ReviewsSection({ productId, rating, reviewCount }) {
       )}
 
       {/* Rating summary */}
-      <div className="flex flex-col sm:flex-row items-start gap-8 mb-8 p-6 rounded-2xl border" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
+      <div className="flex flex-col sm:flex-row items-start gap-8 mb-8 p-6 rounded-2xl border" style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#161b22' : '#fafafa' }}>
         <div className="text-center shrink-0">
           <p className="text-5xl font-black text-ink">{avgRating.toFixed(1)}</p>
           <div className="flex justify-center gap-0.5 my-2">
@@ -262,7 +265,7 @@ function ReviewsSection({ productId, rating, reviewCount }) {
           {bars.map(({ stars, pct }) => (
             <div key={stars} className="flex items-center gap-3">
               <span className="text-xs text-muted w-6 text-end shrink-0">{stars}★</span>
-              <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#e0e0e0' }}>
+              <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: dark ? '#30363d' : '#e0e0e0' }}>
                 <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: '#f59e0b' }} />
               </div>
               <span className="text-xs text-muted w-8 shrink-0">{pct}%</span>
@@ -275,7 +278,7 @@ function ReviewsSection({ productId, rating, reviewCount }) {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[1,2].map(i => (
-            <div key={i} className="p-5 rounded-2xl border animate-pulse" style={{ borderColor: '#e0e0e0' }}>
+            <div key={i} className="p-5 rounded-2xl border animate-pulse" style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#161b22' : '#ffffff' }}>
               <div className="flex gap-3 mb-3">
                 <div className="w-9 h-9 rounded-full bg-gray-200" />
                 <div className="space-y-1.5 flex-1">
@@ -294,7 +297,7 @@ function ReviewsSection({ productId, rating, reviewCount }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {reviews.map((review, i) => (
             <motion.div key={review.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-              className="p-5 rounded-2xl border" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}
+              className="p-5 rounded-2xl border" style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#161b22' : '#fafafa' }}
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
@@ -336,6 +339,7 @@ function ReviewsSection({ productId, rating, reviewCount }) {
 
 export default function ProductDetailPage() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   const { id } = useParams()
   const navigate = useNavigate()
   const { addItem } = useCart()
@@ -435,7 +439,7 @@ export default function ProductDetailPage() {
       className="pt-36 lg:pt-44 pb-20 lg:pb-0">
 
       {/* Breadcrumb */}
-      <div className="border-b" style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
+      <div className="border-b" style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#161b22' : '#fafafa' }}>
         <nav aria-label="breadcrumb" className="max-w-7xl mx-auto px-6 py-3 flex items-center gap-2 text-xs text-muted font-medium">
           <button onClick={() => navigate('/')} className="hover:text-ink transition-colors">{t('product.home')}</button>
           <span className="text-gray-300" aria-hidden="true">›</span>
@@ -464,7 +468,7 @@ export default function ProductDetailPage() {
               onClick={() => setLightbox(true)}
               onMouseMove={handleZoomMove}
               onMouseLeave={() => setZoom(z => ({ ...z, active: false }))}
-              style={{ aspectRatio: '4/3', borderColor: '#e0e0e0', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}
+              style={{ aspectRatio: '4/3', borderColor: dark ? '#30363d' : '#e0e0e0', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}
             >
               <AnimatePresence mode="wait">
                 <motion.img
@@ -551,7 +555,7 @@ export default function ProductDetailPage() {
                     onClick={() => setActiveImg(i)}
                     className="relative shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all"
                     style={{
-                      borderColor: activeImg === i ? '#0056b3' : '#e0e0e0',
+                      borderColor: activeImg === i ? '#0056b3' : (dark ? '#30363d' : '#e0e0e0'),
                       opacity: activeImg === i ? 1 : 0.65,
                     }}
                     aria-label={`View image ${i + 1}`}
@@ -573,7 +577,7 @@ export default function ProductDetailPage() {
             <div className="mt-4 grid grid-cols-3 gap-3">
               {trustChips.map(({ icon, label }) => (
                 <div key={label} className="flex flex-col items-center gap-1.5 py-3 rounded-2xl border text-center"
-                  style={{ borderColor: '#e0e0e0', backgroundColor: '#fafafa' }}>
+                  style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#161b22' : '#fafafa' }}>
                   <span className="text-lg" aria-hidden="true">{icon}</span>
                   <span className="text-[11px] font-bold text-muted leading-tight">{label}</span>
                 </div>
@@ -601,7 +605,7 @@ export default function ProductDetailPage() {
             {product.spec && <p className="text-sm font-medium text-muted -mt-2">{product.spec}</p>}
 
             <StarRating rating={product.rating} count={product.reviews} />
-            <div className="h-px" style={{ backgroundColor: '#e0e0e0' }} />
+            <div className="h-px" style={{ backgroundColor: dark ? '#30363d' : '#e0e0e0' }} />
 
             {/* Price */}
             <div className="flex items-baseline gap-3">
@@ -642,7 +646,7 @@ export default function ProductDetailPage() {
             {/* Qty selector */}
             <div className="flex items-center gap-3">
               <span className="text-sm font-semibold text-ink">{t('product.qty')}</span>
-              <div className="flex items-center border rounded-xl overflow-hidden" style={{ borderColor: '#e0e0e0' }}>
+              <div className="flex items-center border rounded-xl overflow-hidden" style={{ borderColor: dark ? '#30363d' : '#e0e0e0' }}>
                 <button onClick={() => setQty(q => Math.max(1, q - 1))} aria-label="Decrease quantity"
                   className="w-9 h-9 flex items-center justify-center text-muted hover:bg-surface transition-colors font-bold text-base">
                   −
@@ -668,9 +672,9 @@ export default function ProductDetailPage() {
                 aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
                 aria-pressed={inWishlist}
                 className="w-12 h-12 rounded-xl border flex items-center justify-center transition-colors"
-                style={{ borderColor: inWishlist ? '#fca5a5' : '#e0e0e0', backgroundColor: inWishlist ? '#fff1f1' : 'transparent' }}
+                style={{ borderColor: inWishlist ? '#fca5a5' : (dark ? '#30363d' : '#e0e0e0'), backgroundColor: inWishlist ? '#fff1f1' : 'transparent' }}
                 onMouseEnter={(e) => { if (!inWishlist) { e.currentTarget.style.borderColor = '#fca5a5'; e.currentTarget.style.backgroundColor = '#fff5f5' } }}
-                onMouseLeave={(e) => { if (!inWishlist) { e.currentTarget.style.borderColor = '#e0e0e0'; e.currentTarget.style.backgroundColor = 'transparent' } }}>
+                onMouseLeave={(e) => { if (!inWishlist) { e.currentTarget.style.borderColor = dark ? '#30363d' : '#e0e0e0'; e.currentTarget.style.backgroundColor = 'transparent' } }}>
                 <svg className="w-5 h-5" style={{ color: inWishlist ? '#ef4444' : '#9ca3af' }}
                   fill={inWishlist ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -680,9 +684,9 @@ export default function ProductDetailPage() {
                 onClick={() => { navigator.clipboard.writeText(window.location.href); addToast(t('product.linkCopied'), 'success') }}
                 aria-label="Share product"
                 className="w-12 h-12 rounded-xl border flex items-center justify-center transition-colors text-muted hover:text-ink"
-                style={{ borderColor: '#e0e0e0' }}
+                style={{ borderColor: dark ? '#30363d' : '#e0e0e0' }}
                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#0056b3'; e.currentTarget.style.color = '#0056b3' }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e0e0e0'; e.currentTarget.style.color = '' }}>
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = dark ? '#30363d' : '#e0e0e0'; e.currentTarget.style.color = '' }}>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
                   <polyline points="16 6 12 2 8 6" />
@@ -693,7 +697,7 @@ export default function ProductDetailPage() {
 
             {/* ── Notify Me — only when out of stock ── */}
             {!product.inStock && (
-              <div className="rounded-2xl border p-4" style={{ borderColor: '#fde68a', backgroundColor: '#fffbeb' }}>
+              <div className="rounded-2xl border p-4" style={{ borderColor: dark ? '#30363d' : '#fde68a', backgroundColor: dark ? '#161b22' : '#fffbeb' }}>
                 {isAuthenticated && user ? (
                   notifySent ? (
                     <div className="flex items-center gap-2.5">
@@ -710,9 +714,9 @@ export default function ProductDetailPage() {
                           onChange={e => setNotifyEmail(e.target.value)}
                           placeholder="your@email.com"
                           className="flex-1 border rounded-xl px-3 py-2 text-sm outline-none transition-colors"
-                          style={{ borderColor: '#e0e0e0' }}
+                          style={{ borderColor: dark ? '#30363d' : '#e0e0e0', backgroundColor: dark ? '#0d1117' : '#fff', color: dark ? '#e6edf3' : '#1a202c' }}
                           onFocus={e => { e.target.style.borderColor = '#0056b3' }}
-                          onBlur={e => { e.target.style.borderColor = '#e0e0e0' }}
+                          onBlur={e => { e.target.style.borderColor = dark ? '#30363d' : '#e0e0e0' }}
                         />
                         <button
                           onClick={handleNotifySubmit}
@@ -750,10 +754,10 @@ export default function ProductDetailPage() {
         {product.specs && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }} className="mt-16">
             <h2 className="text-xl font-black text-ink mb-6">{t('product.specifications')}</h2>
-            <div className="rounded-2xl border overflow-hidden" style={{ borderColor: '#e0e0e0' }}>
+            <div className="rounded-2xl border overflow-hidden" style={{ borderColor: dark ? '#30363d' : '#e0e0e0' }}>
               {product.specs.map((spec, i) => (
                 <div key={spec.label} className="flex items-center px-6 py-4"
-                  style={{ backgroundColor: i % 2 === 0 ? '#fafafa' : '#fff', borderBottom: i < product.specs.length - 1 ? '1px solid #e0e0e0' : 'none' }}>
+                  style={{ backgroundColor: i % 2 === 0 ? (dark ? '#161b22' : '#fafafa') : (dark ? '#0d1117' : '#fff'), borderBottom: i < product.specs.length - 1 ? `1px solid ${dark ? '#30363d' : '#e0e0e0'}` : 'none' }}>
                   <span className="w-40 text-xs font-black uppercase tracking-wider text-muted shrink-0">{spec.label}</span>
                   <span className="text-sm font-semibold text-ink">{spec.value}</span>
                 </div>
@@ -888,8 +892,8 @@ export default function ProductDetailPage() {
       </AnimatePresence>
 
       {/* Mobile sticky CTA */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t px-4 py-3 flex items-center gap-3"
-        style={{ borderColor: '#e0e0e0', boxShadow: '0 -4px 16px rgba(0,0,0,0.06)' }}>
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t px-4 py-3 flex items-center gap-3"
+        style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0', boxShadow: '0 -4px 16px rgba(0,0,0,0.06)' }}>
         <div className="flex-1 min-w-0">
           <p className="text-xs font-bold text-ink truncate">{product.title}</p>
           <p className="text-base font-black" style={{ color: '#0056b3' }}>{formatPrice(parseUSD(product.price))}</p>
