@@ -736,32 +736,48 @@ export default function ProductGrid() {
         {/* ── Bottom CTAs ── */}
         {!loading && (
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="mt-14 flex flex-col sm:flex-row items-center justify-center gap-4"
+            transition={{ delay: 0.2, duration: 0.4 }}
+            className="mt-14 rounded-2xl border px-6 py-10 flex flex-col items-center gap-5 text-center"
+            style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}
           >
-            <motion.button
-              onClick={() => setActive('All')}
-              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-              className="px-10 py-3.5 rounded-xl text-white text-sm font-black shadow-sm transition-colors"
-              style={{ backgroundColor: '#0056b3' }}
-              onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#004494' }}
-              onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#0056b3' }}
-            >
-              {t('products.viewAllBtn')}
-            </motion.button>
-            <motion.button
-              onClick={() => navigate('/builder')}
-              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-              className="px-10 py-3.5 rounded-xl text-sm font-black border-2 transition-colors"
-              style={{ borderColor: '#28a745', color: '#1e8035' }}
-              onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#e9f7ed' }}
-              onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent' }}
-            >
-              {t('products.customBuilder')}
-            </motion.button>
+            <p className="text-xs font-bold tracking-wide" style={{ color: dark ? '#8b949e' : '#718096' }}>
+              {t('products.ctaLabel')}
+            </p>
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <motion.button
+                onClick={() => setActive('All')}
+                whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                className="px-10 py-3.5 rounded-xl text-white text-sm font-black transition-colors"
+                style={{ backgroundColor: '#0056b3' }}
+                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#004494' }}
+                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#0056b3' }}
+              >
+                {t('products.viewAllBtn')}
+              </motion.button>
+              <motion.button
+                onClick={() => navigate('/builder')}
+                whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                className="px-10 py-3.5 rounded-xl text-sm font-black transition-colors"
+                style={{
+                  backgroundColor: dark ? 'transparent' : '#1e293b',
+                  color: dark ? '#e6edf3' : '#ffffff',
+                  border: `2px solid ${dark ? 'rgba(255,255,255,0.15)' : '#1e293b'}`,
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.backgroundColor = dark ? 'rgba(255,255,255,0.07)' : '#0f172a'
+                  e.currentTarget.style.borderColor = dark ? 'rgba(255,255,255,0.25)' : '#0f172a'
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.backgroundColor = dark ? 'transparent' : '#1e293b'
+                  e.currentTarget.style.borderColor = dark ? 'rgba(255,255,255,0.15)' : '#1e293b'
+                }}
+              >
+                ⚙ {t('products.customBuilder')}
+              </motion.button>
+            </div>
           </motion.div>
         )}
 

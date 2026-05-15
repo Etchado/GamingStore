@@ -186,6 +186,7 @@
     "clearFilter": "Clear filter",
     "viewAll": "View all products →",
     "viewAllBtn": "View All Products →",
+    "ctaLabel": "Not sure where to start?",
     "customBuilder": "Custom PC Builder",
     "notFound": "No products found",
     "notFoundQuery": "No results for \"{{q}}\"",
