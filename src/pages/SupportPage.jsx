@@ -76,7 +76,7 @@ function FAQSection() {
           ))}
         </div>
 
-        <div className="mt-12 rounded-2xl p-6 text-center" style={{ backgroundColor: '#e6f0fa', border: '1px solid #99c3eb' }}>
+        <div className="mt-12 rounded-2xl p-6 text-center" style={{ backgroundColor: dark ? 'rgba(0,86,179,0.15)' : '#e6f0fa', border: `1px solid ${dark ? 'rgba(0,86,179,0.3)' : '#99c3eb'}` }}>
           <p className="text-sm font-bold text-ink mb-2">{t('faqPage.stillHaveQuestions')}</p>
           <p className="text-xs text-muted mb-4">{t('contactPage.infoSub')}</p>
           <Link
@@ -143,7 +143,7 @@ function ContactSection() {
           <AnimatePresence mode="wait">
             {sent ? (
               <motion.div key="success" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-10">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#e9f7ed' }}>
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: dark ? 'rgba(30,128,53,0.2)' : '#e9f7ed' }}>
                   <svg className="w-8 h-8" fill="none" stroke="#1e8035" strokeWidth={2.5} viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>
                 </div>
                 <h2 className="text-xl font-black text-ink mb-2">{t('contactPage.successTitle')}</h2>
@@ -245,10 +245,10 @@ function ContactSection() {
               </div>
             ))}
           </div>
-          <div className="rounded-2xl p-5 text-center" style={{ backgroundColor: '#e9f7ed', border: '1px solid #a7dfb7' }}>
+          <div className="rounded-2xl p-5 text-center" style={{ backgroundColor: dark ? 'rgba(30,128,53,0.15)' : '#e9f7ed', border: `1px solid ${dark ? 'rgba(30,128,53,0.3)' : '#a7dfb7'}` }}>
             <p className="text-xs font-bold text-ink mb-1">{t('faqPage.needUrgentHelp')}</p>
             <p className="text-xs text-muted">
-              <Link to="/faq" className="font-bold" style={{ color: '#1e8035' }}>{t('pages.faq')}</Link>
+              <Link to="/faq" className="font-bold" style={{ color: dark ? '#4ade80' : '#1e8035' }}>{t('pages.faq')}</Link>
               {' — '}{t('pages.faqDesc')}
             </p>
           </div>
@@ -331,7 +331,7 @@ function TrackOrderSection() {
         <AnimatePresence mode="wait">
           {notFound && (
             <motion.div key="notfound" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              className="rounded-2xl border p-6 text-center" style={{ borderColor: '#fcd34d', backgroundColor: '#fffbeb' }}
+              className="rounded-2xl border p-6 text-center" style={{ borderColor: dark ? 'rgba(251,191,36,0.35)' : '#fcd34d', backgroundColor: dark ? 'rgba(251,191,36,0.08)' : '#fffbeb' }}
             >
               <div className="text-3xl mb-3">🔍</div>
               <h3 className="font-black text-ink mb-1">{t('trackOrderPage.notFound')}</h3>
@@ -386,7 +386,7 @@ function TrackOrderSection() {
                             <div
                               className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 z-10"
                               style={{
-                                backgroundColor: done ? (current ? '#0056b3' : '#e9f7ed') : '#f0f0f0',
+                                backgroundColor: done ? (current ? '#0056b3' : (dark ? 'rgba(30,128,53,0.2)' : '#e9f7ed')) : (dark ? '#21262d' : '#f0f0f0'),
                                 border: current ? '2px solid #0056b3' : 'none',
                               }}
                             >
@@ -463,7 +463,7 @@ function ReturnsSection() {
           </div>
         </div>
 
-        <div className="rounded-2xl p-5" style={{ backgroundColor: '#fffbeb', border: '1px solid #fcd34d' }}>
+        <div className="rounded-2xl p-5" style={{ backgroundColor: dark ? 'rgba(251,191,36,0.08)' : '#fffbeb', border: `1px solid ${dark ? 'rgba(251,191,36,0.25)' : '#fcd34d'}` }}>
           <h3 className="text-sm font-black text-ink mb-1.5">{t('returnsPage.exceptionsTitle')}</h3>
           <p className="text-xs text-muted leading-relaxed">{t('returnsPage.exceptionsDesc')}</p>
         </div>
@@ -485,9 +485,18 @@ function WarrantySection() {
   useSEO({ title: t('pages.warranty'), description: t('pages.warrantyDesc') })
 
   const tiers = [
-    { icon: '🖥️', titleKey: 'systemsTitle', descKey: 'systemsDesc', color: '#e6f0fa', border: '#99c3eb', text: '#004494' },
-    { icon: '⚙️', titleKey: 'componentsTitle', descKey: 'componentsDesc', color: '#f3f0ff', border: '#c4b5fd', text: '#5521b5' },
-    { icon: '🎮', titleKey: 'peripheralsTitle', descKey: 'peripheralsDesc', color: '#e9f7ed', border: '#a7dfb7', text: '#1e8035' },
+    { icon: '🖥️', titleKey: 'systemsTitle', descKey: 'systemsDesc',
+      color: dark ? 'rgba(0,86,179,0.15)' : '#e6f0fa',
+      border: dark ? 'rgba(0,86,179,0.3)' : '#99c3eb',
+      text: dark ? '#6ba3d6' : '#004494' },
+    { icon: '⚙️', titleKey: 'componentsTitle', descKey: 'componentsDesc',
+      color: dark ? 'rgba(85,33,181,0.15)' : '#f3f0ff',
+      border: dark ? 'rgba(85,33,181,0.3)' : '#c4b5fd',
+      text: dark ? '#a78bfa' : '#5521b5' },
+    { icon: '🎮', titleKey: 'peripheralsTitle', descKey: 'peripheralsDesc',
+      color: dark ? 'rgba(30,128,53,0.15)' : '#e9f7ed',
+      border: dark ? 'rgba(30,128,53,0.3)' : '#a7dfb7',
+      text: dark ? '#4ade80' : '#1e8035' },
   ]
 
   return (
@@ -556,7 +565,7 @@ function LocationsSection() {
               transition={{ type: 'spring', stiffness: 300 }}
               className="rounded-2xl border p-6 flex flex-col" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}
             >
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-4" style={{ backgroundColor: '#e6f0fa' }}>📍</div>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-4" style={{ backgroundColor: dark ? 'rgba(0,86,179,0.2)' : '#e6f0fa' }}>📍</div>
               <h2 className="text-base font-black text-ink mb-3">{city}</h2>
               <p className="text-xs text-muted leading-relaxed mb-2">{address}</p>
               <div className="mt-auto space-y-2 pt-4 border-t" style={{ borderColor: dark ? '#30363d' : '#f0f0f0' }}>
@@ -611,7 +620,7 @@ function BuilderGuideSection() {
         <div className="space-y-4 mb-10">
           {steps.map(({ n, icon, title, desc }) => (
             <div key={n} className="rounded-2xl border p-5 flex gap-5 items-start" style={{ backgroundColor: dark ? '#161b22' : '#ffffff', borderColor: dark ? '#30363d' : '#e0e0e0' }}>
-              <div className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-xl" style={{ backgroundColor: '#e6f0fa' }}>
+              <div className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-xl" style={{ backgroundColor: dark ? 'rgba(0,86,179,0.2)' : '#e6f0fa' }}>
                 {icon}
               </div>
               <div className="flex-1">
@@ -691,7 +700,7 @@ function LiveChatSection() {
             <AnimatePresence mode="wait">
               {sent ? (
                 <motion.div key="success" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-8">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#e9f7ed' }}>
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: dark ? 'rgba(30,128,53,0.2)' : '#e9f7ed' }}>
                     <svg className="w-8 h-8" fill="none" stroke="#1e8035" strokeWidth={2.5} viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>
                   </div>
                   <h2 className="text-xl font-black text-ink mb-2">{t('liveChatPage.successTitle')}</h2>
@@ -940,11 +949,12 @@ function CookiesSection() {
 /* ── Generic fallback ──────────────────────────────────────────── */
 function GenericPlaceholder() {
   const { t } = useTranslation()
+  const { dark } = useTheme()
   useSEO({ title: t('pages.comingSoon') })
   return (
     <div className="max-w-2xl mx-auto px-6 pt-4 pb-16 text-center">
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="py-16">
-        <div className="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-6 shadow-sm" style={{ backgroundColor: '#e6f0fa' }}>📄</div>
+        <div className="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-6 shadow-sm" style={{ backgroundColor: dark ? 'rgba(0,86,179,0.2)' : '#e6f0fa' }}>📄</div>
         <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>◈ {t('pages.comingSoon')}</p>
         <h1 className="text-3xl font-black text-ink mb-4">{t('pages.comingSoon')}</h1>
         <p className="text-sm text-muted mb-8">{t('pages.comingSoonSub')}</p>
