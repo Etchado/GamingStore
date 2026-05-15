@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'motion/react'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/context/ThemeContext'
 
 function useCountUp(target, duration = 1800, active = false) {
   const [value, setValue] = useState(0)
@@ -34,7 +35,7 @@ const STAT_DEFS = [
   { valKey: 'supportVal',   labelKey: 'support',    icon: '⭐', numeric: null },
 ]
 
-function StatCard({ stat, index, active }) {
+function StatCard({ stat, index, active, dark }) {
   const { t } = useTranslation()
   const count = useCountUp(stat.numeric ?? 0, 1800, active && stat.numeric !== null)
 
@@ -55,7 +56,10 @@ function StatCard({ stat, index, active }) {
       <span className="text-4xl sm:text-5xl font-black tracking-tight tabular-nums" style={{ color: '#0056b3' }}>
         {displayValue()}
       </span>
-      <span className="text-sm font-semibold mt-2 max-w-[120px] leading-snug" style={{ color: '#4a5568' }}>
+      <span
+        className="text-sm font-semibold mt-2 max-w-[120px] leading-snug"
+        style={{ color: dark ? '#8b949e' : '#4a5568' }}
+      >
         {t(`stats.${stat.labelKey}`)}
       </span>
     </motion.div>
@@ -63,15 +67,26 @@ function StatCard({ stat, index, active }) {
 }
 
 export default function StatsSection() {
+  const { dark } = useTheme()
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section ref={ref} className="py-12 border-y" style={{ backgroundColor: '#f8fafc', borderColor: '#e0e0e0' }}>
+    <section
+      ref={ref}
+      className="py-12 border-y"
+      style={{
+        backgroundColor: dark ? '#161b22' : '#f8fafc',
+        borderColor: dark ? '#30363d' : '#e0e0e0',
+      }}
+    >
       <div className="max-w-5xl mx-auto px-6">
-        <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0" style={{ divideColor: '#e0e0e0' }}>
+        <div
+          className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0"
+          style={{ '--tw-divide-opacity': 1, borderColor: dark ? '#30363d' : '#e0e0e0' }}
+        >
           {STAT_DEFS.map((stat, i) => (
-            <StatCard key={stat.valKey} stat={stat} index={i} active={inView} />
+            <StatCard key={stat.valKey} stat={stat} index={i} active={inView} dark={dark} />
           ))}
         </div>
       </div>

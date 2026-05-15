@@ -87,43 +87,46 @@ const NAV_ITEMS = [
   },
 ]
 
-/* ── Desktop MegaMenu — dark sportswear style ── */
-function MegaMenu({ item, onLinkClick }) {
+/* ── Compact floating dropdown — matches sportswear style ── */
+function MegaMenu({ item, onLinkClick, dark }) {
   const { t } = useTranslation()
+  const bg     = dark ? '#161b22' : '#ffffff'
+  const border = dark ? 'rgba(255,255,255,0.08)' : '#e5e7eb'
+  const shadow = dark ? '0 20px 48px rgba(0,0,0,0.55)' : '0 8px 32px rgba(0,0,0,0.12)'
+  const heading = dark ? 'rgba(255,255,255,0.35)' : '#9ca3af'
+  const linkColor = dark ? 'rgba(255,255,255,0.82)' : '#374151'
+  const linkHoverColor = dark ? '#ffffff' : '#0056b3'
+  const linkHoverBg = dark ? 'rgba(255,255,255,0.07)' : '#f0f7ff'
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 6 }}
-      transition={{ duration: 0.16, ease: 'easeOut' }}
-      className="absolute left-0 right-0 top-full z-50 pt-px"
+      initial={{ opacity: 0, y: 8, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 8, scale: 0.97 }}
+      transition={{ duration: 0.15, ease: 'easeOut' }}
+      className="absolute top-full left-0 z-50 pt-1"
     >
       <div
-        className="shadow-2xl"
-        style={{
-          background: '#1a1d26',
-          borderTop: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: '0 20px 48px rgba(0,0,0,0.5)',
-        }}
+        className="rounded-2xl p-5 min-w-[300px]"
+        style={{ background: bg, border: `1px solid ${border}`, boxShadow: shadow }}
       >
-        <div className="max-w-7xl mx-auto px-8 py-8 grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-1">
           {item.cols.map((col) => (
             <div key={col.headingKey}>
-              <p className="text-[10px] font-black tracking-[0.15em] uppercase mb-3" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              <p className="text-[10px] font-black tracking-[0.12em] uppercase mb-2.5" style={{ color: heading }}>
                 {t(col.headingKey)}
               </p>
-              <ul className="space-y-1">
+              <ul className="space-y-0.5">
                 {col.links.map((link) => (
                   <li key={link.labelKey}>
                     <Link
                       to={link.href ?? `/?category=${link.filter}`}
                       onClick={() => onLinkClick(link)}
-                      className="text-sm font-medium transition-all inline-flex items-center gap-2 group px-2 py-1.5 -mx-2 rounded-lg"
-                      style={{ color: 'rgba(255,255,255,0.75)' }}
-                      onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
-                      onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.75)'; e.currentTarget.style.background = 'transparent' }}
+                      className="text-sm font-medium block px-2.5 py-1.5 rounded-lg transition-all"
+                      style={{ color: linkColor }}
+                      onMouseEnter={e => { e.currentTarget.style.color = linkHoverColor; e.currentTarget.style.background = linkHoverBg }}
+                      onMouseLeave={e => { e.currentTarget.style.color = linkColor; e.currentTarget.style.background = 'transparent' }}
                     >
-                      <span className="w-1 h-1 rounded-full shrink-0" style={{ background: 'rgba(255,255,255,0.3)' }} />
                       {t(link.labelKey)}
                     </Link>
                   </li>
@@ -618,72 +621,80 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* ── Row 2: Nav categories — dark sportswear style — desktop only ── */}
-      <div className="relative hidden lg:block" style={{ background: '#0d1117', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+      {/* ── Row 2: Nav categories — desktop only ── */}
+      <div
+        className="relative hidden lg:block"
+        style={{
+          background: dark ? '#0A0F1E' : '#ffffff',
+          borderBottom: `1px solid ${dark ? 'rgba(255,255,255,0.07)' : '#e0e0e0'}`,
+        }}
+      >
         <div className="max-w-7xl mx-auto px-6 h-11 flex items-center gap-0.5">
-          {NAV_ITEMS.map((item) => (
-            <div key={item.id} onMouseEnter={() => setActiveMenu(item.id)}>
-              <button
-                onClick={() => handleNavClick(item.filter)}
-                className="px-4 h-11 text-sm font-semibold transition-all flex items-center gap-1.5 relative"
-                style={{
-                  color: activeMenu === item.id ? '#ffffff' : 'rgba(255,255,255,0.72)',
-                }}
+          {NAV_ITEMS.map((item) => {
+            const isActive = activeMenu === item.id
+            const textColor = dark
+              ? (isActive ? '#ffffff' : 'rgba(255,255,255,0.72)')
+              : (isActive ? '#0056b3' : '#4a5568')
+            const underlineColor = dark ? '#ffffff' : '#0056b3'
+            return (
+              <div
+                key={item.id}
+                className="relative h-11 flex items-center"
+                onMouseEnter={() => setActiveMenu(item.id)}
+                onMouseLeave={() => setActiveMenu(null)}
               >
-                {/* active underline */}
-                {activeMenu === item.id && (
-                  <motion.span
-                    layoutId="nav-underline"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
-                    style={{ background: '#ffffff' }}
-                  />
-                )}
-                {t(item.labelKey)}
-                <svg
-                  className="w-3.5 h-3.5 transition-transform duration-200"
-                  style={{
-                    opacity: 0.55,
-                    transform: activeMenu === item.id ? 'rotate(180deg)' : 'rotate(0deg)',
-                  }}
-                  fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
+                <button
+                  onClick={() => handleNavClick(item.filter)}
+                  className="px-4 h-11 text-sm font-semibold transition-all flex items-center gap-1.5 relative"
+                  style={{ color: textColor }}
                 >
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
-              </button>
-            </div>
-          ))}
+                  {isActive && (
+                    <motion.span
+                      layoutId="nav-underline"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
+                      style={{ background: underlineColor }}
+                    />
+                  )}
+                  {t(item.labelKey)}
+                  <svg
+                    className="w-3.5 h-3.5 transition-transform duration-200"
+                    style={{ opacity: 0.5, transform: isActive ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                    fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+
+                <AnimatePresence>
+                  {isActive && (
+                    <MegaMenu item={item} onLinkClick={handleMegaClose} dark={dark} />
+                  )}
+                </AnimatePresence>
+              </div>
+            )
+          })}
 
           <div className="ms-auto flex items-center gap-5">
             <Link
               to="/deals"
               className="text-xs font-bold transition-colors"
-              style={{ color: '#ff6b6b' }}
-              onMouseEnter={e => e.currentTarget.style.color = '#ff9999'}
-              onMouseLeave={e => e.currentTarget.style.color = '#ff6b6b'}
+              style={{ color: '#e53e3e' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#c53030'}
+              onMouseLeave={e => e.currentTarget.style.color = '#e53e3e'}
             >
               {t('nav.deals')}
             </Link>
             <Link
               to="/?badge=NEW"
               className="text-xs font-bold transition-colors"
-              style={{ color: 'rgba(255,255,255,0.5)' }}
-              onMouseEnter={e => e.currentTarget.style.color = 'rgba(255,255,255,0.9)'}
-              onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}
+              style={{ color: dark ? 'rgba(255,255,255,0.5)' : '#718096' }}
+              onMouseEnter={e => e.currentTarget.style.color = dark ? '#fff' : '#1a202c'}
+              onMouseLeave={e => e.currentTarget.style.color = dark ? 'rgba(255,255,255,0.5)' : '#718096'}
             >
               {t('nav.newArrivals')}
             </Link>
           </div>
         </div>
-
-        {/* Mega menu */}
-        <AnimatePresence>
-          {activeMenu && (
-            <MegaMenu
-              item={NAV_ITEMS.find(i => i.id === activeMenu)}
-              onLinkClick={handleMegaClose}
-            />
-          )}
-        </AnimatePresence>
       </div>
 
       {/* ── Mobile menu ── */}
