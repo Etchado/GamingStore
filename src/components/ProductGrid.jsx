@@ -417,7 +417,7 @@ export default function ProductGrid() {
                 <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
                   ◈ {t('products.searchResultsSub')}
                 </p>
-                <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
+                <h2 className="font-black text-ink tracking-tight leading-tight" style={{ fontSize: 'clamp(1.9rem, 4vw, 3rem)' }}>
                   "{queryParam}"
                 </h2>
                 {!loading && (
@@ -431,7 +431,7 @@ export default function ProductGrid() {
                 <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
                   ◈ {t('products.newArrivalsSub')}
                 </p>
-                <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
+                <h2 className="font-black text-ink tracking-tight leading-tight" style={{ fontSize: 'clamp(1.9rem, 4vw, 3rem)' }}>
                   {t('products.newArrivalsTitle')}
                 </h2>
                 {!loading && (
@@ -445,7 +445,7 @@ export default function ProductGrid() {
                 <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#e53e3e' }}>
                   ◈ {t('products.dealsSub')}
                 </p>
-                <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
+                <h2 className="font-black text-ink tracking-tight leading-tight" style={{ fontSize: 'clamp(1.9rem, 4vw, 3rem)' }}>
                   {t('products.dealsTitle')}
                 </h2>
                 {!loading && (
@@ -459,7 +459,7 @@ export default function ProductGrid() {
                 <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
                   ◈ {t('products.featuredSub')}
                 </p>
-                <h2 className="text-3xl sm:text-4xl font-black text-ink tracking-tight">
+                <h2 className="font-black text-ink tracking-tight leading-tight" style={{ fontSize: 'clamp(1.9rem, 4vw, 3rem)' }}>
                   {t('products.featuredTitle')}
                 </h2>
                 {!loading && (
@@ -642,7 +642,7 @@ export default function ProductGrid() {
               >
                 <div
                   className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl"
-                  style={{ backgroundColor: '#e6f0fa' }}
+                  style={{ backgroundColor: dark ? 'rgba(0,86,179,0.2)' : '#e6f0fa' }}
                 >
                   🔍
                 </div>

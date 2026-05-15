@@ -34,15 +34,15 @@ export default function CategoryShowcase() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.42 }}
-          className="flex items-end justify-between mb-8"
+          className="flex items-end justify-between mb-10"
         >
           <div>
-            <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
-              {t('categories.sub')}
+            <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>
+              ◈ {t('categories.sub')}
             </p>
             <h2
-              className="text-2xl sm:text-3xl font-black tracking-tight"
-              style={{ color: dark ? '#e6edf3' : '#1a202c' }}
+              className="font-black tracking-tight leading-tight"
+              style={{ fontSize: 'clamp(1.9rem, 4vw, 3rem)', color: dark ? '#e6edf3' : '#1a202c' }}
             >
               {t('categories.title')}
             </h2>
@@ -52,7 +52,7 @@ export default function CategoryShowcase() {
             className="hidden sm:inline text-sm font-bold transition-colors"
             style={{ color: '#0056b3' }}
           >
-            {t('categories.viewAll')}
+            {t('categories.viewAll')} →
           </button>
         </motion.div>
 
@@ -68,17 +68,17 @@ export default function CategoryShowcase() {
             >
               <button
                 onClick={() => handleCategoryClick(c.filter)}
-                className="w-full text-start block rounded-2xl border p-5 transition-shadow hover:shadow-card-hover cursor-pointer"
+                className="w-full text-start block rounded-2xl border p-6 transition-shadow hover:shadow-card-hover cursor-pointer"
                 style={{
                   background:   dark ? c.darkBg     : c.lightBg,
                   borderColor:  dark ? c.darkBorder  : c.lightBorder,
                 }}
               >
-                <div className="text-3xl mb-3" aria-hidden="true">{c.icon}</div>
-                <h3 className="text-sm font-black mb-0.5" style={{ color: dark ? c.darkText : c.lightText }}>
+                <div className="text-4xl mb-4" aria-hidden="true">{c.icon}</div>
+                <h3 className="text-base font-black mb-1" style={{ color: dark ? c.darkText : c.lightText }}>
                   {t(`categories.${c.key}`)}
                 </h3>
-                <p className="text-xs leading-relaxed mb-3" style={{ color: dark ? '#8b949e' : '#718096' }}>
+                <p className="text-xs leading-relaxed mb-4" style={{ color: dark ? '#8b949e' : '#718096' }}>
                   {t(`categories.${c.key}Sub`)}
                 </p>
                 <span className="text-[11px] font-black tracking-wide" style={{ color: dark ? c.darkText : c.lightText }}>

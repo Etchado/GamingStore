@@ -50,14 +50,14 @@ function StatCard({ stat, index, active, dark }) {
       initial={{ opacity: 0, y: 24 }}
       animate={active ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      className="flex flex-col items-center text-center px-4 py-6"
+      className="flex flex-col items-center text-center px-4 py-8"
     >
-      <span className="text-3xl mb-3" aria-hidden="true">{stat.icon}</span>
-      <span className="text-4xl sm:text-5xl font-black tracking-tight tabular-nums" style={{ color: '#0056b3' }}>
+      <span className="text-4xl mb-4" aria-hidden="true">{stat.icon}</span>
+      <span className="text-5xl sm:text-6xl font-black tracking-tight tabular-nums leading-none" style={{ color: '#0056b3' }}>
         {displayValue()}
       </span>
       <span
-        className="text-sm font-semibold mt-2 max-w-[120px] leading-snug"
+        className="text-sm font-semibold mt-3 max-w-[120px] leading-snug"
         style={{ color: dark ? '#8b949e' : '#4a5568' }}
       >
         {t(`stats.${stat.labelKey}`)}

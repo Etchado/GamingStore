@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/context/ThemeContext'
 
 const REVIEW_META = [
-  { name: 'Alex M.',  product: 'White Phantom Custom PC',    avatar: 'AM', avatarBg: '#e6f0fa', avatarColor: '#004494', key: 'review1' },
-  { name: 'Sarah K.', product: 'LG UltraWide 34" Monitor',  avatar: 'SK', avatarBg: '#e9f7ed', avatarColor: '#1e8035', key: 'review2' },
-  { name: 'James R.', product: 'Secretlab TITAN Evo 2025',  avatar: 'JR', avatarBg: '#fdf4ff', avatarColor: '#7e22ce', key: 'review3' },
-  { name: 'Nour A.',  product: 'RTX 4090 24GB',             avatar: 'NA', avatarBg: '#fff3e0', avatarColor: '#c2410c', key: 'review4' },
+  { name: 'Alex M.',  product: 'White Phantom Custom PC',    avatar: 'AM', lightBg: '#e6f0fa', darkBg: 'rgba(0,86,179,0.2)',    lightColor: '#004494', darkColor: '#6ba3d6', key: 'review1' },
+  { name: 'Sarah K.', product: 'LG UltraWide 34" Monitor',  avatar: 'SK', lightBg: '#e9f7ed', darkBg: 'rgba(30,128,53,0.2)',   lightColor: '#1e8035', darkColor: '#4ade80', key: 'review2' },
+  { name: 'James R.', product: 'Secretlab TITAN Evo 2025',  avatar: 'JR', lightBg: '#fdf4ff', darkBg: 'rgba(126,34,206,0.2)',  lightColor: '#7e22ce', darkColor: '#c084fc', key: 'review3' },
+  { name: 'Nour A.',  product: 'RTX 4090 24GB',             avatar: 'NA', lightBg: '#fff3e0', darkBg: 'rgba(194,65,12,0.2)',   lightColor: '#c2410c', darkColor: '#fb923c', key: 'review4' },
 ]
 
 function Stars({ count }) {
@@ -39,12 +39,12 @@ export default function Testimonials() {
           transition={{ duration: 0.42 }}
           className="text-center mb-12"
         >
-          <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-2" style={{ color: '#0056b3' }}>
+          <p className="text-[11px] font-black tracking-[0.18em] uppercase mb-3" style={{ color: '#0056b3' }}>
             ◈ {t('testimonials.sub')}
           </p>
           <h2
-            className="text-3xl sm:text-4xl font-black tracking-tight"
-            style={{ color: dark ? '#e6edf3' : '#1a202c' }}
+            className="font-black tracking-tight leading-tight"
+            style={{ fontSize: 'clamp(1.9rem, 4vw, 3rem)', color: dark ? '#e6edf3' : '#1a202c' }}
           >
             {t('testimonials.title')}
           </h2>
@@ -82,7 +82,7 @@ export default function Testimonials() {
               >
                 <div
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-black shrink-0"
-                  style={{ backgroundColor: r.avatarBg, color: r.avatarColor }}
+                  style={{ backgroundColor: dark ? r.darkBg : r.lightBg, color: dark ? r.darkColor : r.lightColor }}
                 >
                   {r.avatar}
                 </div>
