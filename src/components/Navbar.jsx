@@ -9,6 +9,7 @@ import AnnouncementBar from '@/components/AnnouncementBar'
 import { useProducts } from '@/context/ProductsContext'
 import { onImgError } from '@/lib/imgFallback'
 import { useAuth } from '@/context/AuthContext'
+import { useTheme } from '@/context/ThemeContext'
 
 const ADMIN_EMAIL = 'ikhaledi95@gmail.com'
 
@@ -86,25 +87,29 @@ const NAV_ITEMS = [
   },
 ]
 
-/* ── Desktop MegaMenu ── */
+/* ── Desktop MegaMenu — dark sportswear style ── */
 function MegaMenu({ item, onLinkClick }) {
   const { t } = useTranslation()
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 8 }}
-      transition={{ duration: 0.18, ease: 'easeOut' }}
+      exit={{ opacity: 0, y: 6 }}
+      transition={{ duration: 0.16, ease: 'easeOut' }}
       className="absolute left-0 right-0 top-full z-50 pt-px"
     >
       <div
-        className="bg-white border-t-2 shadow-lg"
-        style={{ borderTopColor: '#0056b3', boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
+        className="shadow-2xl"
+        style={{
+          background: '#1a1d26',
+          borderTop: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 20px 48px rgba(0,0,0,0.5)',
+        }}
       >
         <div className="max-w-7xl mx-auto px-8 py-8 grid grid-cols-2 gap-8">
           {item.cols.map((col) => (
             <div key={col.headingKey}>
-              <p className="text-[10px] font-black tracking-[0.15em] uppercase text-muted mb-3">
+              <p className="text-[10px] font-black tracking-[0.15em] uppercase mb-3" style={{ color: 'rgba(255,255,255,0.35)' }}>
                 {t(col.headingKey)}
               </p>
               <ul className="space-y-1">
@@ -113,9 +118,12 @@ function MegaMenu({ item, onLinkClick }) {
                     <Link
                       to={link.href ?? `/?category=${link.filter}`}
                       onClick={() => onLinkClick(link)}
-                      className="text-sm text-ink font-medium transition-colors inline-flex items-center gap-2 group px-2 py-1 -mx-2 rounded-md hover:bg-primary-50 hover:text-primary-600"
+                      className="text-sm font-medium transition-all inline-flex items-center gap-2 group px-2 py-1.5 -mx-2 rounded-lg"
+                      style={{ color: 'rgba(255,255,255,0.75)' }}
+                      onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
+                      onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.75)'; e.currentTarget.style.background = 'transparent' }}
                     >
-                      <span className="w-1 h-1 rounded-full bg-border group-hover:bg-primary-600 transition-colors shrink-0" />
+                      <span className="w-1 h-1 rounded-full shrink-0" style={{ background: 'rgba(255,255,255,0.3)' }} />
                       {t(link.labelKey)}
                     </Link>
                   </li>
@@ -126,6 +134,39 @@ function MegaMenu({ item, onLinkClick }) {
         </div>
       </div>
     </motion.div>
+  )
+}
+
+/* ── Sun / Moon toggle icon ── */
+function ThemeToggle() {
+  const { dark, toggleDark } = useTheme()
+  const btnBg     = dark ? 'rgba(255,255,255,0.08)' : '#f1f5f9'
+  const btnColor  = dark ? 'rgba(255,255,255,0.85)' : '#374151'
+  const btnBorder = dark ? 'rgba(255,255,255,0.12)' : '#e0e0e0'
+  const hoverBg   = dark ? 'rgba(255,255,255,0.15)' : '#e2e8f0'
+  return (
+    <motion.button
+      whileTap={{ scale: 0.9 }}
+      onClick={toggleDark}
+      title={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+      className="hidden sm:flex items-center justify-center w-8 h-8 rounded-lg transition-colors"
+      style={{ background: btnBg, color: btnColor, border: `1px solid ${btnBorder}` }}
+      onMouseEnter={e => { e.currentTarget.style.background = hoverBg }}
+      onMouseLeave={e => { e.currentTarget.style.background = btnBg }}
+    >
+      {dark ? (
+        /* Sun icon */
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="5" />
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+        </svg>
+      ) : (
+        /* Moon icon */
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      )}
+    </motion.button>
   )
 }
 
@@ -143,6 +184,7 @@ export default function Navbar() {
   const currencyRef = useRef(null)
   const supportRef  = useRef(null)
   const { products } = useProducts()
+  const { dark } = useTheme()
 
   const suggestions = query.trim().length >= 2
     ? products.filter(p =>
@@ -161,6 +203,7 @@ export default function Navbar() {
     document.addEventListener('mousedown', onClickOutside)
     return () => document.removeEventListener('mousedown', onClickOutside)
   }, [])
+
   const { itemCount, setIsOpen: openCart }  = useCart()
   const { count: wishlistCount }            = useWishlist()
   const { currency, setCurrency, CURRENCIES } = useCurrency()
@@ -169,6 +212,16 @@ export default function Navbar() {
   const isAr = i18n.language?.startsWith('ar')
   const { user } = useAuth()
   const isAdmin = user?.email === ADMIN_EMAIL
+
+  /* shared dark-aware styles */
+  const row1Bg      = dark ? '#0d1117' : '#ffffff'
+  const row1Border  = dark ? '#30363d' : '#e0e0e0'
+  const inputBg     = dark ? '#161b22' : '#ffffff'
+  const inputText   = dark ? '#e6edf3' : '#1a202c'
+  const mutedText   = dark ? '#8b949e' : '#718096'
+  const surfaceBg   = dark ? '#161b22' : '#f8fafc'
+  const dropdownBg  = dark ? '#161b22' : '#ffffff'
+  const dropdownBdr = dark ? '#30363d' : '#e0e0e0'
 
   function toggleMobileItem(id) {
     setMobileExpanded(prev => prev === id ? null : id)
@@ -206,7 +259,8 @@ export default function Navbar() {
 
   return (
     <header
-      className="fixed top-0 inset-x-0 z-50 bg-white"
+      className="fixed top-0 inset-x-0 z-50"
+      style={{ background: row1Bg }}
       onMouseLeave={() => setActiveMenu(null)}
     >
       {/* ── TopBar ── */}
@@ -215,20 +269,14 @@ export default function Navbar() {
 
           {/* Left: Home, About Us, Support */}
           <div className="flex items-center divide-x divide-white/20" style={{ color: 'rgba(255,255,255,0.85)' }}>
-            <Link
-              to="/"
-              className="flex items-center gap-1 px-3 h-8 transition-colors hover:text-white"
-            >
+            <Link to="/" className="flex items-center gap-1 px-3 h-8 transition-colors hover:text-white">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
               {t('nav.home')}
             </Link>
-            <Link
-              to="/about"
-              className="flex items-center gap-1 px-3 h-8 transition-colors hover:text-white"
-            >
+            <Link to="/about" className="flex items-center gap-1 px-3 h-8 transition-colors hover:text-white">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <circle cx="12" cy="8" r="4" />
                 <path d="M6 20v-2a6 6 0 0 1 12 0v2" />
@@ -257,15 +305,18 @@ export default function Navbar() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.14 }}
-                    className="absolute top-full start-0 mt-1 bg-white rounded-xl border shadow-lg z-[70] overflow-hidden min-w-[160px]"
-                    style={{ borderColor: '#e0e0e0', boxShadow: '0 8px 24px rgba(0,0,0,0.09)' }}
+                    className="absolute top-full start-0 mt-1 rounded-xl border shadow-lg z-[70] overflow-hidden min-w-[160px]"
+                    style={{ background: dropdownBg, borderColor: dropdownBdr, boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}
                   >
                     {SUPPORT_LINKS.map((sl) => (
                       <Link
                         key={sl.labelKey}
                         to={sl.href}
                         onClick={() => setSupportOpen(false)}
-                        className="flex items-center px-4 py-2.5 text-xs font-semibold text-ink hover:bg-surface transition-colors"
+                        className="flex items-center px-4 py-2.5 text-xs font-semibold transition-colors"
+                        style={{ color: inputText }}
+                        onMouseEnter={e => e.currentTarget.style.background = surfaceBg}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                       >
                         {t(sl.labelKey)}
                       </Link>
@@ -307,7 +358,7 @@ export default function Navbar() {
       <AnnouncementBar />
 
       {/* ── Row 1: Logo + Search + Icons ── */}
-      <div className="border-b border-border">
+      <div style={{ borderBottom: `1px solid ${row1Border}`, background: row1Bg }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-3 sm:gap-4">
 
           {/* Logo */}
@@ -320,7 +371,7 @@ export default function Navbar() {
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
               </svg>
             </div>
-            <span className="font-black text-ink text-[15px] tracking-tight leading-none">
+            <span className="font-black text-[15px] tracking-tight leading-none" style={{ color: inputText }}>
               {t('nav.brandFirst')}<span style={{ color: '#0056b3' }}>{t('nav.brandSecond')}</span>
             </span>
           </Link>
@@ -330,11 +381,11 @@ export default function Navbar() {
             <form
               onSubmit={(e) => { e.preventDefault(); doSearch(query) }}
               className="flex items-stretch rounded-xl border overflow-hidden transition-all"
-              style={{ borderColor: showSuggestions && suggestions.length > 0 ? '#0056b3' : '#e0e0e0' }}
+              style={{ borderColor: showSuggestions && suggestions.length > 0 ? '#0056b3' : row1Border }}
             >
               <select
-                className="bg-surface text-xs font-semibold text-muted px-3 border-r outline-none cursor-pointer hover:bg-gray-100 transition-colors"
-                style={{ borderColor: '#e0e0e0' }}
+                className="text-xs font-semibold px-3 border-r outline-none cursor-pointer transition-colors"
+                style={{ background: surfaceBg, color: mutedText, borderColor: row1Border }}
               >
                 <option>{t('nav.allCategories')}</option>
                 <option>{t('nav.systems')}</option>
@@ -348,7 +399,8 @@ export default function Navbar() {
                 onChange={(e) => { setQuery(e.target.value); setShowSuggestions(true) }}
                 onFocus={() => setShowSuggestions(true)}
                 placeholder={t('nav.searchPlaceholder')}
-                className="flex-1 px-4 py-2.5 text-sm outline-none text-ink placeholder-muted bg-white"
+                className="flex-1 px-4 py-2.5 text-sm outline-none"
+                style={{ background: inputBg, color: inputText }}
               />
               <button
                 type="submit"
@@ -371,15 +423,17 @@ export default function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
                   transition={{ duration: 0.14 }}
-                  className="absolute top-full start-0 end-0 mt-1 bg-white rounded-xl border shadow-lg z-[60] overflow-hidden"
-                  style={{ borderColor: '#e0e0e0', boxShadow: '0 8px 24px rgba(0,0,0,0.10)' }}
+                  className="absolute top-full start-0 end-0 mt-1 rounded-xl border shadow-lg z-[60] overflow-hidden"
+                  style={{ background: dropdownBg, borderColor: dropdownBdr, boxShadow: '0 8px 24px rgba(0,0,0,0.14)' }}
                 >
                   {suggestions.map(p => (
                     <Link
                       key={p.id}
                       to={`/product/${p.id}`}
                       onClick={() => { setQuery(''); setShowSuggestions(false) }}
-                      className="flex items-center gap-3 px-4 py-2.5 hover:bg-surface transition-colors"
+                      className="flex items-center gap-3 px-4 py-2.5 transition-colors"
+                      onMouseEnter={e => e.currentTarget.style.background = surfaceBg}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     >
                       <img
                         src={p.image}
@@ -387,20 +441,20 @@ export default function Navbar() {
                         loading="lazy"
                         onError={onImgError}
                         className="w-10 h-10 rounded-lg object-cover shrink-0 border"
-                        style={{ borderColor: '#e0e0e0' }}
+                        style={{ borderColor: dropdownBdr }}
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-ink truncate">{p.title}</p>
-                        <p className="text-xs text-muted">{p.category} · {p.price}</p>
+                        <p className="text-sm font-semibold truncate" style={{ color: inputText }}>{p.title}</p>
+                        <p className="text-xs" style={{ color: mutedText }}>{p.category} · {p.price}</p>
                       </div>
                     </Link>
                   ))}
                   <button
                     onClick={() => doSearch(query)}
                     className="w-full px-4 py-2.5 text-xs font-bold text-start border-t transition-colors"
-                    style={{ borderColor: '#f0f0f0', color: '#0056b3' }}
-                    onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f8fafc'}
-                    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                    style={{ borderColor: dropdownBdr, color: '#0056b3' }}
+                    onMouseEnter={e => e.currentTarget.style.background = surfaceBg}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
                     {t('nav.searchAll', { q: query })} →
                   </button>
@@ -412,7 +466,13 @@ export default function Navbar() {
           {/* Icons */}
           <div className="flex items-center gap-1 sm:gap-2 ms-auto md:ms-0 shrink-0">
             {/* User — hidden on mobile */}
-            <Link to="/account" className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-muted hover:text-ink hover:bg-surface transition-colors">
+            <Link
+              to="/account"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl transition-colors"
+              style={{ color: mutedText }}
+              onMouseEnter={e => { e.currentTarget.style.color = inputText; e.currentTarget.style.background = surfaceBg }}
+              onMouseLeave={e => { e.currentTarget.style.color = mutedText; e.currentTarget.style.background = 'transparent' }}
+            >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
@@ -423,7 +483,10 @@ export default function Navbar() {
             {/* Wishlist */}
             <Link
               to="/wishlist"
-              className="relative hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-muted hover:text-ink hover:bg-surface transition-colors"
+              className="relative hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl transition-colors"
+              style={{ color: mutedText }}
+              onMouseEnter={e => { e.currentTarget.style.color = inputText; e.currentTarget.style.background = surfaceBg }}
+              onMouseLeave={e => { e.currentTarget.style.color = mutedText; e.currentTarget.style.background = 'transparent' }}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -477,8 +540,10 @@ export default function Navbar() {
             {/* Language toggle */}
             <button
               onClick={() => i18n.changeLanguage(isAr ? 'en' : 'ar')}
-              className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-black transition-colors hover:bg-surface"
-              style={{ borderColor: '#e0e0e0', color: '#555' }}
+              className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-black transition-colors"
+              style={{ borderColor: row1Border, color: mutedText, background: 'transparent' }}
+              onMouseEnter={e => e.currentTarget.style.background = surfaceBg}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               title={isAr ? 'Switch to English' : 'التبديل إلى العربية'}
             >
               <span className="text-[11px]">{isAr ? '🇺🇸' : '🇸🇦'}</span>
@@ -489,8 +554,10 @@ export default function Navbar() {
             <div ref={currencyRef} className="relative hidden sm:block">
               <button
                 onClick={() => setCurrencyOpen(o => !o)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-black transition-colors hover:bg-surface"
-                style={{ borderColor: currencyOpen ? '#0056b3' : '#e0e0e0', color: '#555' }}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-black transition-colors"
+                style={{ borderColor: currencyOpen ? '#0056b3' : row1Border, color: mutedText, background: 'transparent' }}
+                onMouseEnter={e => { if (!currencyOpen) e.currentTarget.style.background = surfaceBg }}
+                onMouseLeave={e => { if (!currencyOpen) e.currentTarget.style.background = 'transparent' }}
               >
                 {currency.code} {currency.label}
                 <svg className="w-2.5 h-2.5 opacity-60 transition-transform" style={{ transform: currencyOpen ? 'rotate(180deg)' : undefined }} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
@@ -504,20 +571,23 @@ export default function Navbar() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.14 }}
-                    className="absolute top-full end-0 mt-1 bg-white rounded-xl border shadow-lg z-[70] overflow-hidden"
-                    style={{ borderColor: '#e0e0e0', boxShadow: '0 8px 24px rgba(0,0,0,0.10)', minWidth: '200px' }}
+                    className="absolute top-full end-0 mt-1 rounded-xl border shadow-lg z-[70] overflow-hidden"
+                    style={{ background: dropdownBg, borderColor: dropdownBdr, boxShadow: '0 8px 24px rgba(0,0,0,0.14)', minWidth: '200px' }}
                   >
                     {CURRENCIES.map((c) => (
                       <button
                         key={c.code}
                         onClick={() => { setCurrency(c); setCurrencyOpen(false) }}
                         className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold text-start transition-colors"
-                        style={{ backgroundColor: currency.code === c.code ? '#f0f7ff' : 'transparent', color: currency.code === c.code ? '#0056b3' : '#374151' }}
-                        onMouseEnter={(e) => { if (currency.code !== c.code) e.currentTarget.style.backgroundColor = '#f8fafc' }}
+                        style={{
+                          backgroundColor: currency.code === c.code ? (dark ? '#1e3a5f' : '#f0f7ff') : 'transparent',
+                          color: currency.code === c.code ? '#0056b3' : inputText,
+                        }}
+                        onMouseEnter={(e) => { if (currency.code !== c.code) e.currentTarget.style.backgroundColor = surfaceBg }}
                         onMouseLeave={(e) => { if (currency.code !== c.code) e.currentTarget.style.backgroundColor = 'transparent' }}
                       >
                         <span className="font-bold">{c.code}  {c.label}</span>
-                        <span className="text-muted font-medium">- {c.ar}</span>
+                        <span style={{ color: mutedText }} className="font-medium">- {c.ar}</span>
                       </button>
                     ))}
                   </motion.div>
@@ -525,10 +595,16 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
 
+            {/* Dark mode toggle */}
+            <ThemeToggle />
+
             {/* Hamburger — mobile only */}
             <button
               onClick={() => setMobileOpen(o => !o)}
-              className="lg:hidden flex items-center justify-center w-9 h-9 rounded-xl text-muted hover:text-ink hover:bg-surface transition-colors"
+              className="lg:hidden flex items-center justify-center w-9 h-9 rounded-xl transition-colors"
+              style={{ color: mutedText }}
+              onMouseEnter={e => { e.currentTarget.style.color = inputText; e.currentTarget.style.background = surfaceBg }}
+              onMouseLeave={e => { e.currentTarget.style.color = mutedText; e.currentTarget.style.background = 'transparent' }}
               aria-label="Toggle menu"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -542,29 +618,60 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* ── Row 2: Nav categories — desktop only ── */}
-      <div className="relative border-b border-border bg-white hidden lg:block">
-        <div className="max-w-7xl mx-auto px-6 h-10 flex items-center gap-1">
+      {/* ── Row 2: Nav categories — dark sportswear style — desktop only ── */}
+      <div className="relative hidden lg:block" style={{ background: '#0d1117', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+        <div className="max-w-7xl mx-auto px-6 h-11 flex items-center gap-0.5">
           {NAV_ITEMS.map((item) => (
             <div key={item.id} onMouseEnter={() => setActiveMenu(item.id)}>
               <button
                 onClick={() => handleNavClick(item.filter)}
-                className="px-2 mx-1 h-10 text-sm font-semibold transition-colors flex items-center gap-1.5 rounded-none border-b-2 -mb-px"
+                className="px-4 h-11 text-sm font-semibold transition-all flex items-center gap-1.5 relative"
                 style={{
-                  color:       activeMenu === item.id ? '#0056b3' : '#4a5568',
-                  borderColor: activeMenu === item.id ? '#0056b3' : 'transparent',
+                  color: activeMenu === item.id ? '#ffffff' : 'rgba(255,255,255,0.72)',
                 }}
               >
+                {/* active underline */}
+                {activeMenu === item.id && (
+                  <motion.span
+                    layoutId="nav-underline"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
+                    style={{ background: '#ffffff' }}
+                  />
+                )}
                 {t(item.labelKey)}
-                <svg className="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <svg
+                  className="w-3.5 h-3.5 transition-transform duration-200"
+                  style={{
+                    opacity: 0.55,
+                    transform: activeMenu === item.id ? 'rotate(180deg)' : 'rotate(0deg)',
+                  }}
+                  fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
+                >
                   <path d="m6 9 6 6 6-6" />
                 </svg>
               </button>
             </div>
           ))}
-          <div className="ms-auto flex items-center gap-4">
-            <Link to="/deals" className="text-xs font-bold transition-colors" style={{ color: '#e53e3e' }} onMouseEnter={(e) => { e.currentTarget.style.color = '#c53030' }} onMouseLeave={(e) => { e.currentTarget.style.color = '#e53e3e' }}>{t('nav.deals')}</Link>
-            <Link to="/?badge=NEW" className="text-xs font-bold text-muted hover:text-ink transition-colors">{t('nav.newArrivals')}</Link>
+
+          <div className="ms-auto flex items-center gap-5">
+            <Link
+              to="/deals"
+              className="text-xs font-bold transition-colors"
+              style={{ color: '#ff6b6b' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#ff9999'}
+              onMouseLeave={e => e.currentTarget.style.color = '#ff6b6b'}
+            >
+              {t('nav.deals')}
+            </Link>
+            <Link
+              to="/?badge=NEW"
+              className="text-xs font-bold transition-colors"
+              style={{ color: 'rgba(255,255,255,0.5)' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'rgba(255,255,255,0.9)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}
+            >
+              {t('nav.newArrivals')}
+            </Link>
           </div>
         </div>
 
@@ -587,21 +694,23 @@ export default function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.22, ease: 'easeInOut' }}
-            className="lg:hidden border-b border-border bg-white overflow-hidden"
+            className="lg:hidden overflow-hidden"
+            style={{ background: row1Bg, borderBottom: `1px solid ${row1Border}` }}
           >
             {/* Mobile search */}
-            <div className="px-4 py-3 border-b border-border">
+            <div className="px-4 py-3" style={{ borderBottom: `1px solid ${row1Border}` }}>
               <form
                 onSubmit={(e) => { e.preventDefault(); doSearch(mobileQuery, true) }}
                 className="flex items-stretch rounded-xl border overflow-hidden"
-                style={{ borderColor: '#e0e0e0' }}
+                style={{ borderColor: row1Border }}
               >
                 <input
                   type="search"
                   value={mobileQuery}
                   onChange={(e) => setMobileQuery(e.target.value)}
                   placeholder={t('nav.searchMobilePlaceholder')}
-                  className="flex-1 px-4 py-2.5 text-sm outline-none text-ink bg-white"
+                  className="flex-1 px-4 py-2.5 text-sm outline-none"
+                  style={{ background: inputBg, color: inputText }}
                 />
                 <button
                   type="submit"
@@ -617,15 +726,18 @@ export default function Navbar() {
 
             {/* Nav items accordion */}
             {NAV_ITEMS.map((item) => (
-              <div key={item.id} className="border-b border-border last:border-0">
+              <div key={item.id} style={{ borderBottom: `1px solid ${row1Border}` }}>
                 <button
                   onClick={() => toggleMobileItem(item.id)}
-                  className="flex items-center justify-between w-full px-5 py-3.5 text-sm font-bold text-ink hover:bg-surface transition-colors"
+                  className="flex items-center justify-between w-full px-5 py-3.5 text-sm font-bold transition-colors"
+                  style={{ color: inputText }}
+                  onMouseEnter={e => e.currentTarget.style.background = surfaceBg}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
                   {t(item.labelKey)}
                   <svg
-                    className="w-4 h-4 text-muted transition-transform duration-200"
-                    style={{ transform: mobileExpanded === item.id ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                    className="w-4 h-4 transition-transform duration-200"
+                    style={{ color: mutedText, transform: mobileExpanded === item.id ? 'rotate(180deg)' : 'rotate(0deg)' }}
                     fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
                   >
                     <path d="m6 9 6 6 6-6" />
@@ -640,12 +752,12 @@ export default function Navbar() {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.2 }}
                       className="overflow-hidden"
-                      style={{ backgroundColor: '#f8fafc' }}
+                      style={{ background: surfaceBg }}
                     >
                       <div className="px-5 py-4 grid grid-cols-2 gap-4">
                         {item.cols.map((col) => (
                           <div key={col.headingKey}>
-                            <p className="text-[10px] font-black tracking-widest uppercase text-muted mb-2">
+                            <p className="text-[10px] font-black tracking-widest uppercase mb-2" style={{ color: mutedText }}>
                               {t(col.headingKey)}
                             </p>
                             <ul className="space-y-2">
@@ -654,7 +766,10 @@ export default function Navbar() {
                                   <Link
                                     to={link.href ?? `/?category=${link.filter}`}
                                     onClick={() => setMobileOpen(false)}
-                                    className="text-sm text-ink hover:text-primary-600 transition-colors"
+                                    className="text-sm transition-colors"
+                                    style={{ color: inputText }}
+                                    onMouseEnter={e => e.currentTarget.style.color = '#0056b3'}
+                                    onMouseLeave={e => e.currentTarget.style.color = inputText}
                                   >
                                     {t(link.labelKey)}
                                   </Link>
@@ -671,12 +786,15 @@ export default function Navbar() {
             ))}
 
             {/* Mobile extras */}
-            <div className="px-5 py-3 flex gap-4 border-t border-border bg-white">
+            <div className="px-5 py-3 flex gap-4" style={{ borderTop: `1px solid ${row1Border}`, background: row1Bg }}>
               <Link to="/deals" className="text-xs font-bold transition-colors" style={{ color: '#e53e3e' }} onClick={() => setMobileOpen(false)}>{t('nav.deals')}</Link>
-              <Link to="/?badge=NEW" className="text-xs font-bold text-muted hover:text-ink transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.newArrivals')}</Link>
+              <Link to="/?badge=NEW" className="text-xs font-bold transition-colors" style={{ color: mutedText }} onClick={() => setMobileOpen(false)}
+                onMouseEnter={e => e.currentTarget.style.color = inputText} onMouseLeave={e => e.currentTarget.style.color = mutedText}
+              >{t('nav.newArrivals')}</Link>
               <Link
                 to="/wishlist"
-                className="text-xs font-semibold text-muted hover:text-ink transition-colors flex items-center gap-1"
+                className="text-xs font-semibold transition-colors flex items-center gap-1"
+                style={{ color: mutedText }}
                 onClick={() => setMobileOpen(false)}
               >
                 ♡ {t('nav.wishlist')}{wishlistCount > 0 && <span className="text-red-500 font-black">({wishlistCount})</span>}
@@ -684,7 +802,8 @@ export default function Navbar() {
               <Link
                 to="/account"
                 onClick={() => setMobileOpen(false)}
-                className="text-xs font-semibold text-muted hover:text-ink transition-colors ms-auto"
+                className="text-xs font-semibold transition-colors ms-auto"
+                style={{ color: mutedText }}
               >
                 <svg className="w-4 h-4 inline me-1" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />

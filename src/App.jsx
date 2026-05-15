@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { useEffect, lazy, Suspense, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSEO } from './hooks/useSEO'
+import { ThemeProvider } from './context/ThemeContext'
 import { CartProvider } from './context/CartContext'
 import { ToastProvider } from './context/ToastContext'
 import { WishlistProvider } from './context/WishlistContext'
@@ -104,7 +105,7 @@ function AppShell() {
   }, [isAr])
 
   return (
-    <div className="min-h-screen bg-white text-ink">
+    <div className="min-h-screen bg-white dark:bg-[#0d1117] text-ink dark:text-[#e6edf3]">
       <ScrollProgressBar />
       <ScrollToTop />
       <Navbar />
@@ -153,6 +154,7 @@ function AppShell() {
 function App() {
   return (
     <BrowserRouter>
+      <ThemeProvider>
       <AuthProvider>
         <ProductsProvider>
         <CurrencyProvider>
@@ -168,6 +170,7 @@ function App() {
         </CurrencyProvider>
         </ProductsProvider>
       </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }

@@ -45,3 +45,57 @@ html { scroll-behavior: smooth; }
   box-shadow: 0 0 0 3px rgba(0,86,179,0.12);
   border-color: #0056b3;
 }
+
+/* ── Dark mode base ─────────────────────────── */
+.dark body,
+.dark #root {
+  background-color: #0d1117;
+  color: #e6edf3;
+  color-scheme: dark;
+}
+
+/* Background overrides */
+.dark .bg-white   { background-color: #0d1117 !important; }
+.dark .bg-surface { background-color: #161b22 !important; }
+
+/* Border overrides */
+.dark .border-border       { border-color: #30363d !important; }
+.dark .border-border-light { border-color: #21262d !important; }
+.dark .divide-border > * + * { border-color: #30363d !important; }
+
+/* Text overrides */
+.dark .text-ink    { color: #e6edf3 !important; }
+.dark .text-muted  { color: #8b949e !important; }
+
+/* Card / shadow surfaces */
+.dark [class*="shadow"] {
+  --tw-shadow-color: rgba(0,0,0,0.5);
+}
+
+/* Search / inputs in light components */
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #161b22;
+  color: #e6edf3;
+  border-color: #30363d;
+}
+.dark input::placeholder { color: #6e7681; }
+
+/* Buttons that use bg-surface on hover */
+.dark .hover\:bg-surface:hover { background-color: #161b22 !important; }
+
+/* White cards / panels */
+.dark .rounded-xl.bg-white,
+.dark .rounded-2xl.bg-white,
+.dark .rounded-lg.bg-white {
+  background-color: #161b22 !important;
+  border-color: #30363d !important;
+}
+
+/* Announcement bar stays its own color — no override */
+
+/* Transition for smooth dark/light switch */
+body, #root, header, main, footer, section, div, span, p, a, button, input, select {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
