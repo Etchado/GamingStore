@@ -22,14 +22,14 @@ function StatCard({ icon, label, value, sub }) {
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm"
+      className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 shadow-sm"
     >
       <div className="flex items-center justify-between mb-3">
         <span className="text-2xl">{icon}</span>
       </div>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
-      <p className="text-sm font-medium text-gray-700 mt-0.5">{label}</p>
-      {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
+      <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-0.5">{label}</p>
+      {sub && <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{sub}</p>}
     </motion.div>
   )
 }
@@ -87,7 +87,7 @@ function OrdersTab() {
   )
 
   if (!orders.length) return (
-    <div className="text-center py-20 text-gray-400">
+    <div className="text-center py-20 text-gray-400 dark:text-gray-500">
       <p className="text-4xl mb-3">📦</p>
       <p className="font-medium">No orders yet</p>
     </div>
@@ -97,9 +97,9 @@ function OrdersTab() {
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-gray-100">
+          <tr className="border-b border-gray-100 dark:border-gray-700">
             {['Order', 'Customer', 'Date', 'Total', 'Status', 'Items', ''].map(h => (
-              <th key={h} className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+              <th key={h} className="text-left py-3 px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide whitespace-nowrap">
                 {h}
               </th>
             ))}
@@ -115,13 +115,13 @@ function OrdersTab() {
             return [
               <tr
                 key={order.id}
-                className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer"
+                className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer"
                 onClick={() => setExpanded(isExpanded ? null : order.id)}
               >
-                <td className="py-3 px-4 font-mono text-xs text-gray-500">{order.order_number ?? order.id.slice(0, 8)}</td>
-                <td className="py-3 px-4 font-medium text-gray-800">{customerName}</td>
-                <td className="py-3 px-4 text-gray-500 whitespace-nowrap">{date}</td>
-                <td className="py-3 px-4 font-semibold text-gray-900">{order.total}</td>
+                <td className="py-3 px-4 font-mono text-xs text-gray-500 dark:text-gray-400">{order.order_number ?? order.id.slice(0, 8)}</td>
+                <td className="py-3 px-4 font-medium text-gray-800 dark:text-gray-100">{customerName}</td>
+                <td className="py-3 px-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{date}</td>
+                <td className="py-3 px-4 font-semibold text-gray-900 dark:text-white">{order.total}</td>
                 <td className="py-3 px-4">
                   <select
                     value={order.status}
@@ -135,14 +135,14 @@ function OrdersTab() {
                     }}
                   >
                     {ORDER_STATUSES.map(s => (
-                      <option key={s} value={s} className="bg-white text-gray-800">{s}</option>
+                      <option key={s} value={s} className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">{s}</option>
                     ))}
                   </select>
                 </td>
-                <td className="py-3 px-4 text-gray-500">{(order.order_items ?? []).length} item(s)</td>
+                <td className="py-3 px-4 text-gray-500 dark:text-gray-400">{(order.order_items ?? []).length} item(s)</td>
                 <td className="py-3 px-4">
                   <svg
-                    className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                    className={`w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                     fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"
                   >
                     <path d="M19 9l-7 7-7-7" />
@@ -151,21 +151,21 @@ function OrdersTab() {
               </tr>,
               isExpanded && (
                 <tr key={order.id + '-items'}>
-                  <td colSpan={7} className="px-4 pb-4 bg-gray-50">
+                  <td colSpan={7} className="px-4 pb-4 bg-gray-50 dark:bg-gray-900/50">
                     <div className="pt-3 space-y-2">
                       {(order.order_items ?? []).map(item => (
-                        <div key={item.id} className="flex items-center gap-3 bg-white rounded-xl p-3 border border-gray-100">
+                        <div key={item.id} className="flex items-center gap-3 bg-white dark:bg-gray-800 rounded-xl p-3 border border-gray-100 dark:border-gray-700">
                           {item.image && (
                             <img src={item.image} alt={item.title} className="w-12 h-12 rounded-lg object-cover" />
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm text-gray-800 truncate">{item.title}</p>
-                            <p className="text-xs text-gray-400">Qty: {item.qty} · {item.price}</p>
+                            <p className="font-medium text-sm text-gray-800 dark:text-gray-100 truncate">{item.title}</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500">Qty: {item.qty} · {item.price}</p>
                           </div>
                         </div>
                       ))}
                       {order.shipping_address && (
-                        <div className="text-xs text-gray-500 pt-1 px-1">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 pt-1 px-1">
                           <span className="font-medium">Ship to: </span>
                           {[addr.address, addr.city, addr.country].filter(Boolean).join(', ')}
                           {order.coupon_code && <span className="ml-3 font-medium text-green-600">Coupon: {order.coupon_code}</span>}
@@ -182,22 +182,22 @@ function OrdersTab() {
 
       {/* Pagination */}
       {total > PAGE_SIZE && (
-        <div className="flex items-center justify-between px-2 pt-4 border-t border-gray-100 mt-2">
-          <p className="text-xs text-gray-400">
+        <div className="flex items-center justify-between px-2 pt-4 border-t border-gray-100 dark:border-gray-700 mt-2">
+          <p className="text-xs text-gray-400 dark:text-gray-500">
             {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} of {total} orders
           </p>
           <div className="flex gap-2">
             <button
               onClick={() => setPage(p => p - 1)}
               disabled={page === 0}
-              className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               ← Previous
             </button>
             <button
               onClick={() => setPage(p => p + 1)}
               disabled={(page + 1) * PAGE_SIZE >= total}
-              className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               Next →
             </button>
@@ -240,7 +240,7 @@ function ReviewsTab() {
   )
 
   if (!reviews.length) return (
-    <div className="text-center py-20 text-gray-400">
+    <div className="text-center py-20 text-gray-400 dark:text-gray-500">
       <p className="text-4xl mb-3">💬</p>
       <p className="font-medium">No reviews yet</p>
     </div>
@@ -256,26 +256,26 @@ function ReviewsTab() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96 }}
-            className="bg-white rounded-xl border border-gray-100 p-4 flex gap-4"
+            className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 flex gap-4"
           >
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
-                <span className="font-semibold text-sm text-gray-800">{r.user_name ?? 'Anonymous'}</span>
+                <span className="font-semibold text-sm text-gray-800 dark:text-gray-100">{r.user_name ?? 'Anonymous'}</span>
                 <span className="flex text-amber-400 text-sm">
                   {'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}
                 </span>
-                <span className="text-xs text-gray-400 font-mono">{r.product_id}</span>
-                <span className="text-xs text-gray-300">·</span>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-gray-400 dark:text-gray-500 font-mono">{r.product_id}</span>
+                <span className="text-xs text-gray-300 dark:text-gray-600">·</span>
+                <span className="text-xs text-gray-400 dark:text-gray-500">
                   {new Date(r.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                 </span>
               </div>
-              <p className="text-sm text-gray-600 leading-relaxed">{r.body}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{r.body}</p>
             </div>
             <button
               onClick={() => deleteReview(r.id)}
               disabled={deleting === r.id}
-              className="flex-shrink-0 p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+              className="flex-shrink-0 p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
             >
               {deleting === r.id
                 ? <div className="w-4 h-4 rounded-full border-2 border-red-400 border-t-transparent animate-spin" />
@@ -334,9 +334,9 @@ export default function AdminPage() {
       <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <div className="flex items-center gap-3 mb-1">
           <span className="text-2xl">🛠</span>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Panel</h1>
         </div>
-        <p className="text-gray-400 text-sm">Manage orders and content for GamingStore.</p>
+        <p className="text-gray-400 dark:text-gray-500 text-sm">Manage orders and content for GamingStore.</p>
       </motion.div>
 
       {/* Stats */}
@@ -354,8 +354,8 @@ export default function AdminPage() {
       )}
 
       {/* Tabs */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="flex border-b border-gray-100">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
+        <div className="flex border-b border-gray-100 dark:border-gray-700">
           {TABS.map(t => (
             <button
               key={t.id}
@@ -363,7 +363,7 @@ export default function AdminPage() {
               className={`px-6 py-4 text-sm font-semibold transition-colors ${
                 tab === t.id
                   ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-400 hover:text-gray-600'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
               }`}
             >
               {t.label}
