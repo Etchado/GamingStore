@@ -396,7 +396,7 @@ export default function AdminPage() {
   const dividerColor = dark ? '#30363d' : '#e5e7eb'
 
   return (
-    <div style={{ backgroundColor: pageBg }} className="min-h-screen pt-32 sm:pt-36 pb-20">
+    <div style={{ backgroundColor: pageBg }} className="min-h-screen pt-52 pb-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
         {/* ── Page header ── */}
